@@ -7,4 +7,9 @@ spring:
     init:
       mode: always
       continueOnError: false
-      dataLocations: classpath:demo_data.sql
+ #     dataLocations: classpath:demo_data.sql
+security:
+   jwt:
+     secret: YXNkdXdkYXNkdXlmYXd1ZGlhdXd1ZnVhZmFmaWF3ZnVGQVNGQVNmd2ZhZkFTRkFTRmFzZnF3ZHV5ZnF3dWZzZEZTREdBSEVSRldGU0FE
+     access: 3600000
+     refresh: 2592000000
