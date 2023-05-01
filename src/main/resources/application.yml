@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tasklist?currentSchema=tasklist
+    username: postgres
+    password: 442656827
+  sql:
+    init:
+      mode: always
+      continueOnError: false
+      dataLocations: classpath:demo_data.sql
