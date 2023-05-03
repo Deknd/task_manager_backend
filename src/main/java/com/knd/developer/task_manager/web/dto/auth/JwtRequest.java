@@ -1,10 +1,11 @@
 package com.knd.developer.task_manager.web.dto.auth;
 
+import com.knd.developer.task_manager.web.controller.AuthController;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class JwtRequest {
+public class JwtRequest{
 
     @NotNull(message = "Username must be not null.")
     private String username;
