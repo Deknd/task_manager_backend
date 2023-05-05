@@ -13,7 +13,7 @@ import com.knd.developer.task_manager.repository.mappers.TaskRowMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-@Repository
+//@Repository
 @RequiredArgsConstructor
 public class TaskRepositoryImpl implements TaskRepository {
     private final DataSourceConfig dataSourceConfig;
@@ -25,7 +25,7 @@ public class TaskRepositoryImpl implements TaskRepository {
                    t.expiration_date as task_expiration_date,
                    t.status          as task_status
             FROM tasks t
-            WHERE id = ?""";
+            WHERE t.id = ?""";
     private final String FIND_ALL_BY_USER_ID = """
             SELECT t.id              as task_id,
                    t.title           as task_title,
