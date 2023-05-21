@@ -11,7 +11,10 @@ import java.util.Optional;
 public interface TaskRepository{
     Optional<Task> findById(Long id);
     List<Task> findAllByUserId(Long userId);
-    void assignToUserById(@Param("taskId") Long taskId,@Param("userId") Long userId);
+   // void assignToUserById(@Param("task_id") Long task_id,@Param("user_id") Long user_id);
+
+    List<Integer> findAllTaskIdsByUserId(Long user_id);
+    boolean isTaskOwner(Long user_id, Long id);
     void update(Task task);
     void create(Task task);
     void delete(Long id);

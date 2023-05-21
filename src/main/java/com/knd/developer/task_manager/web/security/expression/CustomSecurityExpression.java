@@ -1,6 +1,7 @@
 package com.knd.developer.task_manager.web.security.expression;
 
 import com.knd.developer.task_manager.domain.user.Role;
+import com.knd.developer.task_manager.service.TaskService;
 import com.knd.developer.task_manager.service.UserService;
 import com.knd.developer.task_manager.web.security.JwtEntity;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Service("customSecurityExpression")
 @RequiredArgsConstructor
 public class CustomSecurityExpression {
-    private final UserService userService;
+    private final TaskService taskService;
 
     public boolean canAccessUser(Long id){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -41,6 +42,6 @@ public class CustomSecurityExpression {
 
         Long id= user.getId();
 
-        return userService.isTaskOwner(id, taskId);
+        return taskService.isTaskOwner(id, taskId);
     }
 }

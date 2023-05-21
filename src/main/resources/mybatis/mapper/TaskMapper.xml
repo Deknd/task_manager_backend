@@ -21,6 +21,16 @@
         WHERE t.id = #{id}
     </select>
 
+    <select id="findAllTaskIdsByUserId" resultType="java.lang.Integer">
+        SELECT t.id
+        FROM tasks t
+        WHERE t.user_id = #{userId}
+    </select>
+
+
+
+
+
     <select id="findAllByUserId" resultMap="TaskResultMap">
         SELECT t.id as task_id,
         t.title as task_title,
@@ -28,14 +38,13 @@
         t.expiration_date as task_expiration_date,
         t.status as task_status
         FROM tasks t
-        JOIN users_task ut on t.id = ut.task_id
-        WHERE ut.user_id = #{userId}
+        WHERE t.user_id = #{userId}
     </select>
 
-    <insert id="assignToUserById">
-        INSERT INTO users_tasks (task_id,user_id)
-        VALUES (#{taskId}, #{userId})
-    </insert>
+    <!--<insert id="assignToUserById">
+        INSERT INTO users_task (user_id, task_id)
+        VALUES (#{user_id}, #{task_id})
+    </insert>-->
 
     <update id="update">
         UPDATE tasks
@@ -47,9 +56,19 @@
     </update>
 
     <insert id="create" keyProperty="id" keyColumn="id" useGeneratedKeys="true">
-        INSERT INTO tasks (title, description, expiration_date, status)
-        VALUES (#{title}, #{description}, #{expirationDate}, #{date})
+        INSERT INTO tasks (user_id, title, description, status, expiration_date)
+        VALUES (#{user_id}, #{title}, #{description}, #{status}, #{expirationDate, jdbcType=TIMESTAMP})
     </insert>
+
+    <select id="isTaskOwner" resultType="boolean">
+        SELECT exists(
+        SELECT 1
+        FROM tasks
+        WHERE user_id = #{user_id}
+        AND id = #{id}
+        )
+    </select>
+
 
     <delete id="delete">
         DELETE FROM tasks

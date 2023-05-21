@@ -10,19 +10,28 @@ import com.knd.developer.task_manager.web.dto.validation.OnCreate;
 import com.knd.developer.task_manager.web.dto.validation.OnUpdate;
 import com.knd.developer.task_manager.web.mappers.TaskMapper;
 import com.knd.developer.task_manager.web.mappers.UserMapper;
+import com.knd.developer.task_manager.web.security.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 @Tag(name = "User Controller", description = "User API")
 public class UserController {
 
@@ -50,7 +59,19 @@ public class UserController {
     @Operation(summary = "Delete user by id")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
     public  void deleteById(@PathVariable Long id){
-        userService.delete(id);
+
+        User user=userService.getById(id);
+        List<Integer> id_tasks=taskService.getAllTaskIdsByUserId(id);
+       StringBuilder st=new StringBuilder();
+        StringBuilder type=new StringBuilder();
+        for(int i=0; i<id_tasks.size();i++){
+            type.append(id_tasks.get(i).getClass()).append(' ') ;
+           st.append(id_tasks.get(i)).append(' ');
+        }
+        st.append(type);
+        String re=st.toString();
+        log.info("id: "+id+" name: "+user.getUsername()+" "+id_tasks.size()+" "+re+" "+type);
+        userService.delete(id, user.getUsername(), id_tasks);
     }
     @GetMapping("/{id}/tasks")
     @Operation(summary = "Get all User tasks")

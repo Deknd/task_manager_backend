@@ -3,6 +3,7 @@ package com.knd.developer.task_manager.web.security;
 import com.knd.developer.task_manager.domain.user.User;
 import com.knd.developer.task_manager.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

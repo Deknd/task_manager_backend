@@ -1,28 +1,37 @@
 package com.knd.developer.task_manager.config;
 
+
 import com.knd.developer.task_manager.web.security.JwtTokenFilter;
 import com.knd.developer.task_manager.web.security.JwtTokenProvider;
+import com.knd.developer.task_manager.web.security.JwtUserDetailsService;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
+
+import java.security.SecureRandom;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 @EnableWebSecurity
@@ -31,7 +40,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class ApplicationConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final ApplicationContext applicationContext;
+    private final JwtUserDetailsService userDetailsService;
+
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -40,8 +51,19 @@ public class ApplicationConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+
         return configuration.getAuthenticationManager();
     }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+
+        return authProvider;
+    }
+
 
     @Bean
     public OpenAPI openAPI() {
@@ -68,7 +90,8 @@ public class ApplicationConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf().disable()
-                .cors()
+                .cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
+
                 .and()
                 .httpBasic().disable()
                 .sessionManagement()
@@ -89,7 +112,7 @@ public class ApplicationConfig {
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
 
-                .anyRequest().authenticated()//authenticated()
+                .anyRequest().authenticated()
                 .and()
                 .anonymous().disable()
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);

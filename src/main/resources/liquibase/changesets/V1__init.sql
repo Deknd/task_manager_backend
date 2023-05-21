@@ -5,24 +5,18 @@ create table if not exists users
     username varchar(255) not null unique,
     password varchar(255) not null
 
+
 );
 create table if not exists tasks
 (
     id              bigserial primary key,
+    user_id         bigint       not null,
     title           varchar(255) not null,
     description     varchar(255) null,
     status          varchar(255) not null,
-    expiration_date timestamp    null
-);
-create table if not exists users_task
-(
-    user_id bigint not null,
-    task_id bigint not null,
-    primary key (user_id, task_id),
-    constraint fk_users_tasks_users foreign key (user_id) references users (id) on delete cascade on update no action,
-    constraint fk_users_tasks_tasks foreign key (task_id) references tasks (id) on delete cascade on update no action
+    expiration_date timestamp    null,
+constraint fk_tasks_user foreign key (user_id) references users (id) on delete cascade on update no action );
 
-);
 create table if not exists users_roles
 (
     user_id bigint       not null,
@@ -30,3 +24,4 @@ create table if not exists users_roles
     primary key (user_id, role),
     constraint fk_users_role_users foreign key (user_id) references users (id) on delete cascade on update no action
 );
+/*alter  table  tasks add constraint fk_task_users_tasks foreign key (id) references users_task (task_id) on delete cascade on update no action ;*/

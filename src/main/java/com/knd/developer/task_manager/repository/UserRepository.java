@@ -12,7 +12,7 @@ public interface UserRepository {
     Optional<User> findByUsername(String username);
     void update(User user);
     void create(User user);
-    void insertUserRole(@Param("userId") Long userId,@Param("role") Role role);
-    boolean isTaskOwner(@Param("userId") Long userId,@Param("taskId") Long taskId);
+    void insertUserRole(@Param("user_id") Long userId,@Param("role") String role);
+    boolean isTaskOwner(@Param("user_id") Long userId,@Param("task_id") Long taskId);
     void delete(Long id);
 }

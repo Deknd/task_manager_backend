@@ -14,7 +14,8 @@ create table if not exists tasks
     title           varchar(255) not null,
     description     varchar(255) null,
     status          varchar(255) not null,
-    expiration_date timestamp    null
+    expiration_date timestamp    null,
+    constraint fk_tasks_users_tasks foreign key (id) references users_task (task_id) on delete cascade on update no action
 );
 create table if not exists users_task
 (
@@ -25,6 +26,7 @@ create table if not exists users_task
     constraint fk_users_tasks_tasks foreign key (task_id) references tasks (id) on delete cascade on update no action
 
 );
+
 create table if not exists users_roles
 (
     user_id bigint       not null,

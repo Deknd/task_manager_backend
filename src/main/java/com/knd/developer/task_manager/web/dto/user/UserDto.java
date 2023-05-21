@@ -25,6 +25,8 @@ public class UserDto {
     @Schema(description = "User email", example = "johndoe@mail.com")
     @NotNull(message = "Username must be not null", groups = {OnCreate.class, OnUpdate.class})
     @Length(max = 255, message = "Username length must be smaller than 255 symbols.", groups = {OnCreate.class,OnUpdate.class})
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+
     private String username;
 
     @Schema(description = "User password", example = "12345")
@@ -32,9 +34,6 @@ public class UserDto {
     @NotNull(message = "Password must be not null", groups = {OnCreate.class, OnUpdate.class})
     private String password;
 
-    @Schema(description = "User password confirmation", example = "12345")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @NotNull(message = "Password confirmation must be not null", groups = OnCreate.class)
-    private String passwordConfirmation;
+
 
 }

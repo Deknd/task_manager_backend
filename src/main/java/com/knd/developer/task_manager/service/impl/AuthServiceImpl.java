@@ -7,6 +7,7 @@ import com.knd.developer.task_manager.web.dto.auth.JwtRequest;
 import com.knd.developer.task_manager.web.dto.auth.JwtResponse;
 import com.knd.developer.task_manager.web.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class AuthServiceImpl implements AuthService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));//отравляет на JwtUserDetailsService
         User user = userService.getByUsername(loginRequest.getUsername()); //А если нет такого юзера? то выдается ошибка выше в методе
         jwtResponse.setId(user.getId());
-        jwtResponse.setUsername(user.getName());
+        jwtResponse.setName(user.getName());
         jwtResponse.setAccessToken(jwtTokenProvider.createAccessToken(user.getId(), user.getUsername(), user.getRoles()));
         jwtResponse.setRefreshToken(jwtTokenProvider.createRefreshToken(user.getId(), user.getUsername()));
 

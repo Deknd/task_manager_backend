@@ -6,6 +6,10 @@ import com.knd.developer.task_manager.domain.task.Task;
 import com.knd.developer.task_manager.repository.TaskRepository;
 import com.knd.developer.task_manager.service.TaskService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +32,11 @@ public class TaskServiceImpl implements TaskService {
     public List<Task> getAllByUserId(Long id) {
         return taskRepository.findAllByUserId(id);
     }
+    @Override
+    @Transactional(readOnly = true)
+    public List<Integer> getAllTaskIdsByUserId(Long id){
+        return taskRepository.findAllTaskIdsByUserId(id);
+    }
 
     @Override
     @Transactional
@@ -40,12 +49,17 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    @Transactional
+   @Transactional
     public Task create(Task task, Long userId) {
         task.setStatus(Status.TODO);
+        task.setUser_id(userId);
         taskRepository.create(task);
-        taskRepository.assignToUserById(task.getId(), userId);
-        return task;
+        Task result= task;
+        return result;
+    }
+    @Override
+    public boolean isTaskOwner(Long user_id, Long task_id){
+        return taskRepository.isTaskOwner(user_id, task_id);
     }
 
     @Override

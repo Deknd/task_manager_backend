@@ -34,7 +34,7 @@ public class JwtTokenFilter extends GenericFilterBean {
                 }
             } catch (ResourceNotFoundException ignored) {
 
-              throw new AccessDeniedException("что то плохое в авторизации");
+
             }
         }
         chain.doFilter(request,response);
