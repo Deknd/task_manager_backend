@@ -1,6 +1,7 @@
 package com.knd.developer.task_manager.service.impl;
 
 import com.knd.developer.task_manager.domain.exception.ResourceNotFoundException;
+import com.knd.developer.task_manager.domain.task.PriorityTask;
 import com.knd.developer.task_manager.domain.task.Status;
 import com.knd.developer.task_manager.domain.task.Task;
 import com.knd.developer.task_manager.repository.TaskRepository;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
 
@@ -44,6 +46,10 @@ public class TaskServiceImpl implements TaskService {
         if (task.getStatus() == null) {
             task.setStatus(Status.TODO);
         }
+        if(task.getPriority()==null){
+
+            task.setPriority(PriorityTask.STANDART);
+        }
         taskRepository.update(task);
         return task;
     }
@@ -51,6 +57,11 @@ public class TaskServiceImpl implements TaskService {
     @Override
    @Transactional
     public Task create(Task task, Long userId) {
+        if(task.getPriority()==null){
+
+
+            task.setPriority(PriorityTask.STANDART);
+        }
         task.setStatus(Status.TODO);
         task.setUser_id(userId);
         taskRepository.create(task);

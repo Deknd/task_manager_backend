@@ -1,6 +1,7 @@
 package com.knd.developer.task_manager.config;
 
 
+import com.knd.developer.task_manager.service.props.RedisProperties;
 import com.knd.developer.task_manager.web.security.JwtTokenFilter;
 import com.knd.developer.task_manager.web.security.JwtTokenProvider;
 import com.knd.developer.task_manager.web.security.JwtUserDetailsService;
@@ -12,12 +13,17 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -41,6 +47,7 @@ public class ApplicationConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtUserDetailsService userDetailsService;
+    private final RedisProperties redisProperties;
 
 
 
@@ -86,11 +93,37 @@ public class ApplicationConfig {
 
     }
 
+
+    @Bean
+    public JedisConnectionFactory jedisConnectionFactory() {
+        RedisStandaloneConfiguration redisConfiguration = new RedisStandaloneConfiguration(redisProperties.getHost(), redisProperties.getPort());
+        redisConfiguration.setPassword(redisProperties.getPassword());
+        return new JedisConnectionFactory(redisConfiguration);
+    }
+
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate() {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(jedisConnectionFactory());
+        return template;
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf().disable()
-                .cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
+                .cors().configurationSource(request -> {
+                    CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
+                    configuration.addAllowedOrigin("http://localhost:3000");
+                    configuration.addAllowedHeader("Authorization");
+                    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+                    configuration.addExposedHeader("Custom-Header"); // Добавьте эту строку для возвращения дополнительных заголовков
+
+
+                    return configuration;
+
+
+                })
 
                 .and()
                 .httpBasic().disable()

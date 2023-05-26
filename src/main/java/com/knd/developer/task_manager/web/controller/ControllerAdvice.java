@@ -6,6 +6,7 @@ import com.knd.developer.task_manager.domain.exception.ResourceNotFoundException
 import com.knd.developer.task_manager.domain.exception.ResourcesMappingException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -75,14 +76,20 @@ public class ControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionBody handlerAuthenticationException(AuthenticationException e){
         e.printStackTrace();
-        return new ExceptionBody("Authentication failed ");
+        return new ExceptionBody("Authentication failed 1");
     }
     @ExceptionHandler(InternalAuthenticationServiceException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ExceptionBody handlerInternalAuthenticationServiceException(InternalAuthenticationServiceException e){
-        e.printStackTrace();
-        return new ExceptionBody("Authentication failed ");
+e.printStackTrace();
+        return new ExceptionBody("Authentication failed 2");
     }
+    @ExceptionHandler(BadCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ExceptionBody handlerBadCredentialsException(BadCredentialsException e){
+        return new ExceptionBody("Authentication failed");
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ExceptionBody handlerException(Exception e){

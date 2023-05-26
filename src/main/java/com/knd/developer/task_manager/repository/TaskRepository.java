@@ -2,7 +2,6 @@ package com.knd.developer.task_manager.repository;
 
 import com.knd.developer.task_manager.domain.task.Task;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,6 +1,5 @@
 package com.knd.developer.task_manager.repository;
 
-import com.knd.developer.task_manager.domain.user.Role;
 import com.knd.developer.task_manager.domain.user.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

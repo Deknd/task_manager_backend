@@ -23,8 +23,8 @@ mybatis:
 security:
    jwt:
      secret: ${JWT_SECRET}
-     access: 1 #час
-     refresh: 72 #часа
+     access: 15 #минут
+     refresh: 24 #часа
 
 
 springdoc:

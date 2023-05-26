@@ -13,4 +13,5 @@ public class Task implements Serializable {
     private String description;
     private Status status;
     private LocalDateTime expirationDate;
+    private  PriorityTask priority;
 }

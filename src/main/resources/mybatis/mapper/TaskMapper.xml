@@ -9,6 +9,7 @@
         <result property="description" column="task_description"/>
         <result property="expirationDate" column="task_expiration_date"/>
         <result property="status" column="task_status"/>
+        <result property="priority" column="task_priority" />
     </resultMap>
 
     <select id="findById" resultMap="TaskResultMap">
@@ -16,7 +17,8 @@
         t.title as task_title,
         t.description as task_description,
         t.expiration_date as task_expiration_date,
-        t.status as task_status
+        t.status as task_status,
+        t.priority as task_priority
         FROM tasks t
         WHERE t.id = #{id}
     </select>
@@ -36,7 +38,8 @@
         t.title as task_title,
         t.description as task_description,
         t.expiration_date as task_expiration_date,
-        t.status as task_status
+        t.status as task_status,
+        t.priority as task_priority
         FROM tasks t
         WHERE t.user_id = #{userId}
     </select>
@@ -51,13 +54,14 @@
         SET title = #{title},
         description = #{description},
         expiration_date = #{expirationDate},
-        status = #{status}
+        status = #{status},
+        priority = #{priority}
         WHERE id = #{id}
     </update>
 
     <insert id="create" keyProperty="id" keyColumn="id" useGeneratedKeys="true">
-        INSERT INTO tasks (user_id, title, description, status, expiration_date)
-        VALUES (#{user_id}, #{title}, #{description}, #{status}, #{expirationDate, jdbcType=TIMESTAMP})
+        INSERT INTO tasks (user_id, title, description, status, expiration_date, priority)
+        VALUES (#{user_id}, #{title}, #{description}, #{status}, #{expirationDate, jdbcType=TIMESTAMP}, #{priority})
     </insert>
 
     <select id="isTaskOwner" resultType="boolean">

@@ -6,6 +6,7 @@ import com.knd.developer.task_manager.service.AuthService;
 import com.knd.developer.task_manager.service.UserService;
 import com.knd.developer.task_manager.web.dto.auth.JwtRequest;
 import com.knd.developer.task_manager.web.dto.auth.JwtResponse;
+import com.knd.developer.task_manager.web.dto.auth.RefreshRequest;
 import com.knd.developer.task_manager.web.dto.user.UserDto;
 import com.knd.developer.task_manager.web.dto.validation.OnCreate;
 import com.knd.developer.task_manager.web.mappers.UserMapper;
@@ -17,10 +18,7 @@ import java.security.SecureRandom;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth/")
@@ -37,7 +35,6 @@ public class AuthController {
     @PostMapping("/login")
     public JwtResponse login(@Validated @RequestBody JwtRequest loginRequest) {
 
-
         return authService.login(loginRequest);
     }
 
@@ -50,7 +47,11 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public JwtResponse refresh(@RequestBody String refreshToken) {
-        return authService.refresh(refreshToken);
+    public JwtResponse refresh(@RequestBody RefreshRequest refreshToken) {
+        return authService.refresh(refreshToken.getRefreshToken());
+    }
+    @DeleteMapping("/logout")
+    public void logout(@RequestBody RefreshRequest refreshToken) {
+        authService.logout(refreshToken.getRefreshToken());
     }
 }
