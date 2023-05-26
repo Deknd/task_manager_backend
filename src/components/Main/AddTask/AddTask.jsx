@@ -41,7 +41,22 @@ export const AddTask = () => {
               priority: task.priorityTask,
               expirationDate: datetimeString,
             })
-          );
+          )
+            .then(() => {
+              // Сбросить значения формы
+              setTask({
+                title: "",
+                description: "",
+                expirationDate: "",
+                time: "",
+                date: "",
+                priorityTask: "STANDART",
+              });
+            })
+            .catch((error) => {
+              // Обработка ошибки отправки задачи
+              console.log("Ошибка отправки задачи:", error);
+            });
         }
       }
     } else return;

@@ -23,13 +23,32 @@ export const getAllTasks = createAsyncThunk(
     }
   }
 );
+export const deleteTask = createAsyncThunk(
+  "tasks/deleteTask",
+  async (payload, thunkAPI) => {
+    try {
+      const res = await axios.delete(
+        `${HOST}:${PORT}${API}tasks/${payload.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${payload.accessToken}`,
+          },
+        }
+      );
+      return res;
+    } catch (err) {
+      console.log(err);
+      return thunkAPI.rejectWithValue(err);
+    }
+  }
+);
 
 export const addTask = createAsyncThunk(
   "tasks/addTask",
   async (payload, thunkAPI) => {
     try {
       const res = await axios.post(
-        `http://192.168.1.101:8080/api/v1/users/${payload.id}/tasks`,
+        `${HOST}:${PORT}${API}users/${payload.id}/tasks`,
         {
           title: payload.title,
           description: payload.description,
@@ -78,6 +97,12 @@ const taskSlice = createSlice({
 
     builder.addCase(addTask.fulfilled, (state, action) => {
       state.tasks.push(action.payload);
+    });
+    builder.addCase(deleteTask.fulfilled, (state, action) => {
+      console.log(action.meta.arg.id);
+      state.tasks = state.tasks.filter(
+        (task) => task.id !== action.meta.arg.id
+      );
     });
   },
 });
