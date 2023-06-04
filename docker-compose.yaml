@@ -7,16 +7,9 @@ volumes:
     driver: local
 
 services:
-  app:
-    build:
-      context: .
-    container_name: tasklist
-    depends_on:
-      - db
-    env_file:
-      - .env
-    ports:
-      - '8080:8080'
+
+
+
   db:
     image: postgres:15.1-alpine
     container_name: postgres
@@ -27,8 +20,9 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DATABASE}
     volumes:
-      - ./src/main/resources/db-init:/docker-entrypoint-initdb.d
       - db-data:/var/lib/postgresql/data
+      - ./src/main/resources/db-init:/docker-entrypoint-initdb.d
+
   redis:
     image: redis:7.2-rc-alpine
     restart: always

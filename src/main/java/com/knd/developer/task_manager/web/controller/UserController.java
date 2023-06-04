@@ -61,17 +61,16 @@ public class UserController {
     public  void deleteById(@PathVariable Long id){
 
         User user=userService.getById(id);
-        List<Integer> id_tasks=taskService.getAllTaskIdsByUserId(id);
-       StringBuilder st=new StringBuilder();
-        StringBuilder type=new StringBuilder();
-        for(int i=0; i<id_tasks.size();i++){
-            type.append(id_tasks.get(i).getClass()).append(' ') ;
-           st.append(id_tasks.get(i)).append(' ');
-        }
-        st.append(type);
-        String re=st.toString();
-        log.info("id: "+id+" name: "+user.getUsername()+" "+id_tasks.size()+" "+re+" "+type);
-        userService.delete(id, user.getUsername(), id_tasks);
+//        List<Integer> id_tasks=taskService.getAllTaskIdsByUserId(id);
+//       StringBuilder st=new StringBuilder();
+//        StringBuilder type=new StringBuilder();
+//        for(int i=0; i<id_tasks.size();i++){
+//            type.append(id_tasks.get(i).getClass()).append(' ') ;
+//           st.append(id_tasks.get(i)).append(' ');
+//        }
+//        st.append(type);
+//        String re=st.toString();
+        userService.delete(id);
     }
     @GetMapping("/{id}/tasks")
     @Operation(summary = "Get all User tasks")

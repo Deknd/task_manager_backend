@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 @Data
 @RedisHash("RefreshToken")
+
 public class RefreshToken implements Serializable {
     private String id;
     private String refreshToken;

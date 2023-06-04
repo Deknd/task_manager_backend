@@ -11,5 +11,5 @@ public interface UserService {
     User update(User user);
     User create(User user);
     //boolean isTaskOwner(Long userId, Long taskId);
-    void delete(Long id, String username, List<Integer> id_tasks);
+    void delete(Long id);
 }

@@ -34,11 +34,6 @@ public class TaskServiceImpl implements TaskService {
     public List<Task> getAllByUserId(Long id) {
         return taskRepository.findAllByUserId(id);
     }
-    @Override
-    @Transactional(readOnly = true)
-    public List<Integer> getAllTaskIdsByUserId(Long id){
-        return taskRepository.findAllTaskIdsByUserId(id);
-    }
 
     @Override
     @Transactional
@@ -48,7 +43,7 @@ public class TaskServiceImpl implements TaskService {
         }
         if(task.getPriority()==null){
 
-            task.setPriority(PriorityTask.STANDART);
+            task.setPriority(PriorityTask.STANDARD);
         }
         taskRepository.update(task);
         return task;
@@ -60,7 +55,7 @@ public class TaskServiceImpl implements TaskService {
         if(task.getPriority()==null){
 
 
-            task.setPriority(PriorityTask.STANDART);
+            task.setPriority(PriorityTask.STANDARD);
         }
         task.setStatus(Status.TODO);
         task.setUser_id(userId);

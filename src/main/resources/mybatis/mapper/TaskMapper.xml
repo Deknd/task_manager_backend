@@ -5,6 +5,7 @@
 <mapper namespace="com.knd.developer.task_manager.repository.TaskRepository">
     <resultMap id="TaskResultMap" type="com.knd.developer.task_manager.domain.task.Task" autoMapping="false">
         <id property="id" column="task_id"/>
+        <result property="user_id" column="task_user_id" />
         <result property="title" column="task_title"/>
         <result property="description" column="task_description"/>
         <result property="expirationDate" column="task_expiration_date"/>
@@ -14,6 +15,7 @@
 
     <select id="findById" resultMap="TaskResultMap">
         SELECT t.id as task_id,
+        t.user_id as task_user_id,
         t.title as task_title,
         t.description as task_description,
         t.expiration_date as task_expiration_date,
@@ -35,6 +37,8 @@
 
     <select id="findAllByUserId" resultMap="TaskResultMap">
         SELECT t.id as task_id,
+        t.user_id as task_user_id,
+
         t.title as task_title,
         t.description as task_description,
         t.expiration_date as task_expiration_date,
@@ -51,7 +55,8 @@
 
     <update id="update">
         UPDATE tasks
-        SET title = #{title},
+        SET
+        title = #{title},
         description = #{description},
         expiration_date = #{expirationDate},
         status = #{status},
