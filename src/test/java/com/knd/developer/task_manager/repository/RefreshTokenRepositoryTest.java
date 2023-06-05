@@ -1,11 +1,16 @@
 package com.knd.developer.task_manager.repository;
 
 import com.knd.developer.task_manager.domain.refresh.RefreshToken;
+import org.aspectj.lang.annotation.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,17 +22,32 @@ class RefreshTokenRepositoryTest {
 
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
-    String id = UUID.randomUUID().toString();
 
+
+    String id = UUID.randomUUID().toString();
+    KeyGenerator keyGenerator;
+
+
+    private SecretKey secretKey() {
+        try {
+            keyGenerator = KeyGenerator.getInstance("HmacSHA256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        SecretKey secretKey = keyGenerator.generateKey();
+        return secretKey;
+
+    }
 
     @Test
-    void refreshTokenRepository_SaveRefreshToken_ReturnRefreshToken() {
+    void saveRefreshToken_ReturnRefreshToken() {
 
         //given
         String token = "RefreshToken";
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setId(id);
         refreshToken.setRefreshToken(token);
+        refreshToken.setSecretKey(secretKey());
 
 
         //when
@@ -38,6 +58,7 @@ class RefreshTokenRepositoryTest {
         assertNotNull(resultToken);
         assertEquals(refreshToken.getId(), resultToken.getId());
         assertEquals(refreshToken.getRefreshToken(), resultToken.getRefreshToken());
+        assertEquals(refreshToken.getSecretKey(), resultToken.getSecretKey());
 
         deleteCache(resultToken);
 
@@ -51,10 +72,13 @@ class RefreshTokenRepositoryTest {
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setId(id);
         refreshToken.setRefreshToken(token);
+        refreshToken.setSecretKey(secretKey());
+
         String tokenUpdate = "UpdateRefreshToken";
         RefreshToken refreshTokenUpdate = new RefreshToken();
         refreshTokenUpdate.setId(id);
         refreshTokenUpdate.setRefreshToken(tokenUpdate);
+        refreshTokenUpdate.setSecretKey(secretKey());
 
         //when
         refreshTokenRepository.save(refreshToken);
@@ -65,10 +89,12 @@ class RefreshTokenRepositoryTest {
         //then
         assertNotNull(resultToken);
         assertEquals(refreshToken.getId(), resultToken.getId());
-        assertNotEquals(refreshToken.getRefreshToken(),resultToken.getRefreshToken());
+        assertNotEquals(refreshToken.getRefreshToken(), resultToken.getRefreshToken());
+        assertNotEquals(refreshToken.getSecretKey(), resultToken.getSecretKey());
 
 
         assertEquals(refreshTokenUpdate.getRefreshToken(), resultToken.getRefreshToken());
+        assertEquals(refreshTokenUpdate.getSecretKey(), resultToken.getSecretKey());
 
         deleteCache(resultToken);
 
@@ -81,6 +107,7 @@ class RefreshTokenRepositoryTest {
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setId(id);
         refreshToken.setRefreshToken(token);
+        refreshToken.setSecretKey(secretKey());
         refreshTokenRepository.save(refreshToken);
 
         RefreshToken result = refreshTokenRepository.findById(id).orElse(null);
@@ -88,6 +115,7 @@ class RefreshTokenRepositoryTest {
         assertNotNull(result);
         assertEquals(refreshToken.getId(), result.getId());
         assertEquals(refreshToken.getRefreshToken(), result.getRefreshToken());
+        assertEquals(refreshToken.getSecretKey(), result.getSecretKey());
 
         deleteCache(result);
 
@@ -113,6 +141,7 @@ class RefreshTokenRepositoryTest {
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setId(id);
         refreshToken.setRefreshToken(token);
+        refreshToken.setSecretKey(secretKey());
         refreshTokenRepository.save(refreshToken);
 
         refreshTokenRepository.delete(refreshToken);

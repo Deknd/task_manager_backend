@@ -5,12 +5,13 @@ import com.knd.developer.task_manager.service.AuthService;
 import com.knd.developer.task_manager.service.UserService;
 import com.knd.developer.task_manager.service.props.JwtProperties;
 import com.knd.developer.task_manager.web.dto.auth.JwtRequest;
-import com.knd.developer.task_manager.web.dto.auth.JwtResponse;
+import com.knd.developer.task_manager.web.dto.auth.ResponseAuthUser;
+import com.knd.developer.task_manager.web.dto.auth.RefreshRequest;
 import com.knd.developer.task_manager.web.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.hibernate.query.sqm.TemporalUnit;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
@@ -30,30 +31,34 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public JwtResponse login(JwtRequest loginRequest) {
-        JwtResponse jwtResponse = new JwtResponse();//создаем ответ на запрос
+    public ResponseAuthUser login(JwtRequest loginRequest) {
+        ResponseAuthUser responseAuthUser = new ResponseAuthUser();//создаем ответ на запрос
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));//отравляет на JwtUserDetailsService
+        } catch (InternalAuthenticationServiceException e) {
+            throw new BadCredentialsException(e.getMessage());
+        }
 
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));//отравляет на JwtUserDetailsService
-
-        Instant validity=Instant.now()
+        Instant validity = Instant.now()
                 .plus(jwtProperties.getAccess(), ChronoUnit.MINUTES);
 
         User user = userService.getByUsername(loginRequest.getUsername()); //А если нет такого юзера? то выдается ошибка выше в методе
-        jwtResponse.setId(user.getId());
-        jwtResponse.setName(user.getName());
-        jwtResponse.setExpiration(validity.toString());
-        jwtResponse.setAccessToken(jwtTokenProvider.createAccessToken(user.getId(), user.getUsername(), user.getRoles(), validity));
+        responseAuthUser.setId(user.getId());
+        responseAuthUser.setName(user.getName());
+        responseAuthUser.setTasks(user.getTasks());
+        responseAuthUser.setExpiration(validity.toString());
+        responseAuthUser.setAccessToken(jwtTokenProvider.createAccessToken(user.getId(), user.getUsername(), user.getRoles(), validity));
 
-        jwtResponse.setRefreshToken(jwtTokenProvider.createRefreshToken(user.getId(), user.getUsername()));
+        responseAuthUser.setRefreshToken(jwtTokenProvider.createRefreshToken(user.getId(), user.getUsername()));
 
-        return jwtResponse;
+        return responseAuthUser;
     }
 
     @Override
-    public JwtResponse refresh(String refreshToken) {
-        Instant validity=Instant.now().atZone(ZoneId.of("UTC")).toInstant();
+    public ResponseAuthUser refresh(RefreshRequest refreshToken) {
+        Instant validity = Instant.now().atZone(ZoneId.of("UTC")).toInstant();
         Instant result = validity.plus(jwtProperties.getAccess(), ChronoUnit.MINUTES);
-        return jwtTokenProvider.refreshUserToken(refreshToken, result);
+        return jwtTokenProvider.refreshUserToken(refreshToken.getRefreshToken(), result);
     }
 
     @Override

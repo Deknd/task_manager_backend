@@ -22,7 +22,6 @@ mybatis:
   mapper-locations: classpath:mybatis/mapper/*.xml
 security:
    jwt:
-     secret: ${JWT_SECRET}
      access: 15 #минут
      refresh: 24 #часа
 
