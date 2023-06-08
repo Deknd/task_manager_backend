@@ -34,8 +34,18 @@ public interface UserRepository {
      * @param user должен быть уникальный: username
      */
     void create(User user);
+
+    /**
+     * Сохраняет роль пользователя в память
+     * @param userId - айди пользователя
+     * @param role - роль пользователя
+     */
     void insertUserRole(@Param("user_id") Long userId,@Param("role") String role);
 //    boolean isTaskOwner(@Param("user_id") Long userId,@Param("task_id") Long taskId);
 
+    /**
+     * Удаляет пользователя из памяти
+     * @param id - айди пользователя
+     */
     void delete(Long id);
 }

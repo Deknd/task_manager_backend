@@ -1,8 +1,8 @@
 package com.knd.developer.task_manager.service.impl;
 
 import com.knd.developer.task_manager.domain.exception.AccessDeniedException;
-import com.knd.developer.task_manager.domain.refresh.RefreshToken;
-import com.knd.developer.task_manager.repository.RefreshTokenRepository;
+import com.knd.developer.task_manager.domain.tokens.Tokens;
+import com.knd.developer.task_manager.repository.TokensRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,41 +22,41 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class RefreshTokenServiceImplTest {
+class TokensServiceImplTest {
 
 
     @Mock
-    private RefreshTokenRepository refreshTokenRepository;
+    private TokensRepository tokensRepository;
 
     @InjectMocks
-    private RefreshTokenServiceImpl refreshTokenService;
+    private TokensServiceImpl refreshTokenService;
 
     @Test
     void addToken_shouldSaveTokenRepository_ReturnToken() {
-        RefreshToken token = new RefreshToken();
+        Tokens token = new Tokens();
         token.setId(id_s());
         token.setRefreshToken("Refresh Token");
         token.setSecretKey(secretKey());
-        when(refreshTokenRepository.save(token)).thenReturn(token);
+        when(tokensRepository.save(token)).thenReturn(token);
 
-        RefreshToken result = refreshTokenService.addToken(token);
+        Tokens result = refreshTokenService.addToken(token);
 
         assertEquals(token, result);
-        verify(refreshTokenRepository).save(token);
+        verify(tokensRepository).save(token);
 
     }
 
     @Test
     void addToken_shouldTrySaveNotFullToken_ThrowExceptionAccessDeniedException() {
-        RefreshToken token1 = new RefreshToken();
+        Tokens token1 = new Tokens();
         token1.setId(null);
         token1.setRefreshToken("RefreshToken");
         token1.setSecretKey(secretKey());
-        RefreshToken token2 = new RefreshToken();
+        Tokens token2 = new Tokens();
         token2.setId(id_s());
         token2.setRefreshToken(null);
         token2.setSecretKey(secretKey());
-        RefreshToken token3 = new RefreshToken();
+        Tokens token3 = new Tokens();
         token3.setId(null);
         token3.setRefreshToken("RefreshToken");
         token3.setSecretKey(secretKey());
@@ -65,75 +65,88 @@ class RefreshTokenServiceImplTest {
         assertThrows(AccessDeniedException.class, () -> refreshTokenService.addToken(token1));
         assertThrows(AccessDeniedException.class, () -> refreshTokenService.addToken(token2));
         assertThrows(AccessDeniedException.class, () -> refreshTokenService.addToken(token3));
-        verify(refreshTokenRepository, never()).save(any(RefreshToken.class));
+        verify(tokensRepository, never()).save(any(Tokens.class));
     }
 
     @Test
     void getTokenForByToken_ShouldReturnRefreshTokenIfTokenInMemory() {
-        List<RefreshToken> tokens = new ArrayList<>();
-        RefreshToken token1 = new RefreshToken();
+        List<Tokens> tokens = new ArrayList<>();
+
+        Tokens token1 = new Tokens();
         token1.setId(id_s());
         token1.setRefreshToken("RefreshToken 1");
+        token1.setAccessToken("AccessToken 1");
         token1.setSecretKey(secretKey());
-        RefreshToken token2 = new RefreshToken();
+
+        Tokens token2 = new Tokens();
         token2.setId(id_s());
+        token2.setAccessToken("AccessToken 2");
         token2.setRefreshToken("RefreshToken 2");
         token2.setSecretKey(secretKey());
-        RefreshToken token3 = new RefreshToken();
+        Tokens token3 = new Tokens();
         token3.setId(id_s());
+        token3.setAccessToken("AccessToken 3");
         token3.setRefreshToken("RefreshToken 3");
         token3.setSecretKey(secretKey());
+
         tokens.add(token1);
         tokens.add(token2);
-        tokens.add(token2);
-        when(refreshTokenRepository.findAll()).thenReturn(tokens);
+        tokens.add(token3);
+        when(tokensRepository.findAll()).thenReturn(tokens);
 
-        RefreshToken result = refreshTokenService.getTokenForByToken(token2.getRefreshToken());
+        Tokens result = refreshTokenService.getTokenForByToken(token2.getRefreshToken());
+        Tokens result2 = refreshTokenService.getTokenForByToken(token3.getAccessToken());
 
         assertEquals(token2.getRefreshToken(), result.getRefreshToken());
-        verify(refreshTokenRepository).findAll();
+        assertEquals(token3, result2);
+        verify(tokensRepository, times(2)).findAll();
 
     }
 
     @Test
     void getTokenForByToken_ShouldThrowExceptionAsNoGivenToken() {
-        List<RefreshToken> tokens = new ArrayList<>();
-        RefreshToken token1 = new RefreshToken();
+        List<Tokens> tokens = new ArrayList<>();
+        Tokens token1 = new Tokens();
         token1.setId(id_s());
         token1.setRefreshToken("RefreshToken 1");
+        token1.setAccessToken("AccessToken 1");
         token1.setSecretKey(secretKey());
-        RefreshToken token2 = new RefreshToken();
+
+        Tokens token2 = new Tokens();
         token2.setId(id_s());
+        token2.setAccessToken("AccessToken 2");
         token2.setRefreshToken("RefreshToken 2");
         token2.setSecretKey(secretKey());
-        RefreshToken token3 = new RefreshToken();
+        Tokens token3 = new Tokens();
         token3.setId(id_s());
+        token3.setAccessToken("AccessToken 3");
         token3.setRefreshToken("RefreshToken 3");
         token3.setSecretKey(secretKey());
         tokens.add(token1);
         tokens.add(token2);
-        tokens.add(token2);
-        when(refreshTokenRepository.findAll()).thenReturn(tokens);
+        tokens.add(token3);
+        when(tokensRepository.findAll()).thenReturn(tokens);
 
-        assertThrows(AccessDeniedException.class, () -> refreshTokenService.getTokenForByToken("6O8rCX8"));
-        verify(refreshTokenRepository).findAll();
+        Tokens tokenForByToken = refreshTokenService.getTokenForByToken("6O8rCX8");
+        assertNull(tokenForByToken);
+        verify(tokensRepository).findAll();
     }
 
     @Test
     void getTokenById_ShouldReturnRefreshTokenIfTokenThereIsOrReturnOptionalOfNull() {
-        RefreshToken token = new RefreshToken();
+        Tokens token = new Tokens();
         token.setId(id_s());
         token.setRefreshToken("Refresh Token");
         token.setSecretKey(secretKey());
-        when(refreshTokenRepository.findById(Mockito.eq(token.getId()))).thenReturn(Optional.of(token));
+        when(tokensRepository.findById(Mockito.eq(token.getId()))).thenReturn(Optional.of(token));
 
-        Optional<RefreshToken> result = refreshTokenService.getTokenById(token.getId());
-        Optional<RefreshToken> isNull = refreshTokenService.getTokenById(id_s());
+        Optional<Tokens> result = refreshTokenService.getTokenById(token.getId());
+        Optional<Tokens> isNull = refreshTokenService.getTokenById(id_s());
 
         assertTrue(result.isPresent());
         assertEquals(token, result.get());
         assertTrue(isNull.isEmpty());
-        verify(refreshTokenRepository, times(2)).findById(any(String.class));
+        verify(tokensRepository, times(2)).findById(any(String.class));
     }
 
     @Test
@@ -141,7 +154,7 @@ class RefreshTokenServiceImplTest {
         String id = id_s();
         refreshTokenService.deleteToken(id);
 
-        verify(refreshTokenRepository).deleteById(id);
+        verify(tokensRepository).deleteById(id);
     }
 
 

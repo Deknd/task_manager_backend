@@ -4,6 +4,9 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+/**
+ * Выдает данные, для настройки бина редис, данные хранятся в application.yml
+ */
 @Component
 @Data
 @ConfigurationProperties(prefix = "spring.data.redis")

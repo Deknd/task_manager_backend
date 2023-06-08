@@ -1,23 +1,22 @@
 package com.knd.developer.task_manager.repository;
 
+import com.knd.developer.task_manager.IntegrationTestBase;
 import com.knd.developer.task_manager.domain.task.PriorityTask;
 import com.knd.developer.task_manager.domain.task.Status;
 import com.knd.developer.task_manager.domain.task.Task;
 import com.knd.developer.task_manager.domain.user.Role;
 import com.knd.developer.task_manager.domain.user.User;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-class TaskRepositoryTest {
+class TaskRepositoryTest  extends IntegrationTestBase {
 
     @Autowired
     private UserRepository userRepository;

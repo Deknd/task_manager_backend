@@ -7,6 +7,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
+/**
+ * Класс служи для представления пользователя в Spring security
+ */
 @Data
 @AllArgsConstructor
 public class JwtEntity implements UserDetails {

@@ -32,11 +32,12 @@
         <springdoc.version>2.1.0</springdoc.version>
         <jedis.version> 4.4.1 </jedis.version>
         <testcontainers.version>1.18.3</testcontainers.version>
+        <testcontainersRedis.version>1.6.4</testcontainersRedis.version>
+        <jetbrains.version>24.0.1</jetbrains.version>
     </properties>
 
 
     <dependencies>
-
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -57,13 +58,16 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
             <version>${jedis.version}</version>
         </dependency>
-
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -88,11 +92,7 @@
             <version>${mybatis.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>${springdoc.version}</version>
-        </dependency>
+
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -120,6 +120,7 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
+            <scope>compile</scope>
             <version>${lombok.version}</version>
         </dependency>
 
@@ -140,6 +141,23 @@
             <artifactId>hibernate-validator</artifactId>
             <version>${hibernate-validator.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.redis.testcontainers</groupId>
+            <artifactId>testcontainers-redis</artifactId>
+            <version>${testcontainersRedis.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+
+
 
         <dependency>
             <groupId>jakarta.validation</groupId>
@@ -166,16 +184,11 @@
             <version>${jjwt.version}</version>
             <scope>runtime</scope>
         </dependency>
+
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>17.0.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>17.0.0</version>
+            <version>${jetbrains.version}</version>
             <scope>compile</scope>
         </dependency>
 

@@ -2,23 +2,24 @@ package com.knd.developer.task_manager.web.security;
 
 
 import com.knd.developer.task_manager.domain.exception.AccessDeniedException;
-import com.knd.developer.task_manager.domain.refresh.RefreshToken;
+import com.knd.developer.task_manager.domain.tokens.Tokens;
 import com.knd.developer.task_manager.domain.user.Role;
 import com.knd.developer.task_manager.domain.user.User;
-import com.knd.developer.task_manager.service.RefreshTokenService;
+import com.knd.developer.task_manager.service.TokensService;
 import com.knd.developer.task_manager.service.UserService;
 import com.knd.developer.task_manager.service.props.JwtProperties;
-import com.knd.developer.task_manager.web.dto.auth.ResponseAuthUser;
+import com.knd.developer.task_manager.web.dto.user.response.UserAndTokenResponseDto;
+import com.knd.developer.task_manager.web.mappers.TaskMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.SignatureException;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.KeyGenerator;
@@ -38,31 +39,61 @@ import java.util.stream.Collectors;
 public class JwtTokenProvider {
 
     private final JwtProperties jwtProperties;
-    private final UserDetailsService userDetailsService;
     private final UserService userService;
-    private final RefreshTokenService tokenService;
+    private final TokensService tokenService;
+    private final JwtEntityFactory entityFactory;
+    private final TaskMapper taskMapper;
 
 
 
-    public String createAccessToken(Long userId, String username, Set<Role> roles, Instant validity) {
+    /**
+     * Создает Ацесс токен
+     *
+     * @param userId   - юзер айди
+     * @param username - email(username) пользователя
+     * @param roles    - роли пользователя
+     * @param validity - время действия токена
+     * @return - возвращает токен в виде строки
+     */
+    public String createAccessToken(@NotNull Long userId, @NotNull String username, @NotNull Set<Role> roles, @NotNull Instant validity) {
+        Optional<Tokens> optionalToken = tokenService.getTokenById(userId.toString());
+        Tokens token;
+        if (optionalToken.isPresent()) {
+            token=optionalToken.get();
+        } else throw new AccessDeniedException();
+
         Claims claims = Jwts.claims().setSubject(username);
         claims.put("id", userId);
         claims.put("roles", resolveRoles(roles));
-        SecretKey key = tokenService.getTokenById(userId.toString()).get().getSecretKey();
 
-        return Jwts.builder()
+        token.setAccessToken(Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(Date.from(validity))
-                .signWith(key)
-                .compact();
+                .signWith(token.getSecretKey())
+                .compact());
+
+        return tokenService.addToken(token).getAccessToken();
     }
 
+    /**
+     * Маппит Set<Role> в List<String>
+     *
+     * @param roles - роли пользователя
+     * @return - возвращает лист пользователя в виде строк
+     */
     private List<String> resolveRoles(Set<Role> roles) {
         return roles.stream()
                 .map(Enum::name)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Создает Рефреш токен
+     *
+     * @param userId   - айди пользователя
+     * @param username - email пользователя
+     * @return - возвращает Рефреш токен
+     */
     public String createRefreshToken(Long userId, String username) {
 
         KeyGenerator keyGenerator;
@@ -79,7 +110,7 @@ public class JwtTokenProvider {
         Instant validity = Instant.now()
                 .plus(jwtProperties.getRefresh(), ChronoUnit.HOURS);
 
-        RefreshToken token = new RefreshToken();
+        Tokens token = new Tokens();
         token.setId(userId.toString());
         token.setSecretKey(secretKey);
         token.setRefreshToken(Jwts.builder()
@@ -88,110 +119,108 @@ public class JwtTokenProvider {
                 .signWith(token.getSecretKey())
                 .compact());
 
-        RefreshToken result = tokenService.addToken(token);
 
-        return result.getRefreshToken();
+        return tokenService.addToken(token).getRefreshToken();
     }
 
-    public ResponseAuthUser refreshUserToken(String refreshToken, Instant validity) {
-        ResponseAuthUser responseAuthUser = new ResponseAuthUser();
-        if (!validateToken(refreshToken)) {
-            throw new AccessDeniedException();
-        }
-        Long userId = Long.valueOf(getId(refreshToken));
-        User user = userService.getById(userId);
-        if (!validateRefreshToken(refreshToken, userId)) {
-            throw new AccessDeniedException();
-        }
-        responseAuthUser.setId(userId);
-        responseAuthUser.setName(user.getName());
-        responseAuthUser.setExpiration(validity.toString());
-        String newRefresh = createRefreshToken(userId, user.getUsername());
-        responseAuthUser.setRefreshToken(newRefresh);
-        responseAuthUser.setAccessToken(createAccessToken(userId, user.getUsername(), user.getRoles(), validity));
+    public UserAndTokenResponseDto refreshUserToken(String refreshToken, Instant validity) {
+        Tokens token = tokenService.getTokenForByToken(refreshToken);
 
-        return responseAuthUser;
+        if(token == null){
+            throw new AccessDeniedException();
+        }
+        if ( !validateToken(refreshToken, token)  ) {
+            throw new AccessDeniedException();
+        }
+        User user = userService.getById(Long.valueOf(token.getId()));
+        UserAndTokenResponseDto userAndTokenResponseDTO = new UserAndTokenResponseDto();
+
+        userAndTokenResponseDTO.setId(user.getId());
+        userAndTokenResponseDTO.setName(user.getName());
+        userAndTokenResponseDTO.setExpiration(validity.toString());
+        userAndTokenResponseDTO.setRefreshToken(createRefreshToken(user.getId(), user.getUsername()));
+        userAndTokenResponseDTO.setAccessToken(createAccessToken(user.getId(), user.getUsername(), user.getRoles(), validity));
+        if(!user.getTasks().isEmpty())
+        userAndTokenResponseDTO.setTasks(taskMapper.toDto(user.getTasks()));
+
+        return userAndTokenResponseDTO;
     }
 
-    public boolean validateToken(String token) {
-        Long userId;
+    private boolean validateToken(String token, Tokens tokenForRedis) {
         try {
-            userId = Long.valueOf(getId(token));
-        } catch (SignatureException e) {
-
+            Jws<Claims> claims = Jwts
+                    .parserBuilder()
+                    .setSigningKey(tokenForRedis.getSecretKey())
+                    .build()
+                    .parseClaimsJws(token);
+            return claims.getBody().getExpiration().after(new Date());
+        }catch (
+                JwtException e){
             return false;
         }
 
 
-        Optional<RefreshToken> tokenForRedis = tokenService.getTokenById(userId.toString());
-        if (tokenForRedis.isEmpty()) return false;
 
 
-        Jws<Claims> claims = Jwts
-                .parserBuilder()
-                .setSigningKey(tokenForRedis.get().getSecretKey())
-                .build()
-                .parseClaimsJws(token);
-
-
-        return claims.getBody().getExpiration().after(new Date());
     }
-
-    public boolean validateRefreshToken(String token, Long id) {
-
-        Optional<RefreshToken> refreshToken = tokenService.getTokenById(id.toString());
-
-        if (!refreshToken.isEmpty()) {
-           return token.equals(refreshToken.get().getRefreshToken());
-
-        } else return false;
-    }
-
-    private String getId(String token) {
-        RefreshToken refreshToken = tokenService.getTokenForByToken(token);
-        SecretKey key;
-        if (refreshToken != null) {
-            key = refreshToken.getSecretKey();
-            return Jwts
-                    .parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody()
-                    .get("id")
-                    .toString();
+    public boolean validateToken(String token){
+        Tokens tokens = tokenService.getTokenForByToken(token);
+        if(tokens == null){
+            throw new AccessDeniedException();
         }
-        return null;
+        return validateToken(token, tokens);
     }
 
-    private String getUsername(String token) {
-        RefreshToken refreshToken = tokenService.getTokenForByToken(token);
-        SecretKey key;
-        if (refreshToken != null) {
-            key = refreshToken.getSecretKey();
-            return Jwts
-                    .parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody()
-                    .getSubject();
-        }
-        return null;
-    }
+
+//    private String getId(String token) {
+//        Tokens tokens = tokenService.getTokenForByToken(token);
+//        SecretKey key;
+//        if (tokens != null) {
+//            key = tokens.getSecretKey();
+//            return Jwts
+//                    .parserBuilder()
+//                    .setSigningKey(key)
+//                    .build()
+//                    .parseClaimsJws(token)
+//                    .getBody()
+//                    .get("id")
+//                    .toString();
+//        }
+//        return null;
+//    }
+
+//    private String getUsername(String token) {
+//        Tokens tokens = tokenService.getTokenForByToken(token);
+//        SecretKey key;
+//        if (tokens != null) {
+//            key = tokens.getSecretKey();
+//            return Jwts
+//                    .parserBuilder()
+//                    .setSigningKey(key)
+//                    .build()
+//                    .parseClaimsJws(token)
+//                    .getBody()
+//                    .getSubject();
+//        }
+//        return null;
+//    }
 
     public Authentication getAuthentication(String token) {
-        String username = getUsername(token);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        Tokens tokens = tokenService.getTokenForByToken(token);
+        if(token.equals(tokens.getAccessToken())){
+            User user = userService.getById(Long.valueOf(tokens.getId()));
+            UserDetails userDetails = entityFactory.create(user);
+            return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        }
+        return null;
     }
 
-    public void logoutUser(String refreshToken) {
-
-        Long userId = Long.valueOf(getId(refreshToken));
-
-        tokenService.deleteToken(userId.toString());
-
+//    public void logoutUser(Long id) {
+//
+//    }
+    public void logoutUser(String refreshToken){
+        Tokens tokens = tokenService.getTokenForByToken(refreshToken);
+        userService.logout(Long.valueOf(tokens.getId()));
     }
 
 

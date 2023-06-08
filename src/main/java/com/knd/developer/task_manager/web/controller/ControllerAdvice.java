@@ -38,27 +38,49 @@ public class ControllerAdvice {
     @ExceptionHandler(IllegalStateException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionBody handlerIllegalStateException(IllegalStateException e){
-        e.printStackTrace();
 
         return new ExceptionBody(e.getMessage());
     }
-    @ExceptionHandler({AccessDeniedException.class, org.springframework.security.access.AccessDeniedException.class})
+//    @ExceptionHandler({AccessDeniedException.class, org.springframework.security.access.AccessDeniedException.class})
+//    @ResponseStatus(HttpStatus.FORBIDDEN)
+//    public ExceptionBody handlerAccessDeniedException(org.springframework.security.access.AccessDeniedException e) {
+//        ExceptionBody body = new ExceptionBody("Access, denied");
+//
+//        return body;
+//    }
+    @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ExceptionBody handlerAccessDeniedException(AccessDeniedException e){
-        e.printStackTrace();
+        ExceptionBody body = new ExceptionBody("Access, denied");
 
-        return new ExceptionBody("Access, denied");
+        return body;
     }
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ExceptionBody handlerAccessDeniedExceptionSpring(org.springframework.security.access.AccessDeniedException e){
+        ExceptionBody body = new ExceptionBody("Access, denied");
+
+        return body;
+    }
+    @ExceptionHandler(com.knd.developer.task_manager.domain.exception.MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionBody handlerMethodArgumentNotValidException(com.knd.developer.task_manager.domain.exception.MethodArgumentNotValidException e){
+        ExceptionBody exceptionBody=new ExceptionBody("Validation failed.");
+        exceptionBody.setErrors(e.getErrors());
+
+        return exceptionBody;
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionBody handlerMethodArgumentNotValidException(MethodArgumentNotValidException e){
-        e.printStackTrace();
 
         ExceptionBody exceptionBody=new ExceptionBody("Validation failed.");
         List<FieldError> errors = e.getBindingResult().getFieldErrors();
         exceptionBody.setErrors(errors.stream().collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage)));
         return exceptionBody;
     }
+
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionBody handlerConstraintViolationException(ConstraintViolationException e){
@@ -94,6 +116,6 @@ e.printStackTrace();
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ExceptionBody handlerException(Exception e){
         e.printStackTrace();
-        return new ExceptionBody("Internal error.");
+        return new ExceptionBody("Internal error."+e.getMessage());
     }
 }

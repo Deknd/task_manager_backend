@@ -1,19 +1,16 @@
 package com.knd.developer.task_manager.repository;
 
+import com.knd.developer.task_manager.IntegrationTestBase;
 import com.knd.developer.task_manager.domain.task.PriorityTask;
 import com.knd.developer.task_manager.domain.task.Status;
 import com.knd.developer.task_manager.domain.task.Task;
 import com.knd.developer.task_manager.domain.user.Role;
 import com.knd.developer.task_manager.domain.user.User;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,9 +20,8 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-public class UserRepositoryTest {
+
+public class UserRepositoryTest extends IntegrationTestBase {
 
 
     @Autowired

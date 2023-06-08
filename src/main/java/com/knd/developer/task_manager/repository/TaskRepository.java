@@ -43,5 +43,10 @@ public interface TaskRepository{
      * @param task userId - не может быть null, title - не может быть null, status - не может быть null, priority - не может быть null
      */
     void create(Task task);
+
+    /**
+     * Удаляет таск из памяти
+     * @param id - айди таска
+     */
     void delete(Long id);
 }

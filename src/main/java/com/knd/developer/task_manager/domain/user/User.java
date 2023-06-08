@@ -7,6 +7,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Используется для хранения пользователя в базе данных
+ */
 @Data
 public class User implements Serializable {
 

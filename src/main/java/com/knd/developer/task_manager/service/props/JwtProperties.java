@@ -4,6 +4,9 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+/**
+ * Используется для отображения данных о времени действие токенов, данные хранятся в application.yml
+ */
 @Component
 @Data
 @ConfigurationProperties(prefix = "security.jwt")

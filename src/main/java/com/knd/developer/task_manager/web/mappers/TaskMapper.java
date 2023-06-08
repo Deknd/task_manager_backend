@@ -10,5 +10,4 @@ import java.util.List;
 public interface TaskMapper {
     TaskDto toDto(Task task);
     List<TaskDto> toDto(List<Task> tasks);
-    Task toEntity(TaskDto dto);
 }

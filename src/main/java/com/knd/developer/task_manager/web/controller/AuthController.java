@@ -1,52 +1,45 @@
 package com.knd.developer.task_manager.web.controller;
 
-import com.knd.developer.task_manager.domain.user.User;
 import com.knd.developer.task_manager.service.AuthService;
 import com.knd.developer.task_manager.service.UserService;
-import com.knd.developer.task_manager.web.dto.auth.JwtRequest;
-import com.knd.developer.task_manager.web.dto.auth.ResponseAuthUser;
+import com.knd.developer.task_manager.web.dto.auth.LoginRequest;
 import com.knd.developer.task_manager.web.dto.auth.RefreshRequest;
-import com.knd.developer.task_manager.web.dto.user.UserDto;
+import com.knd.developer.task_manager.web.dto.user.response.UserAndTokenResponseDto;
+import com.knd.developer.task_manager.web.dto.user.request.UserCreateRequestDto;
 import com.knd.developer.task_manager.web.dto.validation.OnCreate;
-import com.knd.developer.task_manager.web.mappers.UserMapper;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.knd.developer.task_manager.web.security.JwtEntity;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/v1/auth/")
 @RequiredArgsConstructor
 @Validated
-@Slf4j
-@Tag(name = "Auth Controller", description = "Auth API")
 public class AuthController {
     private final AuthService authService;
     private final UserService userService;
-    private final UserMapper userMapper;
 
     @PostMapping("/login")
-    public ResponseAuthUser login(@Validated @RequestBody JwtRequest loginRequest) {
+    public UserAndTokenResponseDto login(@Validated @RequestBody LoginRequest loginRequest) {
 
         return authService.login(loginRequest);
     }
 
     @PostMapping("/register")
-    public UserDto register(@Validated(OnCreate.class) @RequestBody UserDto userDto) {
+    public void register(@Validated(OnCreate.class) @RequestBody UserCreateRequestDto userDto) {
 
-        User user = userMapper.toEntity(userDto);
-        User createUser = userService.create(user);
-        return userMapper.toDto(createUser);
+        userService.create(userDto);
     }
 
     @PostMapping("/refresh")
-    public ResponseAuthUser refresh(@RequestBody RefreshRequest refreshToken) {
+    public UserAndTokenResponseDto refresh(@RequestBody RefreshRequest refreshToken) {
         return authService.refresh(refreshToken);
     }
-    @DeleteMapping("/logout")
-    public void logout(@RequestBody RefreshRequest refreshToken) {
-        authService.logout(refreshToken.getRefreshToken());
-    }
+
 }
