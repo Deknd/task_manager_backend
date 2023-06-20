@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.security.sasl.AuthenticationException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -29,9 +31,8 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler(ResourcesMappingException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionBody handlerResourcesMappingException(ResourcesMappingException e){
-        e.printStackTrace();
 
         return new ExceptionBody(e.getMessage());
     }
@@ -48,6 +49,14 @@ public class ControllerAdvice {
 //
 //        return body;
 //    }
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionBody handlerHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e){
+        return ExceptionBody.builder()
+                .message("Нет такого url")
+                .errors(Map.of(e.getMethod(),e.getMessage()))
+                .build();
+    }
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ExceptionBody handlerAccessDeniedException(AccessDeniedException e){

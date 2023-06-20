@@ -145,6 +145,8 @@ public class UserServiceImpl implements UserService {
      */
     private void validationDateUser(User result, String name, String username, String password){
         if (name != null) {
+            System.out.println("Update: "+ name+" Pattern: "+pattern.getFORBIDDEN_JS_CHARS_PATTERN().pattern());
+            System.out.println(!pattern.getFORBIDDEN_JS_CHARS_PATTERN().matcher(name).find());
             if (!pattern.getFORBIDDEN_JS_CHARS_PATTERN().matcher(name).find()) {
                 result.setName(name);
             } else {

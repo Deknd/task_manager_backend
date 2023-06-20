@@ -27,6 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
@@ -34,6 +35,8 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
+    private final Pattern FORBIDDEN_JS_CHARS_PATTERN = Pattern.compile("[<>&\']");
+    private final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -83,7 +86,6 @@ class UserServiceImplTest {
         String newPassword = "NewPassword";
         Long id = id_l();
         PasswordEncoder pasEnc = new BCryptPasswordEncoder();
-        PatternString patt = new PatternString();
         List<Task> tasks = mock(List.class);
         List<TaskDto> tasksDto = mock(List.class);
 
@@ -109,8 +111,8 @@ class UserServiceImplTest {
             String code = invocationOnMock.getArgument(0);
             return pasEnc.encode(code);
         });
-        when(pattern.getFORBIDDEN_JS_CHARS_PATTERN()).thenReturn(patt.getFORBIDDEN_JS_CHARS_PATTERN());
-        when(pattern.getEMAIL_PATTERN()).thenReturn(patt.getEMAIL_PATTERN());
+        when(pattern.getFORBIDDEN_JS_CHARS_PATTERN()).thenReturn(FORBIDDEN_JS_CHARS_PATTERN);
+        when(pattern.getEMAIL_PATTERN()).thenReturn(EMAIL_PATTERN);
         when(taskMapper.toDto(any(List.class))).thenReturn(tasksDto);
 
 
@@ -130,7 +132,6 @@ class UserServiceImplTest {
         String newPassword = "NewPassword";
         Long id = id_l();
         PasswordEncoder pasEnc = new BCryptPasswordEncoder();
-        PatternString patt = new PatternString();
         List<Task> tasks = mock(List.class);
         List<TaskDto> tasksDto = mock(List.class);
 
@@ -170,7 +171,6 @@ class UserServiceImplTest {
         String newPassword = "NewPassword";
         Long id = id_l();
         PasswordEncoder pasEnc = new BCryptPasswordEncoder();
-        PatternString patt = new PatternString();
 
         UserUpdateRequestDto user1 = new UserUpdateRequestDto();
         user1.setId(id);
@@ -204,8 +204,8 @@ class UserServiceImplTest {
             return pasEnc.matches(charSequence, encodePassword);
         });
 
-        when(pattern.getFORBIDDEN_JS_CHARS_PATTERN()).thenReturn(patt.getFORBIDDEN_JS_CHARS_PATTERN());
-        when(pattern.getEMAIL_PATTERN()).thenReturn(patt.getEMAIL_PATTERN());
+        when(pattern.getFORBIDDEN_JS_CHARS_PATTERN()).thenReturn(FORBIDDEN_JS_CHARS_PATTERN);
+        when(pattern.getEMAIL_PATTERN()).thenReturn(EMAIL_PATTERN);
 
 
         assertThrows(AccessDeniedException.class, () -> userService.update(user1), " не верный password");
@@ -221,7 +221,6 @@ class UserServiceImplTest {
         String newPassword = "NewPassword";
         Long id = id_l();
         PasswordEncoder pasEnc = new BCryptPasswordEncoder();
-        PatternString patt = new PatternString();
         List<Task> tasks = mock(List.class);
         List<TaskDto> tasksDto = mock(List.class);
 
@@ -261,8 +260,8 @@ class UserServiceImplTest {
             String code = invocationOnMock.getArgument(0);
             return pasEnc.encode(code);
         });
-        when(pattern.getFORBIDDEN_JS_CHARS_PATTERN()).thenReturn(patt.getFORBIDDEN_JS_CHARS_PATTERN());
-        when(pattern.getEMAIL_PATTERN()).thenReturn(patt.getEMAIL_PATTERN());
+        when(pattern.getFORBIDDEN_JS_CHARS_PATTERN()).thenReturn(FORBIDDEN_JS_CHARS_PATTERN);
+        when(pattern.getEMAIL_PATTERN()).thenReturn(EMAIL_PATTERN);
         when(taskMapper.toDto(any(List.class))).thenReturn(tasksDto);
 
 
@@ -294,14 +293,13 @@ class UserServiceImplTest {
         requestDto.setPassword("newpassword");
 
         PasswordEncoder pasEnc = new BCryptPasswordEncoder();
-        PatternString patt = new PatternString();
 
         when(passwordEncoder.encode(any(String.class))).thenAnswer(invocationOnMock -> {
             String code = invocationOnMock.getArgument(0);
             return pasEnc.encode(code);
         });
-        when(pattern.getFORBIDDEN_JS_CHARS_PATTERN()).thenReturn(patt.getFORBIDDEN_JS_CHARS_PATTERN());
-        when(pattern.getEMAIL_PATTERN()).thenReturn(patt.getEMAIL_PATTERN());
+        when(pattern.getFORBIDDEN_JS_CHARS_PATTERN()).thenReturn(FORBIDDEN_JS_CHARS_PATTERN);
+        when(pattern.getEMAIL_PATTERN()).thenReturn(EMAIL_PATTERN);
         doAnswer(invocation -> {
             User arg=invocation.getArgument(0);
             arg.setId(id_l());
@@ -343,9 +341,8 @@ class UserServiceImplTest {
         user3.setName("Name");
         user3.setUsername("username@server.ru");
         user3.setPassword(null);
-        PatternString patt = new PatternString();
-        when(pattern.getFORBIDDEN_JS_CHARS_PATTERN()).thenReturn(patt.getFORBIDDEN_JS_CHARS_PATTERN());
-        when(pattern.getEMAIL_PATTERN()).thenReturn(patt.getEMAIL_PATTERN());
+        when(pattern.getFORBIDDEN_JS_CHARS_PATTERN()).thenReturn(FORBIDDEN_JS_CHARS_PATTERN);
+        when(pattern.getEMAIL_PATTERN()).thenReturn(EMAIL_PATTERN);
 
 
         assertThrows(IllegalStateException.class, () -> {userService.create(user1);});

@@ -178,15 +178,15 @@ class JwtTokenProviderTest {
         assertNull(authentication2);
 
     }
-    @Test
-    void logoutUser_ShouldDeleteTokensForMemory(){
-        Tokens tokens = generationTokens(789L, "Obcu5jbG");
-        when(tokensService.getTokenForByToken(tokens.getRefreshToken())).thenReturn(tokens);
-
-        tokenProvider.logoutUser(tokens.getRefreshToken());
-
-        verify(tokensService).deleteToken(eq(tokens.getId()));
-    }
+//    @Test
+//    void logoutUser_ShouldDeleteTokensForMemory(){
+//        Tokens tokens = generationTokens(789L, "Obcu5jbG");
+//        when(tokensService.getTokenForByToken(tokens.getRefreshToken())).thenReturn(tokens);
+//
+//        tokenProvider.logoutUser(tokens.getRefreshToken());
+//
+//        verify(tokensService).deleteToken(eq(tokens.getId()));
+//    }
 
     private Tokens generationTokens(Long userId, String username) {
         KeyGenerator keyGenerator;

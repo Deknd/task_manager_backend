@@ -2,8 +2,11 @@ package com.knd.developer.task_manager.web.controller;
 
 import com.knd.developer.task_manager.IntegrationTestBase;
 import com.knd.developer.task_manager.domain.exception.ExceptionBody;
+import com.knd.developer.task_manager.domain.task.PriorityTask;
+import com.knd.developer.task_manager.domain.task.Status;
 import com.knd.developer.task_manager.service.props.JwtProperties;
 import com.knd.developer.task_manager.web.dto.auth.LoginRequest;
+import com.knd.developer.task_manager.web.dto.task.TaskDto;
 import com.knd.developer.task_manager.web.dto.user.request.UserUpdateRequestDto;
 import com.knd.developer.task_manager.web.dto.user.response.UserAndTokenResponseDto;
 import com.knd.developer.task_manager.web.dto.user.response.UserResponseDto;
@@ -15,8 +18,11 @@ import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.FluxExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Random;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @AutoConfigureWebTestClient
 class UserControllerTest extends IntegrationTestBase {
@@ -54,13 +60,13 @@ class UserControllerTest extends IntegrationTestBase {
                 .returnResult(String.class);
 
         assertNotNull(result);
-        UserResponseDto userResult = objectMapper.readValue(result.getResponseBodyContent(), UserResponseDto.class );
+        UserResponseDto userResult = objectMapper.readValue(result.getResponseBodyContent(), UserResponseDto.class);
         assertNotNull(userResult);
         assertEquals(user.getId(), userResult.getId());
         assertEquals(userUpdate.getNewName(), userResult.getName());
         assertNotNull(userResult.getListTask());
 
-        LoginRequest loginRequest = new LoginRequest(userUpdate.getNewUsername(),userUpdate.getNewPassword());
+        LoginRequest loginRequest = new LoginRequest(userUpdate.getNewUsername(), userUpdate.getNewPassword());
         String log = objectMapper.writeValueAsString(loginRequest);
 
         FluxExchangeResult<String> returnResult = webTestClient.post()
@@ -72,9 +78,9 @@ class UserControllerTest extends IntegrationTestBase {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .returnResult(String.class);
         assertNotNull(returnResult);
-        UserAndTokenResponseDto responseDto = objectMapper.readValue(returnResult.getResponseBodyContent(),UserAndTokenResponseDto.class);
+        UserAndTokenResponseDto responseDto = objectMapper.readValue(returnResult.getResponseBodyContent(), UserAndTokenResponseDto.class);
         assertNotNull(responseDto);
-        assertEquals(userResult.getId(),responseDto.getId());
+        assertEquals(userResult.getId(), responseDto.getId());
         assertEquals(userResult.getName(), responseDto.getName());
         assertEquals(userResult.getListTask(), responseDto.getTasks());
 
@@ -118,6 +124,7 @@ class UserControllerTest extends IntegrationTestBase {
                 );
 
     }
+
     @Test
     void userController_Update_ShouldNoValidationEmeilDate() throws Exception {
         UserAndTokenResponseDto user = getUser(6);
@@ -161,7 +168,7 @@ class UserControllerTest extends IntegrationTestBase {
     void userController_Update_ShouldNotUpdateDate_BecauseIdAndOldPasswordFalse() throws Exception {
         UserAndTokenResponseDto user = getUser(3);
 
-        UserUpdateRequestDto[] userUpdateArray ={
+        UserUpdateRequestDto[] userUpdateArray = {
                 UserUpdateRequestDto
                         .builder()
                         .id(null)
@@ -187,7 +194,7 @@ class UserControllerTest extends IntegrationTestBase {
                         .newPassword("test")
                         .build()
         };
-        for(UserUpdateRequestDto userUpdate: userUpdateArray){
+        for (UserUpdateRequestDto userUpdate : userUpdateArray) {
             String userJson = objectMapper.writeValueAsString(userUpdate);
 
             webTestClient.put()
@@ -219,7 +226,7 @@ class UserControllerTest extends IntegrationTestBase {
     void userController_Update_ShouldNotUpdateDate_BecauseNotForbidden() throws Exception {
         UserAndTokenResponseDto user = getUser(4);
 
-        UserUpdateRequestDto[] userUpdateArray ={
+        UserUpdateRequestDto[] userUpdateArray = {
                 UserUpdateRequestDto
                         .builder()
                         .id(224L)
@@ -238,7 +245,7 @@ class UserControllerTest extends IntegrationTestBase {
                         .build()
         };
 
-        for(UserUpdateRequestDto userDto: userUpdateArray){
+        for (UserUpdateRequestDto userDto : userUpdateArray) {
             String userJson = objectMapper.writeValueAsString(userDto);
 
             webTestClient.put()
@@ -291,13 +298,13 @@ class UserControllerTest extends IntegrationTestBase {
                 .returnResult(String.class);
 
         assertNotNull(result);
-        UserResponseDto userResult = objectMapper.readValue(result.getResponseBodyContent(), UserResponseDto.class );
+        UserResponseDto userResult = objectMapper.readValue(result.getResponseBodyContent(), UserResponseDto.class);
         assertNotNull(userResult);
         assertEquals(user.getId(), userResult.getId());
         assertEquals(userUpdate.getNewName(), userResult.getName());
         assertNotNull(userResult.getListTask());
 
-        LoginRequest loginRequest = new LoginRequest("m57NMah@yahoo.com","12345");
+        LoginRequest loginRequest = new LoginRequest("m57NMah@yahoo.com", "12345");
         String log = objectMapper.writeValueAsString(loginRequest);
 
         FluxExchangeResult<String> returnResult = webTestClient.post()
@@ -309,12 +316,11 @@ class UserControllerTest extends IntegrationTestBase {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .returnResult(String.class);
         assertNotNull(returnResult);
-        UserAndTokenResponseDto responseDto = objectMapper.readValue(returnResult.getResponseBodyContent(),UserAndTokenResponseDto.class);
+        UserAndTokenResponseDto responseDto = objectMapper.readValue(returnResult.getResponseBodyContent(), UserAndTokenResponseDto.class);
         assertNotNull(responseDto);
-        assertEquals(userResult.getId(),responseDto.getId());
+        assertEquals(userResult.getId(), responseDto.getId());
         assertEquals(userResult.getName(), responseDto.getName());
         assertEquals(userResult.getListTask(), responseDto.getTasks());
-
 
 
         // второе действие
@@ -340,13 +346,13 @@ class UserControllerTest extends IntegrationTestBase {
                 )
                 .returnResult(String.class);
         assertNotNull(result2);
-        UserResponseDto userResult2 = objectMapper.readValue(result2.getResponseBodyContent(), UserResponseDto.class );
+        UserResponseDto userResult2 = objectMapper.readValue(result2.getResponseBodyContent(), UserResponseDto.class);
         assertNotNull(userResult2);
         assertEquals(user.getId(), userResult2.getId());
         assertEquals(responseDto.getName(), userResult2.getName());
         assertNotNull(userResult.getListTask());
 
-        LoginRequest loginRequest2 = new LoginRequest(userUsernameUpdate.getNewUsername(),userUsernameUpdate.getOldPassword());
+        LoginRequest loginRequest2 = new LoginRequest(userUsernameUpdate.getNewUsername(), userUsernameUpdate.getOldPassword());
         String log2 = objectMapper.writeValueAsString(loginRequest2);
         FluxExchangeResult<String> returnResult2 = webTestClient.post()
                 .uri("/api/v1/auth/login")
@@ -357,9 +363,9 @@ class UserControllerTest extends IntegrationTestBase {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .returnResult(String.class);
         assertNotNull(returnResult2);
-        UserAndTokenResponseDto responseDto2 = objectMapper.readValue(returnResult2.getResponseBodyContent(),UserAndTokenResponseDto.class);
+        UserAndTokenResponseDto responseDto2 = objectMapper.readValue(returnResult2.getResponseBodyContent(), UserAndTokenResponseDto.class);
         assertNotNull(responseDto2);
-        assertEquals(userResult.getId(),responseDto2.getId());
+        assertEquals(userResult.getId(), responseDto2.getId());
         assertEquals(userResult.getName(), responseDto2.getName());
         assertEquals(userResult.getListTask(), responseDto2.getTasks());
 
@@ -387,13 +393,13 @@ class UserControllerTest extends IntegrationTestBase {
                 )
                 .returnResult(String.class);
         assertNotNull(result3);
-        UserResponseDto userResult3 = objectMapper.readValue(result3.getResponseBodyContent(), UserResponseDto.class );
+        UserResponseDto userResult3 = objectMapper.readValue(result3.getResponseBodyContent(), UserResponseDto.class);
         assertNotNull(userResult3);
         assertEquals(user.getId(), userResult3.getId());
         assertEquals(responseDto.getName(), userResult3.getName());
         assertNotNull(userResult.getListTask());
 
-        LoginRequest loginRequest3 = new LoginRequest(userUsernameUpdate.getNewUsername(),userPasswordUpdate.getNewPassword());
+        LoginRequest loginRequest3 = new LoginRequest(userUsernameUpdate.getNewUsername(), userPasswordUpdate.getNewPassword());
         String log3 = objectMapper.writeValueAsString(loginRequest3);
 
         FluxExchangeResult<String> returnResult3 = webTestClient.post()
@@ -405,15 +411,297 @@ class UserControllerTest extends IntegrationTestBase {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .returnResult(String.class);
         assertNotNull(returnResult3);
-        UserAndTokenResponseDto responseDto3 = objectMapper.readValue(returnResult3.getResponseBodyContent(),UserAndTokenResponseDto.class);
+        UserAndTokenResponseDto responseDto3 = objectMapper.readValue(returnResult3.getResponseBodyContent(), UserAndTokenResponseDto.class);
         assertNotNull(responseDto3);
-        assertEquals(userResult.getId(),responseDto3.getId());
+        assertEquals(userResult.getId(), responseDto3.getId());
         assertEquals(userResult.getName(), responseDto3.getName());
         assertEquals(userResult.getListTask(), responseDto3.getTasks());
     }
-    @Test
-    void userController_createTask_ShouldValidationCheckDataAndSaveInDatabase(){
 
+    @Test
+    void userController_createTask_ShouldValidationCheckDataAndSaveInDatabase() throws Exception {
+        UserAndTokenResponseDto user = getUser(7);
+
+        TaskDto newTask = TaskDto.builder()
+                .title("Test task")
+                .description("Description task")
+                .status(Status.TODO)
+                .priority(PriorityTask.STANDARD)
+                .expirationDate(LocalDateTime.now().plus(48, ChronoUnit.HOURS).toString())
+                .build();
+
+        EntityExchangeResult<TaskDto> result = webTestClient.post()
+                .uri("/api/v1/users/" + user.getId() + "/tasks")
+                .header("Authorization", "Bearer " + user.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(newTask)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectAll(
+                        spec -> System.out.println(spec.returnResult(String.class))
+                )
+                .expectBody(TaskDto.class).returnResult();
+
+        assertNotNull(result);
+        TaskDto taskDto = result.getResponseBody();
+        assertNotNull(taskDto);
+        assertNotNull(taskDto.getId());
+        assertEquals(newTask.getTitle(), taskDto.getTitle());
+        assertEquals(newTask.getDescription(), taskDto.getDescription());
+        assertEquals(newTask.getStatus(), taskDto.getStatus());
+        assertEquals(newTask.getPriority(), taskDto.getPriority());
+        assertEquals(newTask.getExpirationDate(), taskDto.getExpirationDate());
+
+    }
+
+    @Test
+    void userController_createTask_ShouldReturnStatusIsForbidden_BecauseTrySaveAnotherUser() throws Exception {
+        UserAndTokenResponseDto user = getUser(7);
+
+        TaskDto newTask = TaskDto.builder()
+                .title("Test task")
+                .description("Description task")
+                .status(Status.TODO)
+                .priority(PriorityTask.STANDARD)
+                .expirationDate(LocalDateTime.now().plus(48, ChronoUnit.HOURS).toString())
+                .build();
+
+        webTestClient.post()
+                .uri("/api/v1/users/" + 1 + "/tasks")
+                .header("Authorization", "Bearer " + user.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(newTask)
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectAll(
+                        spec -> {
+                            String message = spec
+                                    .expectBody(ExceptionBody.class)
+                                    .returnResult()
+                                    .getResponseBody()
+                                    .getMessage();
+                            assertNotNull(message);
+                        },
+                        spec -> System.out.println(spec.returnResult(String.class))
+                );
+    }
+
+    @Test
+    void userController_createTask_ShouldReturnStatusBadRequest_BecauseNotTrueUrl() throws Exception {
+        UserAndTokenResponseDto user = getUser(7);
+        TaskDto newTask = TaskDto.builder()
+                .title("Test task")
+                .description("Description task")
+                .status(Status.TODO)
+                .priority(PriorityTask.STANDARD)
+                .expirationDate(LocalDateTime.now().plus(48, ChronoUnit.HOURS).toString())
+                .build();
+
+        webTestClient.post()
+                .uri("/api/v1/users//tasks")
+                .header("Authorization", "Bearer " + user.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(newTask)
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectAll(
+                        spec -> {
+                            EntityExchangeResult<ExceptionBody> exceptionBodyEntityExchangeResult = spec
+                                    .expectBody(ExceptionBody.class)
+                                    .returnResult();
+                            assertNotNull(exceptionBodyEntityExchangeResult);
+                            ExceptionBody exceptionBody = exceptionBodyEntityExchangeResult.getResponseBody();
+                            assertNotNull(exceptionBody);
+                        },
+                        spec -> System.out.println(spec.returnResult(String.class))
+                );
+    }
+
+    @Test
+    void userController_createTask_ShouldReturnIsBadRequestStatus_BecauseTitleEqualsNull() throws Exception {
+        UserAndTokenResponseDto user = getUser(7);
+
+        TaskDto newTask = TaskDto.builder()
+                .description("Description task")
+                .status(Status.TODO)
+                .priority(PriorityTask.STANDARD)
+                .expirationDate(LocalDateTime.now().plus(48, ChronoUnit.HOURS).toString())
+                .build();
+
+        webTestClient.post()
+                .uri("/api/v1/users/" + user.getId() + "/tasks")
+                .header("Authorization", "Bearer " + user.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(newTask)
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectAll(
+                        spec -> {
+                            EntityExchangeResult<ExceptionBody> exceptionBodyEntityExchangeResult = spec
+                                    .expectBody(ExceptionBody.class)
+                                    .returnResult();
+                            assertNotNull(exceptionBodyEntityExchangeResult);
+                            ExceptionBody exceptionBody = exceptionBodyEntityExchangeResult.getResponseBody();
+                            assertNotNull(exceptionBody);
+                        },
+                        spec -> System.out.println(spec.returnResult(String.class))
+                );
+
+    }
+
+    @Test
+    void userController_createTask_ShouldReturnIsBadRequestStatus_BecauseNotValidationDate_TitleOrDescription() throws Exception {
+        UserAndTokenResponseDto user = getUser(7);
+
+        TaskDto[] tasksDto = {
+                TaskDto.builder()
+                        .title("test'{[>'")
+                        .description("Description task")
+                        .status(Status.TODO)
+                        .priority(PriorityTask.STANDARD)
+                        .expirationDate(LocalDateTime.now().plus(48, ChronoUnit.HOURS).toString())
+                        .build(),
+                TaskDto.builder()
+                        .title(generateRandomString(30))
+                        .description("Description task")
+                        .status(Status.TODO)
+                        .priority(PriorityTask.STANDARD)
+                        .expirationDate(LocalDateTime.now().plus(48, ChronoUnit.HOURS).toString())
+                        .build(),
+                TaskDto.builder()
+                        .title("test")
+                        .description(generateRandomString(260))
+                        .status(Status.TODO)
+                        .priority(PriorityTask.STANDARD)
+                        .expirationDate(LocalDateTime.now().plus(48, ChronoUnit.HOURS).toString())
+                        .build(),
+                TaskDto.builder()
+                        .title("test")
+                        .description("Description task'{[>'")
+                        .status(Status.TODO)
+                        .priority(PriorityTask.STANDARD)
+                        .expirationDate(LocalDateTime.now().plus(48, ChronoUnit.HOURS).toString())
+                        .build()
+
+        };
+
+
+        for (TaskDto newTask : tasksDto) {
+            webTestClient.post()
+                    .uri("/api/v1/users/" + user.getId() + "/tasks")
+                    .header("Authorization", "Bearer " + user.getAccessToken())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(newTask)
+                    .exchange()
+                    .expectStatus().isBadRequest()
+                    .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                    .expectAll(
+                            spec -> {
+                                EntityExchangeResult<ExceptionBody> exceptionBodyEntityExchangeResult = spec
+                                        .expectBody(ExceptionBody.class)
+                                        .returnResult();
+                                assertNotNull(exceptionBodyEntityExchangeResult);
+                                ExceptionBody exceptionBody = exceptionBodyEntityExchangeResult.getResponseBody();
+                                assertNotNull(exceptionBody);
+                            },
+                            spec -> System.out.println(spec.returnResult(String.class))
+                    );
+        }
+    }
+
+    @Test
+    void userController_createTask_ShouldReturnTaskDtoWithTheCompletedStatusAndPriority() throws Exception {
+        UserAndTokenResponseDto user = getUser(7);
+
+        TaskDto newTask =
+                TaskDto.builder()
+                        .title("Test task")
+                        .description("Description task")
+                        .build();
+
+
+        EntityExchangeResult<TaskDto> result = webTestClient.post()
+                .uri("/api/v1/users/" + user.getId() + "/tasks")
+                .header("Authorization", "Bearer " + user.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(newTask)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectAll(
+                        spec -> System.out.println(spec.returnResult(String.class))
+                )
+                .expectBody(TaskDto.class).returnResult();
+
+        assertNotNull(result);
+        TaskDto taskDto = result.getResponseBody();
+        assertNotNull(taskDto);
+        assertNotNull(taskDto.getId());
+        assertEquals(newTask.getTitle(), taskDto.getTitle());
+        assertEquals(newTask.getDescription(), taskDto.getDescription());
+        assertNotNull(taskDto.getStatus());
+        assertNotNull(taskDto.getPriority());
+        assertNull(taskDto.getExpirationDate());
+
+
+    }
+    @Test
+    void userController_createTask_Should() throws Exception {
+        UserAndTokenResponseDto user = getUser(7);
+
+        TaskDto newTask = TaskDto.builder()
+                .title("Test task")
+                .description("Description task")
+                .status(Status.TODO)
+                .priority(PriorityTask.STANDARD)
+                .expirationDate(LocalDateTime.now().toString())
+                .build();
+
+        EntityExchangeResult<TaskDto> result = webTestClient.post()
+                .uri("/api/v1/users/" + user.getId() + "/tasks")
+                .header("Authorization", "Bearer " + user.getAccessToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(newTask)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectAll(
+                        spec -> System.out.println(spec.returnResult(String.class))
+                )
+                .expectBody(TaskDto.class).returnResult();
+
+        assertNotNull(result);
+        TaskDto taskDto = result.getResponseBody();
+        assertNotNull(taskDto);
+        assertNotNull(taskDto.getId());
+        assertEquals(newTask.getTitle(), taskDto.getTitle());
+        assertEquals(newTask.getDescription(), taskDto.getDescription());
+        assertNotEquals(newTask.getStatus(), taskDto.getStatus());
+        assertEquals(newTask.getPriority(), taskDto.getPriority());
+        assertEquals(newTask.getExpirationDate(), taskDto.getExpirationDate());
+
+    }
+
+
+
+
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    private static String generateRandomString(int length) {
+        StringBuilder sb = new StringBuilder(length);
+        Random random = new Random();
+
+        for (int i = 0; i < length; i++) {
+            int randomIndex = random.nextInt(CHARACTERS.length());
+            char randomChar = CHARACTERS.charAt(randomIndex);
+            sb.append(randomChar);
+        }
+
+        return sb.toString();
     }
 
 }

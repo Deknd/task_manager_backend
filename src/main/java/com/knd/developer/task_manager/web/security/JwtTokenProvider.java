@@ -218,10 +218,10 @@ public class JwtTokenProvider {
 //    public void logoutUser(Long id) {
 //
 //    }
-    public void logoutUser(String refreshToken){
-        Tokens tokens = tokenService.getTokenForByToken(refreshToken);
-        userService.logout(Long.valueOf(tokens.getId()));
-    }
+//    public void logoutUser(String refreshToken){
+//        Tokens tokens = tokenService.getTokenForByToken(refreshToken);
+//        userService.logout(Long.valueOf(tokens.getId()));
+//    }
 
 
 }

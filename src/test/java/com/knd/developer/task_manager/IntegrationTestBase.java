@@ -77,6 +77,9 @@ public abstract class IntegrationTestBase {
             case 6:
                 loginRequest= new LoginRequest("BlaanOdessa@yahoo.com", "12345");
                 break;
+            case 7:
+                loginRequest= new LoginRequest("bud_louis@yahoo.com","12345");
+                break;
             default:
                 loginRequest = new LoginRequest("johndoe@mail.com", "12345");
         }

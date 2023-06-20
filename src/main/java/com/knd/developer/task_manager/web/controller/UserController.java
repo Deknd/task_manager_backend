@@ -3,6 +3,7 @@ package com.knd.developer.task_manager.web.controller;
 import com.knd.developer.task_manager.domain.task.Task;
 import com.knd.developer.task_manager.service.TaskService;
 import com.knd.developer.task_manager.service.UserService;
+import com.knd.developer.task_manager.service.props.TaskProperties;
 import com.knd.developer.task_manager.web.dto.task.TaskDto;
 import com.knd.developer.task_manager.web.dto.user.request.UserDeleteRequestDto;
 import com.knd.developer.task_manager.web.dto.user.request.UserUpdateRequestDto;
@@ -28,6 +29,7 @@ public class UserController {
     private final UserService userService;
     private final TaskService taskService;
     private final TaskMapper taskMapper;
+    private final TaskProperties taskProperties;
 
     /**
      * Обновляет пользовательские данные, такие как: имя, пароль, эмейл.
@@ -51,6 +53,18 @@ public class UserController {
 //        return userService.getUser(id);
 //    }
 
+    /**
+     * Проводит валидацию данных, если все хорошо, сохраняет таск в БД.
+     * Если попробовать добавить таск другому пользователю, то выдаст ошибку - "Access, denied"; возвращает статус: isForbidden
+     * Если title = null, то выдается ошибка - "Bad Request"; возвращает статус: isBadRequest
+     * Если в title или description есть запрещенные символы, то выдаст ошибку - "Bad Request"; возвращает статус: isBadRequest
+     * Если status = null, то статус поменяется на "Status.TO DO"
+     * Если priority = null, то приоритет поменяется на "PriorityTask.STANDARD"
+     * Если время дедлайна провалено, то статус поменяется на "Status.FAILED"
+     * @param id - айди пользователя, берется из url
+     * @param dto - TaskDto приходящий от клиента, title не должен быть null
+     * @return - TaskDto с айди таска
+     */
     @PostMapping("/{id}/tasks")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
     public TaskDto createTask(@PathVariable Long id,

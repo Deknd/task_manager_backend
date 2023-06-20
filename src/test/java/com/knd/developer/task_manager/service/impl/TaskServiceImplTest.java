@@ -7,6 +7,7 @@ import com.knd.developer.task_manager.domain.task.Status;
 import com.knd.developer.task_manager.domain.task.Task;
 import com.knd.developer.task_manager.repository.TaskRepository;
 import com.knd.developer.task_manager.service.props.PatternString;
+import com.knd.developer.task_manager.service.props.TaskProperties;
 import com.knd.developer.task_manager.web.dto.task.TaskDto;
 import com.knd.developer.task_manager.web.dto.task.TaskUpdateDto;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -34,6 +37,8 @@ class TaskServiceImplTest {
 
     @Mock
     private TaskRepository taskRepository;
+    @SpyBean
+    private TaskProperties taskProperties;
 
     @InjectMocks
     private TaskServiceImpl taskService;
@@ -211,6 +216,7 @@ class TaskServiceImplTest {
 
     @Test
     void create_ShouldSaveTaskInRepositoryAndReturnTaskWithId() {
+
         final Pattern FORBIDDEN_JS_CHARS_PATTERN = Pattern.compile("[<>&\']");
 
         Long userId = id_l();

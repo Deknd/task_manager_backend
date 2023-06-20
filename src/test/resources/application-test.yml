@@ -1,4 +1,6 @@
 spring:
   liquibase:
+    change-log: classpath:liquibasetest/db.changelog.yaml
+    enabled: true
     default-schema: public
 

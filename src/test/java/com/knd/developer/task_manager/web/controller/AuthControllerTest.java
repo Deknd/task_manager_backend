@@ -295,14 +295,13 @@ class AuthControllerTest extends IntegrationTestBase {
         RefreshRequest refresh = RefreshRequest.builder().refreshToken(user.getRefreshToken()).build();
         String refreshRequest = objectMapper.writeValueAsString(refresh);
 
+        webTestClient.delete()
+                .uri("/api/v1/users/logout/"+user.getId())
+                .header("Authorization", "Bearer " + user.getAccessToken())
+                .exchange()
+                .expectStatus().isOk();
 
-        this.mockMvc.perform(delete("/api/v1/users/logout/"+user.getId())
-                .contentType(MediaType.APPLICATION_JSON))
-               // .header("Authorization", "Bearer " + user.getAccessToken()))
-                .andDo(print())
-                .andExpect(status().isOk());
-
-        this.mockMvc.perform(post("/api/v1/users/refresh")
+        this.mockMvc.perform(post("/api/v1/auth/refresh")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(refreshRequest))
                 .andDo(print())

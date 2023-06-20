@@ -24,6 +24,13 @@ security:
    jwt:
      access: 15 #минут
      refresh: 24 #часа
+entity:
+  task:
+    max_length_title: 25
+    max_length_description: 255
+  pattern:
+    forbidden_js_chars_pattern: "[<>&']"
+    email_pattern: "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
 
 
 springdoc:

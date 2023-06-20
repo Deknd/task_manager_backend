@@ -4,7 +4,9 @@ values ('John Doe', 'johndoe@mail.com', '$2a$10$GQ9L2PsLbLze56Is68/RqeNWs91E55Dh
        ('Diamantina Murat', 'PcdN1UpsE7@mail.ru', '$2a$10$GQ9L2PsLbLze56Is68/RqeNWs91E55DhsL569M0pzl9mCpZhntPzK'),
        ('Nut Walter', 'madMvkCR1Yh@yahoo.com', '$2a$10$GQ9L2PsLbLze56Is68/RqeNWs91E55DhsL569M0pzl9mCpZhntPzK'),
        ('Aruna Aytac', 'm57NMah@yahoo.com', '$2a$10$GQ9L2PsLbLze56Is68/RqeNWs91E55DhsL569M0pzl9mCpZhntPzK'),
-       ('Bláán Odessa', 'BlaanOdessa@yahoo.com', '$2a$10$GQ9L2PsLbLze56Is68/RqeNWs91E55DhsL569M0pzl9mCpZhntPzK');
+       ('Bláán Odessa', 'BlaanOdessa@yahoo.com', '$2a$10$GQ9L2PsLbLze56Is68/RqeNWs91E55DhsL569M0pzl9mCpZhntPzK'),
+       ('Bud Louis', 'bud_louis@yahoo.com', '$2a$10$GQ9L2PsLbLze56Is68/RqeNWs91E55DhsL569M0pzl9mCpZhntPzK');
+
 
 
 insert into tasks(user_id, title, description, status, expiration_date, priority)
@@ -18,4 +20,6 @@ values (1, 'ROLE_ADMIN'),
        (2, 'ROLE_USER'),
        (3, 'ROLE_USER'),
        (4, 'ROLE_USER'),
-       (5, 'ROLE_USER');
+       (5, 'ROLE_USER'),
+       (6, 'ROLE_USER'),
+       (7, 'ROLE_USER');
