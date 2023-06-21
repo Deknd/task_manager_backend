@@ -51,9 +51,16 @@ public class TaskServiceImpl implements TaskService {
      * @return возврощат List<Task>, если у пользователя нет такс, возврощает пустой список
      */
     @Override
-    @Transactional(readOnly = true)
+    //@Transactional(readOnly = true)
     public List<Task> getAllTasksByUserId(Long id) {
-        return taskRepository.findAllByUserId(id);
+        return getAllTasksCheckStatus(id);
+    }
+    private List<Task> getAllTasksCheckStatus(Long id){
+        List<Task> tasks = taskRepository.findAllByUserId(id);
+        for (Task task: tasks){
+            if(resetStatus(task)) taskRepository.update(task);
+        }
+        return tasks;
     }
 
     /**
@@ -205,14 +212,16 @@ public class TaskServiceImpl implements TaskService {
      *
      * @param task - таск для проверки
      */
-    private void resetStatus(Task task) {
+    private boolean resetStatus(Task task) {
         if (task.getExpirationDate() != null) {
             if (task.getExpirationDate().isBefore(LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()))) {
-                if (task.getStatus() != Status.FAILED) {
+                if (task.getStatus() == Status.TODO || task.getStatus() == Status.IN_PROGRESS) {
                     task.setStatus(Status.FAILED);
+                    return true;
                 }
             }
         }
 
+        return false;
     }
 }

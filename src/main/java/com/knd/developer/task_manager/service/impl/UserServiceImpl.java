@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 
 import java.util.Set;
 
@@ -122,17 +123,13 @@ public class UserServiceImpl implements UserService {
 
 
     /**
-     * Проверяет текущий пароль пользователя, если он верен, удаляет пользователя из базы данных
+     * удаляет пользователя из базы данных
      * @param id - (Long) айди пользователя, которого нужно удалить
-     * @param password - UserDeleteRequestDto содержащее единственное поле с текущим паролем пользователя - password (не может быть null)
      */
     @Override
     @Transactional
-    public void delete(Long id, UserDeleteRequestDto password) {
-        User result = getById(id);
-        if (!passwordEncoder.matches(password.getPassword(), result.getPassword())) {
-            throw new AccessDeniedException();
-        }
+    public void delete(Long id) {
+        tokensService.deleteToken(id.toString());
         userRepository.delete(id);
     }
 
@@ -169,8 +166,13 @@ public class UserServiceImpl implements UserService {
      * @param id - айди пользователя
      */
     @Override
-    public void logout(Long id) {
-        tokensService.deleteToken(id.toString());
+    public void logout(Long id){
+           tokensService.deleteToken(id.toString());
+
+
+
+
+         //throw new HttpRequestMethodNotSupportedException("Logout");
     }
 
     /**

@@ -22,19 +22,19 @@ public class TaskController {
     private final TaskService taskService;
     private final TaskMapper taskMapper;
     @PutMapping
-    @PreAuthorize("@customSecurityExpression.canAccessTask(#dto.id, authentication)")
+    @PreAuthorize("@customSecurityExpression.canAccessTask(#dto.id)")
     public TaskDto update(@Validated(OnUpdate.class) @RequestBody TaskUpdateDto dto, @AuthenticationPrincipal Authentication authentication){
         Task updateTask = taskService.update(dto);
         return taskMapper.toDto(updateTask);
     }
     @GetMapping("/{id}")
-    @PreAuthorize("@customSecurityExpression.canAccessTask(#id, authentication)")
+    @PreAuthorize("@customSecurityExpression.canAccessTask(#id)")
     public TaskDto getById(@PathVariable Long id, @AuthenticationPrincipal Authentication authentication){
         Task task=taskService.getById(id);
         return taskMapper.toDto(task);
     }
     @DeleteMapping("/{id}")
-    @PreAuthorize("@customSecurityExpression.canAccessTask(#id, authentication)")
+    @PreAuthorize("@customSecurityExpression.canAccessTask(#id)")
     public void deleteById(@PathVariable Long id, @AuthenticationPrincipal Authentication authentication){
         taskService.delete(id);
     }

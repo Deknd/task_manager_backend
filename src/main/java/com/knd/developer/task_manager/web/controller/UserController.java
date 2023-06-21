@@ -13,6 +13,7 @@ import com.knd.developer.task_manager.web.dto.validation.OnUpdate;
 import com.knd.developer.task_manager.web.mappers.TaskMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -73,23 +74,43 @@ public class UserController {
         return taskMapper.toDto(createdTask);
     }
 
-
+    /**
+     * Достает из БД все таски пользователя, проверяет время дедлайна, если время провалена меняет статус таски
+     * Если пытаться получить таски другого пользователя, то вернется ответ со статусом IsForbidden
+     * Если в URL не добавить id пользователя, то вернется ответ со статусом IsBadRequest
+     * @param id - пользователя, берется из URL
+     * @return - возвращает List<TaskDto> со всеми тасками пользователя TaskDto
+     */
     @GetMapping("/{id}/tasks")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
-    public List<TaskDto> getTasksByUserId(@PathVariable Long id) {
+    public List<TaskDto> getTasks(@PathVariable Long id) {
         List<Task> tasks = taskService.getAllTasksByUserId(id);
         return taskMapper.toDto(tasks);
     }
+
+    /**
+     * Удаляет из БД токен пользователя
+     * Если попытаться сделать логаут другому пользователю, то вернется статус IsForbidden
+     * Если не добавлять в URL айди пользователя, то вернется статус IsNotFound
+     * @param id - айди пользователя, не может быть null
+     */
     @DeleteMapping("/logout/{id}")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
     public void logout(@PathVariable Long id) {
         userService.logout(id);
 
     }
-    @DeleteMapping("/{id}")
+
+    /**
+     * Удаляет пользователя из БД совсеми данными
+     * Если попробовать удалить другого пользователя, то выдаст статус isForbidden
+     * Если попробовать удалить пользователя и не добавить в урл айди, то выдаст статус isNotFound
+     * @param id - айди пользователя
+     */
+    @DeleteMapping("/delete/{id}")
     @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
-    public void deleteById(@PathVariable Long id, UserDeleteRequestDto password) {
-        userService.delete(id, password);
+    public void deleteUser(@PathVariable Long id) {
+        userService.delete(id);
     }
 
 

@@ -6,7 +6,9 @@ import com.knd.developer.task_manager.domain.task.PriorityTask;
 import com.knd.developer.task_manager.domain.task.Status;
 import com.knd.developer.task_manager.service.props.JwtProperties;
 import com.knd.developer.task_manager.web.dto.auth.LoginRequest;
+import com.knd.developer.task_manager.web.dto.auth.RefreshRequest;
 import com.knd.developer.task_manager.web.dto.task.TaskDto;
+import com.knd.developer.task_manager.web.dto.user.request.UserDeleteRequestDto;
 import com.knd.developer.task_manager.web.dto.user.request.UserUpdateRequestDto;
 import com.knd.developer.task_manager.web.dto.user.response.UserAndTokenResponseDto;
 import com.knd.developer.task_manager.web.dto.user.response.UserResponseDto;
@@ -20,7 +22,10 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -126,7 +131,7 @@ class UserControllerTest extends IntegrationTestBase {
     }
 
     @Test
-    void userController_Update_ShouldNoValidationEmeilDate() throws Exception {
+    void userController_Update_ShouldNoValidationEmailDate() throws Exception {
         UserAndTokenResponseDto user = getUser(6);
 
         UserUpdateRequestDto userUpdate = UserUpdateRequestDto
@@ -649,6 +654,7 @@ class UserControllerTest extends IntegrationTestBase {
 
 
     }
+
     @Test
     void userController_createTask_Should() throws Exception {
         UserAndTokenResponseDto user = getUser(7);
@@ -686,7 +692,219 @@ class UserControllerTest extends IntegrationTestBase {
 
     }
 
+    @Test
+    void userController_getTasks_ShouldReturnListWitchTaskDtoAndStatusIsOk() throws Exception {
+        UserAndTokenResponseDto user = getUser(8);
 
+        EntityExchangeResult<List> result = webTestClient.get()
+                .uri("/api/v1/users/" + user.getId() + "/tasks")
+                .header("Authorization", "Bearer " + user.getAccessToken())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectAll(spec -> System.out.println(spec.returnResult(String.class)))
+                .expectBody(List.class).returnResult();
+        assertNotNull(result);
+        List<Map<String, Object>> responseList = result.getResponseBody();
+
+        List<TaskDto> tasks = responseList.stream()
+                .map(responseMap -> objectMapper.convertValue(responseMap, TaskDto.class))
+                .collect(Collectors.toList());
+        assertNotNull(tasks);
+        assertFalse(tasks.isEmpty());
+        for (TaskDto task : tasks) {
+            if (task.getExpirationDate() != null) {
+                if (LocalDateTime.parse(task.getExpirationDate()).isBefore(LocalDateTime.now())) {
+                    if (task.getStatus() != Status.DONE) {
+                        assertEquals(Status.FAILED, task.getStatus());
+                    }
+                }
+
+            }
+
+        }
+    }
+
+    @Test
+    void userController_getTasks_ShouldReturnStatusIsForbidden_BecauseTryGetTasksAnotherUser() throws Exception {
+        UserAndTokenResponseDto user = getUser(8);
+
+        webTestClient.get()
+                .uri("/api/v1/users/" + 672 + "/tasks")
+                .header("Authorization", "Bearer " + user.getAccessToken())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectAll(
+                        spec -> {
+                            EntityExchangeResult<ExceptionBody> exceptionBodyEntityExchangeResult = spec
+                                    .expectBody(ExceptionBody.class)
+                                    .returnResult();
+                            assertNotNull(exceptionBodyEntityExchangeResult);
+                            ExceptionBody exceptionBody = exceptionBodyEntityExchangeResult.getResponseBody();
+                            assertNotNull(exceptionBody);
+                        },
+                        spec -> System.out.println(spec.returnResult(String.class)));
+    }
+
+    @Test
+    void userController_getTasks_Should() throws Exception {
+        UserAndTokenResponseDto user = getUser(8);
+
+        webTestClient.get()
+                .uri("/api/v1/users//tasks")
+                .header("Authorization", "Bearer " + user.getAccessToken())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectAll(
+                        spec -> {
+                            EntityExchangeResult<ExceptionBody> exceptionBodyEntityExchangeResult = spec
+                                    .expectBody(ExceptionBody.class)
+                                    .returnResult();
+                            assertNotNull(exceptionBodyEntityExchangeResult);
+                            ExceptionBody exceptionBody = exceptionBodyEntityExchangeResult.getResponseBody();
+                            assertNotNull(exceptionBody);
+                        },
+                        spec -> System.out.println(spec.returnResult(String.class)));
+    }
+
+    @Test
+    void userController_Logout_ShouldDeleteTokensForBD() throws Exception {
+        UserAndTokenResponseDto user = getUser(1);
+
+        webTestClient.delete()
+                .uri("/api/v1/users/logout/" + user.getId())
+                .header("Authorization", "Bearer " + user.getAccessToken())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectAll(spec -> System.out.println(spec.returnResult(String.class)));
+
+        webTestClient.post()
+                .uri("/api/v1/auth/refresh")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(RefreshRequest.builder().refreshToken(user.getRefreshToken()).build())
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectAll(spec -> {
+                    EntityExchangeResult<ExceptionBody> exceptionBodyEntityExchangeResult = spec
+                            .expectBody(ExceptionBody.class)
+                            .returnResult();
+                    assertNotNull(exceptionBodyEntityExchangeResult);
+                    ExceptionBody exceptionBody = exceptionBodyEntityExchangeResult.getResponseBody();
+                    assertNotNull(exceptionBody);
+                });
+    }
+
+    @Test
+    void userController_Logout_ShouldReturnIsForbidden_BecauseTryLogoutAnotherUser() throws Exception {
+        UserAndTokenResponseDto user = getUser(1);
+
+        webTestClient.delete()
+                .uri("/api/v1/users/logout/" + 100)
+                .header("Authorization", "Bearer " + user.getAccessToken())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectAll(
+                        spec -> {
+                            EntityExchangeResult<ExceptionBody> exceptionBodyEntityExchangeResult = spec
+                                    .expectBody(ExceptionBody.class)
+                                    .returnResult();
+                            assertNotNull(exceptionBodyEntityExchangeResult);
+                            ExceptionBody exceptionBody = exceptionBodyEntityExchangeResult.getResponseBody();
+                            assertNotNull(exceptionBody);
+                        },
+                        spec -> System.out.println(spec.returnResult(String.class)));
+
+    }
+
+    @Test
+    void userController_Logout_ShouldReturnStatusIsNotFound() throws Exception {
+        UserAndTokenResponseDto user = getUser(1);
+
+        webTestClient.delete()
+                .uri("/api/v1/users/logout/")
+                .header("Authorization", "Bearer " + user.getAccessToken())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectAll(
+
+                        spec -> System.out.println(spec.returnResult(String.class)));
+    }
+
+    @Test
+    void userController_deleteUser_ShouldDeleteUserInBD() throws Exception {
+        UserAndTokenResponseDto user = getUser(9);
+        LoginRequest loginRequest = new LoginRequest("albana_orfeo@yahoo.com", "12345");
+
+
+        webTestClient.delete()
+                .uri("/api/v1/users/delete/" + user.getId())
+                .header("Authorization", "Bearer " + user.getAccessToken())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectAll(spec-> System.out.println(spec.returnResult(String.class)));
+
+        webTestClient.post()
+                .uri("/api/v1/auth/login")
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(loginRequest)
+                .exchange()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectStatus().isUnauthorized()
+                .expectAll(
+                        spec -> {
+                            EntityExchangeResult<ExceptionBody> exceptionBodyEntityExchangeResult = spec
+                                    .expectBody(ExceptionBody.class)
+                                    .returnResult();
+                            assertNotNull(exceptionBodyEntityExchangeResult);
+                            ExceptionBody exceptionBody = exceptionBodyEntityExchangeResult.getResponseBody();
+                            assertNotNull(exceptionBody);
+                        });
+    }
+    @Test
+    void userController_deleteUser_ShouldReturnStatusIsForbidden_BecauseTryDeleteAnotherUser() throws Exception {
+        UserAndTokenResponseDto user = getUser(9);
+
+        webTestClient.delete()
+                .uri("/api/v1/users/delete/" + 136)
+                .header("Authorization", "Bearer " + user.getAccessToken())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectAll(
+                        spec -> {
+                            EntityExchangeResult<ExceptionBody> exceptionBodyEntityExchangeResult = spec
+                                    .expectBody(ExceptionBody.class)
+                                    .returnResult();
+                            assertNotNull(exceptionBodyEntityExchangeResult);
+                            ExceptionBody exceptionBody = exceptionBodyEntityExchangeResult.getResponseBody();
+                            assertNotNull(exceptionBody);
+                        },
+                        spec-> System.out.println(spec.returnResult(String.class)));
+
+    }
+    @Test
+    void userController_deleteUser_ShouldReturnStatusIsNotFound() throws Exception {
+        UserAndTokenResponseDto user = getUser(9);
+
+        webTestClient.delete()
+                .uri("/api/v1/users/delete/")
+                .header("Authorization", "Bearer " + user.getAccessToken())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectAll(spec-> System.out.println(spec.returnResult(String.class)));
+
+    }
 
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

@@ -353,48 +353,39 @@ class UserServiceImplTest {
 
     @Test
     void delete_ShouldValidationPasswordAndDeleteUser(){
-        PasswordEncoder pasEnc = new BCryptPasswordEncoder();
-        User user = new User();
-        String pass = "password";
-        user.setPassword(pasEnc.encode(pass));
+
 
         Long id = id_l();
-        UserDeleteRequestDto password = new UserDeleteRequestDto();
-        password.setPassword(pass);
 
-        when(userRepository.findById(eq(id))).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches(any(CharSequence.class), any(String.class))).thenAnswer(invocationOnMock -> {
-            CharSequence charSequence = invocationOnMock.getArgument(0);
-            String encodePassword = invocationOnMock.getArgument(1);
-            return pasEnc.matches(charSequence, encodePassword);
-        });
 
-        userService.delete(id, password);
+
+
+        userService.delete(id);
 
         verify(userRepository).delete(id);
     }
-    @Test
-    void delete_ShouldThrowsExceptionWhenPasswordWrong(){
-        PasswordEncoder pasEnc = new BCryptPasswordEncoder();
-        User user = new User();
-        String pass = "password";
-        user.setPassword(pasEnc.encode(pass));
-
-        Long id = id_l();
-        UserDeleteRequestDto password = new UserDeleteRequestDto();
-        password.setPassword("Hk7");
-
-        when(userRepository.findById(eq(id))).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches(any(CharSequence.class), any(String.class))).thenAnswer(invocationOnMock -> {
-            CharSequence charSequence = invocationOnMock.getArgument(0);
-            String encodePassword = invocationOnMock.getArgument(1);
-            return pasEnc.matches(charSequence, encodePassword);
-        });
-
-        assertThrows(AccessDeniedException.class, () -> userService.delete(id, password));
-
-        verify(userRepository, never()).delete(id);
-    }
+//    @Test
+//    void delete_ShouldThrowsExceptionWhenPasswordWrong(){
+//        PasswordEncoder pasEnc = new BCryptPasswordEncoder();
+//        User user = new User();
+//        String pass = "password";
+//        user.setPassword(pasEnc.encode(pass));
+//
+//        Long id = id_l();
+//        UserDeleteRequestDto password = new UserDeleteRequestDto();
+//        password.setPassword("Hk7");
+//
+//        when(userRepository.findById(eq(id))).thenReturn(Optional.of(user));
+//        when(passwordEncoder.matches(any(CharSequence.class), any(String.class))).thenAnswer(invocationOnMock -> {
+//            CharSequence charSequence = invocationOnMock.getArgument(0);
+//            String encodePassword = invocationOnMock.getArgument(1);
+//            return pasEnc.matches(charSequence, encodePassword);
+//        });
+//
+//        assertThrows(AccessDeniedException.class, () -> userService.delete(id, password));
+//
+//        verify(userRepository, never()).delete(id);
+//    }
     @Test
     void logout_ShouldUseJwtTokenProvider() {
         Long id = 898L;

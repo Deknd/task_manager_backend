@@ -5,6 +5,7 @@ import com.knd.developer.task_manager.web.dto.user.request.UserCreateRequestDto;
 import com.knd.developer.task_manager.web.dto.user.request.UserDeleteRequestDto;
 import com.knd.developer.task_manager.web.dto.user.request.UserUpdateRequestDto;
 import com.knd.developer.task_manager.web.dto.user.response.UserResponseDto;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 
 import java.util.List;
 
@@ -40,7 +41,7 @@ public interface UserService {
      * @param id - (Long) айди пользователя, которого нужно удалить
      * @param password - UserDeleteRequestDto содержащее единственное поле с текущим паролем пользователя - password (не может быть null)
      */
-    void delete(Long id, UserDeleteRequestDto password);
+    void delete(Long id);
     /**
      * Удаляет рефреш токен из памяти системы, тем самым делает не валидными все токены доступа
      * @param id - айдипользователя

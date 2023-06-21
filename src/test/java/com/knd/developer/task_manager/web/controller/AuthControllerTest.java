@@ -1,6 +1,5 @@
 package com.knd.developer.task_manager.web.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knd.developer.task_manager.IntegrationTestBase;
 import com.knd.developer.task_manager.config.ApplicationConfig;
 import com.knd.developer.task_manager.service.props.JwtProperties;
@@ -8,16 +7,11 @@ import com.knd.developer.task_manager.web.dto.auth.LoginRequest;
 import com.knd.developer.task_manager.web.dto.auth.RefreshRequest;
 import com.knd.developer.task_manager.web.dto.user.request.UserCreateRequestDto;
 import com.knd.developer.task_manager.web.dto.user.response.UserAndTokenResponseDto;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.SecurityConfig;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -26,7 +20,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -35,23 +28,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class AuthControllerTest extends IntegrationTestBase {
 
-//    @Autowired
-//    private WebApplicationContext webApplicationContext;
+
     @Autowired
     private JwtProperties jwtProperties;
     private final String CHARACTERS = "abcdefghijklmnopqrstuvwxyz";
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS'Z'");
-
-//    private MockMvc mockMvc;
-//
-//    private ObjectMapper objectMapper;
-
-
-//    @BeforeEach
-//    public void setup() throws Exception {
-//        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
-//        objectMapper = new ObjectMapper();
-//    }
 
 
     @Test
@@ -289,25 +270,6 @@ class AuthControllerTest extends IntegrationTestBase {
 
     }
 
-    @Test
-    void authController_Logout_ShouldMakeRefreshTokenNoActivity() throws Exception {
-        UserAndTokenResponseDto user = getUser(1);
-        RefreshRequest refresh = RefreshRequest.builder().refreshToken(user.getRefreshToken()).build();
-        String refreshRequest = objectMapper.writeValueAsString(refresh);
-
-        webTestClient.delete()
-                .uri("/api/v1/users/logout/"+user.getId())
-                .header("Authorization", "Bearer " + user.getAccessToken())
-                .exchange()
-                .expectStatus().isOk();
-
-        this.mockMvc.perform(post("/api/v1/auth/refresh")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(refreshRequest))
-                .andDo(print())
-                .andExpect(status().isForbidden());
-
-    }
     private String generateRandomWord(int length) {
         StringBuilder sb = new StringBuilder(length);
         Random random = new Random();
@@ -318,21 +280,5 @@ class AuthControllerTest extends IntegrationTestBase {
         }
         return sb.toString();
     }
-
-//    private UserAndTokenResponseDto getUser() throws Exception {
-//        LoginRequest loginRequest = new LoginRequest("johndoe@mail.com", "12345");
-//        String log = objectMapper.writeValueAsString(loginRequest);
-//
-//        MvcResult result = this.mockMvc.perform(post("/api/v1/auth/login")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(log))
-//                .andExpect(status().isOk())
-//                .andReturn();
-//        String responseBody = result.getResponse().getContentAsString();
-//
-//        return objectMapper.readValue(responseBody, UserAndTokenResponseDto.class);
-//
-//    }
-
 
 }

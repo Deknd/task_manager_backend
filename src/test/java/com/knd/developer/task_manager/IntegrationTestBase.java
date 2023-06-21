@@ -80,6 +80,12 @@ public abstract class IntegrationTestBase {
             case 7:
                 loginRequest= new LoginRequest("bud_louis@yahoo.com","12345");
                 break;
+            case 8:
+                loginRequest= new LoginRequest("janez_clifton@yahoo.com","12345");
+                break;
+            case 9:
+                loginRequest= new LoginRequest("albana_orfeo@yahoo.com","12345");
+                break;
             default:
                 loginRequest = new LoginRequest("johndoe@mail.com", "12345");
         }
