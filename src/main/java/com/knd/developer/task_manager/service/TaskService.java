@@ -3,6 +3,7 @@ package com.knd.developer.task_manager.service;
 import com.knd.developer.task_manager.domain.task.Task;
 import com.knd.developer.task_manager.web.dto.task.TaskDto;
 import com.knd.developer.task_manager.web.dto.task.TaskUpdateDto;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -25,14 +26,14 @@ public interface TaskService {
      * @param task - таск для обновления
      * @return
      */
-    Task update(TaskUpdateDto task);
+    Task update(TaskDto task);
     /**
      * Сохраняет полученый таск от клиента в репозитории
      * @param task - полученный от клиента таск
      * @param  id - id юзера, за которым нужно закрепить таск
      * @return - возврощает таск с id(таска) который был получен при сохранении
      */
-    Task create(TaskDto task, Long id);
+    Task create(TaskDto task,@NotNull Long id);
     /**
      * Делает запрос в TaskRepository на удаление данного таска
      * @param id - айди таска

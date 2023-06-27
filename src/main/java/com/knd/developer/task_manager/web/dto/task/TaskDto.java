@@ -26,7 +26,6 @@ import java.time.LocalDateTime;
 public class TaskDto {
 
     private Long id;
-    @NotNull(message = "Title must be not null", groups = {OnCreate.class, OnUpdate.class})
     private String title;
     private String description;
     private Status status;

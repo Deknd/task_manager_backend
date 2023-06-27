@@ -10,7 +10,6 @@ import com.knd.developer.task_manager.service.TaskService;
 import com.knd.developer.task_manager.service.props.PatternString;
 import com.knd.developer.task_manager.service.props.TaskProperties;
 import com.knd.developer.task_manager.web.dto.task.TaskDto;
-import com.knd.developer.task_manager.web.dto.task.TaskUpdateDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,12 +29,12 @@ public class TaskServiceImpl implements TaskService {
     private final TaskProperties taskProperties;
 
 
-
     /**
-     * Возвращает Таск по ID
+     * Отправляет запрос в taskRepository
+     * Если task по-данному id нет, выдает исключение ResourceNotFoundException
      *
-     * @param id - id таска, выданное при сохранении его в БД
-     * @return - возвращает полный таск
+     * @param id - id(Task)
+     * @return - Task найденный в БД по id(Task)
      */
     @Override
     @Transactional(readOnly = true)
@@ -45,140 +44,77 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
-     * Возвращает все такски принадлежащие пользователю
+     * Делает запрос в TaskRepository и проверяет дедлайн тасков
+     * Если у пользователя нет таксков, вернется пустой лист
+     * Если дата дедлайна у таска закончилась, то статус таска поменяется на Failed
      *
      * @param id - id User для которого нужны таски
-     * @return возврощат List<Task>, если у пользователя нет такс, возврощает пустой список
+     * @return возвращат List<Task>, если у пользователя нет такс, возвращает пустой список
      */
     @Override
-    //@Transactional(readOnly = true)
     public List<Task> getAllTasksByUserId(Long id) {
-        return getAllTasksCheckStatus(id);
-    }
-    private List<Task> getAllTasksCheckStatus(Long id){
         List<Task> tasks = taskRepository.findAllByUserId(id);
-        for (Task task: tasks){
-            if(resetStatus(task)) taskRepository.update(task);
+        for (Task task : tasks) {
+            if (resetStatus(task)) taskRepository.update(task);
         }
         return tasks;
     }
 
+
     /**
-     * Обновляет существующий таск
+     * Проверяет новые данные на валидность, проверяет время выполнения task, сохраняет новые данные БД.
+     * Меняет статус task на Failed, если время выполнения просрочено.
+     * Можно обновлять данные по одному полю, если в TaskDto есть id(Task) и данные в поле, которое нужно обновить.
+     * Если передать TaskDto с id(Task), которого нет в БД, то выбросит исключение ResourcesNotFoundException.
+     * Если попробовать передать не валидные данные, то выбросит исключение ResourcesMappingException.
+     * Если принимаемый TaskDto пустой(кроме id(Task)), то ни каких изменений в task не будет.
      *
-     * @param task - таск для обновления
-     * @return -обновленный Task
+     * @param task - TaskDto, обязательно должно быть id(Task)
+     * @return -Task, из БД с обновленными данными
      */
     @Override
     @Transactional
-    public Task update(TaskUpdateDto task) {
+    public Task update(TaskDto task) {
         Task oldTask = getById(task.getId());
 
-        if (task.getTitle() != null) {
-            if (!oldTask.getTitle().equals(task.getTitle())) {
-                if (task.getTitle().length() <= taskProperties.getMax_length_title()) {
-
-                    if (!pattern.getFORBIDDEN_JS_CHARS_PATTERN().matcher(task.getTitle()).find()) {
-                        oldTask.setTitle(task.getTitle());
-                    } else {
-                        throw new ResourcesMappingException("Не верный запрос изменения Таска, в title используются запрещеные символы");
-                    }
-                } else {
-                    throw new ResourcesMappingException("Не верный запрос изменения Таска, title длинее 25 символов");
-                }
-            }
-        }
-        if (task.getDescription() != null) {
-            if (!oldTask.getDescription().equals(task.getDescription())) {
-                if (task.getDescription().length() < taskProperties.getMax_length_description()) {
-                    if (!pattern.getFORBIDDEN_JS_CHARS_PATTERN().matcher(task.getDescription()).find()) {
-                        oldTask.setDescription(task.getDescription());
-                    } else {
-                        throw new ResourcesMappingException("Не верный запрос изменения Таска, в description используются запрещеные символы");
-                    }
-                } else {
-                    throw new ResourcesMappingException("Не верный запрос изменения Таска, description длинее  255 символов");
-                }
-            }
-        }
-
-        if (task.getStatus() != null) {
-            if (!oldTask.getStatus().equals(task.getStatus())) {
-                oldTask.setStatus(task.getStatus());
-            }
-        }
-        if (task.getPriority() != null) {
-            if (!oldTask.getPriority().equals(task.getPriority())) {
-                oldTask.setPriority(task.getPriority());
-            }
-        }
-        if (task.getExpirationDate() != null) {
-            if (!oldTask.getExpirationDate().equals(task.getExpirationDate())) {
-                if (task.getExpirationDate().isAfter(LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()))) {
-                    oldTask.setExpirationDate(task.getExpirationDate());
-                }
-            }
-        }
+        validationDateTask(oldTask, task);
 
         resetStatus(oldTask);
         taskRepository.update(oldTask);
+
         return oldTask;
     }
 
     /**
-     * Сохраняет полученый таск от клиента в репозитории
+     * Создает новый Task по данным из TaskDto, проверяет валидность данных и сохраняет новый Task в БД.
+     * БД генерирует id(Task)
+     * Если данные не верны( userId == null, title == null,
+     * данные из TaskDto не проходят валидацию(т.е. использованы не допустимые знаки или данные не допустимой длинны),
+     * время выполнения просрочено) выкидывает исключение ResourcesMappingException.
+     * Если не указаны статус и(или) приоритет, то они меняются на Status.ТODO и PriorityTask.STANDART
      *
-     * @param taskDto - полученный от клиента таск
-     * @param userId  - id юзера, за которым нужно закрепить таск
-     * @return - возврощает таск с id(таска) который был получен при сохранении
+     * @param taskDto - TaskDto, title не может быть null
+     * @param userId  - id юзера, к которому добавляется task, не может быть null
+     * @return - возвращает task с id(таска) который был получен при сохранении
      */
     @Override
     @Transactional
     public Task create(TaskDto taskDto, Long userId) {
 
-        Task task = new Task();
-        task.setUser_id(userId);
-        if (taskDto.getTitle().length() <= taskProperties.getMax_length_title()) {
-            if (!pattern.getFORBIDDEN_JS_CHARS_PATTERN().matcher(taskDto.getTitle()).find()) {
-                task.setTitle(taskDto.getTitle());
-
-            } else {
-                throw new ResourcesMappingException("Не верный запрос создания Таска, title использованы не допустимые символы");
-
-            }
-        } else {
-            throw new ResourcesMappingException("Не верный запрос создания Таска, title не может быть длинее 25 символов");
+        if (userId == null) {
+            throw new ResourcesMappingException("User_Id не может быть null");
+        }
+        if (taskDto.getTitle() == null) {
+            throw new ResourcesMappingException("title не может быть null");
 
         }
-
-        if (taskDto.getDescription() != null) {
-            if (taskDto.getDescription().length() <= taskProperties.getMax_length_description()) {
-                if (!pattern.getFORBIDDEN_JS_CHARS_PATTERN().matcher(taskDto.getDescription()).find()) {
-                    task.setDescription(taskDto.getDescription());
-
-                } else {
-                    throw new ResourcesMappingException("Не верный запрос создания Таска, description использованы не допустимые символы");
-
-                }
-            } else {
-                throw new ResourcesMappingException("Не верный запрос создания Таска, description не может быть больше 255");
-
-            }
+        if (taskDto.getExpirationDate() != null && LocalDateTime.parse(taskDto.getExpirationDate()).isBefore(LocalDateTime.now())) {
+            throw new ResourcesMappingException("Не верное время завершение, время на выполнение уже закончилось");
         }
-        if (taskDto.getStatus() != null) {
-            task.setStatus(taskDto.getStatus());
-        } else {
-            task.setStatus(Status.TODO);
-        }
-        if (taskDto.getPriority() != null) {
-            task.setPriority(taskDto.getPriority());
-        } else task.setPriority(PriorityTask.STANDARD);
+        Task task = Task.builder().user_id(userId).build();
 
-        if (taskDto.getExpirationDate() != null) {
-            task.setExpirationDate(LocalDateTime.parse(taskDto.getExpirationDate()));
-        }
+        createValidationTask(task, taskDto);
 
-        resetStatus(task);
         taskRepository.create(task);
         return task;
     }
@@ -206,19 +142,81 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.delete(id);
     }
 
+    private void createValidationTask(Task oldTask, TaskDto newTask) {
+
+        if (newTask.getStatus() == null) {
+            newTask.setStatus(Status.TODO);
+        }
+        if (newTask.getPriority() == null) {
+            newTask.setPriority(PriorityTask.STANDARD);
+        }
+
+        validationDateTask(oldTask, newTask);
+    }
+
+    private void validationDateTask(Task oldTask, TaskDto newTask) {
+        if (newTask.getTitle() != null) {
+            if (newTask.getTitle().length() <= taskProperties.getMax_length_title()) {
+
+                if (!pattern.getFORBIDDEN_JS_CHARS_PATTERN().matcher(newTask.getTitle()).find()) {
+                    oldTask.setTitle(newTask.getTitle());
+                } else {
+                    throw new ResourcesMappingException("Не верный запрос изменения Таска, в title используются запрещеные символы");
+                }
+            } else {
+                throw new ResourcesMappingException("Не верный запрос изменения Таска, title длинее 25 символов");
+            }
+
+        }
+        if (newTask.getDescription() != null) {
+            if (newTask.getDescription().length() < taskProperties.getMax_length_description()) {
+                if (!pattern.getFORBIDDEN_JS_CHARS_PATTERN().matcher(newTask.getDescription()).find()) {
+                    oldTask.setDescription(newTask.getDescription());
+                } else {
+                    throw new ResourcesMappingException("Не верный запрос изменения Таска, в description используются запрещеные символы");
+                }
+            } else {
+                throw new ResourcesMappingException("Не верный запрос изменения Таска, description длинее  255 символов");
+            }
+
+        }
+
+        if (newTask.getStatus() != null) {
+            oldTask.setStatus(newTask.getStatus());
+
+        }
+        if (newTask.getPriority() != null) {
+            oldTask.setPriority(newTask.getPriority());
+
+        }
+        if (newTask.getExpirationDate() != null) {
+            if (LocalDateTime.parse(newTask.getExpirationDate()).isAfter(LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()))) {
+                oldTask.setExpirationDate(LocalDateTime.parse(newTask.getExpirationDate()));
+            }
+
+        }
+    }
+
 
     /**
-     * Проверяет время дедлайна, если время существует и оно позже чем нынешнее время, меняет статус таска на FAILED
+     * Проверяет время дедлайна
+     * Если время существует и оно позже чем нынешнее время, меняет статус таска на FAILED
      *
      * @param task - таск для проверки
      */
     private boolean resetStatus(Task task) {
         if (task.getExpirationDate() != null) {
-            if (task.getExpirationDate().isBefore(LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()))) {
-                if (task.getStatus() == Status.TODO || task.getStatus() == Status.IN_PROGRESS) {
-                    task.setStatus(Status.FAILED);
-                    return true;
+
+            if (task.getExpirationDate().isBefore(LocalDateTime.now())) {
+
+                if (task.getStatus() != null) {
+
+                    if (task.getStatus() == Status.TODO || task.getStatus() == Status.IN_PROGRESS) {
+                        task.setStatus(Status.FAILED);
+                        return true;
+                    }
                 }
+
             }
         }
 

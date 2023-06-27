@@ -7,21 +7,29 @@ values ('John Doe', 'johndoe@mail.com', '$2a$10$GQ9L2PsLbLze56Is68/RqeNWs91E55Dh
        ('Bláán Odessa', 'BlaanOdessa@yahoo.com', '$2a$10$GQ9L2PsLbLze56Is68/RqeNWs91E55DhsL569M0pzl9mCpZhntPzK'),
        ('Bud Louis', 'bud_louis@yahoo.com', '$2a$10$GQ9L2PsLbLze56Is68/RqeNWs91E55DhsL569M0pzl9mCpZhntPzK'),
        ('Janez Clifton', 'janez_clifton@yahoo.com', '$2a$10$GQ9L2PsLbLze56Is68/RqeNWs91E55DhsL569M0pzl9mCpZhntPzK'),
-       ('Albana Orfeo', 'albana_orfeo@yahoo.com', '$2a$10$GQ9L2PsLbLze56Is68/RqeNWs91E55DhsL569M0pzl9mCpZhntPzK');
-
-
+       ('Albana Orfeo', 'albana_orfeo@yahoo.com', '$2a$10$GQ9L2PsLbLze56Is68/RqeNWs91E55DhsL569M0pzl9mCpZhntPzK'),
+       ('Yıldırım Adela', 'yıldırım_adela@yahoo.com', '$2a$10$GQ9L2PsLbLze56Is68/RqeNWs91E55DhsL569M0pzl9mCpZhntPzK');
 
 
 
 insert into tasks(user_id, title, description, status, expiration_date, priority)
-values ('2', 'Buy cheese', null, 'TODO', '2023-05-05 12:00:00', 'STANDARD'),
-       ('2', 'Do homework', 'Math, Physics, Literature', 'IN_PROGRESS', '2023-05-06 00:00:00', 'STANDARD'),
+values ('2', 'Buy cheese', null, 'TODO', '2024-05-05 12:00:00', 'STANDARD'),
+       ('2', 'Do homework', 'Math, Physics, Literature', 'IN_PROGRESS', '2024-05-06 00:00:00', 'STANDARD'),
        ('2', 'Clean rooms', null, 'DONE', null, 'STANDARD'),
-       ('1', 'Call Mike', 'Ask about meeting', 'TODO', '2023-05-07 00:00:00', 'STANDARD'),
-       ('8', 'Task 1', 'Description 1', 'TODO', '2023-07-08 12:00:00', 'STANDARD'),
-       ('8', 'Task 2', 'Description 2', 'IN_PROGRESS', '2023-07-09 00:00:00', 'STANDARD'),
+       ('1', 'Call Mike', 'Ask about meeting', 'TODO', '2024-05-07 00:00:00', 'STANDARD'),
+       ('8', 'Task 1', 'Description 1', 'TODO', '2024-07-08 12:00:00', 'STANDARD'),
+       ('8', 'Task 2', 'Description 2', 'IN_PROGRESS', '2024-07-09 00:00:00', 'STANDARD'),
        ('8', 'Task 3', 'Description 3', 'DONE', null, 'STANDARD'),
-       ('8', 'Task 4', 'Description 4', 'TODO', '2023-06-10 00:00:00', 'STANDARD');
+       ('8', 'Task 4', 'Description 4', 'TODO', '2023-06-10 00:00:00', 'STANDARD'),
+       ('10', 'Task 5', 'Description 5', 'TODO', '2024-06-10 00:00:00', 'STANDARD'),
+       ('10', 'Task 6', 'Description 6', 'TODO', '2024-06-10 00:00:00', 'STANDARD'),
+       ('10', 'Task 7', 'Description 7', 'TODO', '2024-06-10 00:00:00', 'STANDARD'),
+       ('10', 'Task 8', 'Description 8', 'TODO', '2024-06-10 00:00:00', 'STANDARD'),
+       ('10', 'Task 9', 'Description 9', 'TODO', '2024-06-10 00:00:00', 'STANDARD');
+
+
+
+
 insert into users_roles (user_id, role)
 values (1, 'ROLE_ADMIN'),
        (1, 'ROLE_USER'),
@@ -32,4 +40,5 @@ values (1, 'ROLE_ADMIN'),
        (6, 'ROLE_USER'),
        (7, 'ROLE_USER'),
        (8, 'ROLE_USER'),
-       (9, 'ROLE_USER');
+       (9, 'ROLE_USER'),
+       (10, 'ROLE_USER');

@@ -19,6 +19,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.utility.TestcontainersConfiguration;
 
+import java.util.Random;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -58,7 +60,20 @@ public abstract class IntegrationTestBase {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
         objectMapper = new ObjectMapper();
     }
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
+    protected static String generateRandomString(int length) {
+        StringBuilder sb = new StringBuilder(length);
+        Random random = new Random();
+
+        for (int i = 0; i < length; i++) {
+            int randomIndex = random.nextInt(CHARACTERS.length());
+            char randomChar = CHARACTERS.charAt(randomIndex);
+            sb.append(randomChar);
+        }
+
+        return sb.toString();
+    }
     protected UserAndTokenResponseDto getUser(int number) throws Exception {
         LoginRequest loginRequest;
         switch (number) {
@@ -85,6 +100,9 @@ public abstract class IntegrationTestBase {
                 break;
             case 9:
                 loginRequest= new LoginRequest("albana_orfeo@yahoo.com","12345");
+                break;
+            case 10:
+                loginRequest= new LoginRequest("yıldırım_adela@yahoo.com","12345");
                 break;
             default:
                 loginRequest = new LoginRequest("johndoe@mail.com", "12345");

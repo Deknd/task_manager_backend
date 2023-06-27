@@ -33,40 +33,35 @@ public class AuthServiceImpl implements AuthService {
 
 
     /**
-     * Выполняет аутентификацию пользователя, сверяет предоставленный пароль с сохраненным, создает токены доступа
-     * @param loginRequest - JwtRequest содержит username и  password, должен быть полностью заполненным
-     * @return - ResponseAuthUser полностью заполненный пользователь с токенами
+     * Аутентифицирует пользователя по полученным данным, собирает ответ с полным UserAndTokenResponseDto
+     * Если данные не верны, выкидывает исключение BadCredentialsException
+     * @param loginRequest - JwtRequest содержит username(Not null) и  password(Not null)
+     * @return - UserAndTokenResponseDto полностью заполненный пользователь с accessToken и refreshToken
      */
     @Override
     public UserAndTokenResponseDto login(LoginRequest loginRequest) {
-        UserAndTokenResponseDto userAndTokenResponseDTO = new UserAndTokenResponseDto();//создаем ответ на запрос
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));//отравляет на JwtUserDetailsService
         } catch (InternalAuthenticationServiceException e) {
             throw new BadCredentialsException(e.getMessage());
         }
-
         Instant validity = Instant.now()
                 .plus(jwtProperties.getAccess(), ChronoUnit.MINUTES);
-
         User user = userService.getByUsername(loginRequest.getUsername()); //А если нет такого юзера? то выдается ошибка выше в методе
-        userAndTokenResponseDTO.setId(user.getId());
-        userAndTokenResponseDTO.setName(user.getName());
-        userAndTokenResponseDTO.setTasks(taskMapper.toDto(user.getTasks()));
-        userAndTokenResponseDTO.setExpiration(validity.toString());
-
-        userAndTokenResponseDTO.setRefreshToken(jwtTokenProvider.createRefreshToken(user.getId(), user.getUsername()));
-
-        userAndTokenResponseDTO.setAccessToken(jwtTokenProvider.createAccessToken(user.getId(), user.getUsername(), user.getRoles(), validity));
-
-
-        return userAndTokenResponseDTO;
+        return UserAndTokenResponseDto.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .tasks(taskMapper.toDto(user.getTasks()))
+                .expiration(validity.toString())
+                .refreshToken(jwtTokenProvider.createRefreshToken(user.getId(), user.getUsername()))
+                .accessToken(jwtTokenProvider.createAccessToken(user.getId(), user.getUsername(), user.getRoles(), validity))
+                .build();
     }
 
     /**
-     * Обновляет токены доступа
+     * Обновляет по refreshToken -> tokens пользователя
      * @param refreshToken - RefreshRequest должен быть полностью заполненный
-     * @return - ResponseAuthUser полностью заполненный пользователь с токенами
+     * @return - UserAndTokenResponseDto полностью заполненный пользователь с tokens
      */
     @Override
     public UserAndTokenResponseDto refresh(RefreshRequest refreshToken) {

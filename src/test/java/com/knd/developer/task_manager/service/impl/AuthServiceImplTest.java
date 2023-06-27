@@ -47,19 +47,24 @@ class AuthServiceImplTest {
     @Mock
     private JwtTokenProvider tokenProvider;
 
+    //аутентифицирует пользователя по полученным данным
     @Test
     void login_ShouldAuthenticationAndReturnJwtResponse() {
         Task task1 = mock(Task.class);
         Task task2 = mock(Task.class);
         List<TaskDto> listDto = mock(List.class);
+
         LoginRequest request = new LoginRequest("Username", "Password");
-        User user = new User();
-        user.setId(1L);
-        user.setName("User");
-        user.setUsername("Username");
-        user.setPassword("Password");
-        user.setRoles(Set.of(Role.ROLE_USER));
-        user.setTasks(List.of(task1, task2));
+
+        User user = User.builder()
+                .id(1L)
+                .name("User")
+                .username("username@tast.ru")
+                .password("password")
+                .roles(Set.of(Role.ROLE_USER))
+                .tasks(List.of(task1,task2))
+                .build();
+
         when(userService.getByUsername(request.getUsername())).thenReturn(user);
         when(jwtProperties.getAccess()).thenReturn(15L);
         when(tokenProvider.createAccessToken(eq(user.getId()), eq(user.getUsername()), eq(user.getRoles()), any(Instant.class))).thenReturn("Access Token");
@@ -79,8 +84,9 @@ class AuthServiceImplTest {
         verify(jwtProperties).getAccess();
     }
 
+    //Когда данные не верны, должен выбросить ошибку BadCredentialsException
     @Test
-    void login_ShouldTrowsExceptionAuthentication() {
+    void login_ShouldTrowsExceptionAuthentication_BecauseDataNotCorrect() {
         LoginRequest loginRequest = mock(LoginRequest.class);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenThrow(InternalAuthenticationServiceException.class);
 
@@ -88,11 +94,12 @@ class AuthServiceImplTest {
 
     }
 
+    //Обновляет по refreshToken токены пользователя
     @Test
-    void refresh_ShouldReturnResponseAuthUser() {
+    void refresh_ShouldReturnUserAndTokenResponseDto() {
         RefreshRequest request = new RefreshRequest("Refresh token");
         UserAndTokenResponseDto userAndTokenResponseDTO = mock(UserAndTokenResponseDto.class);
-        userAndTokenResponseDTO.setRefreshToken("New Refresh token");
+        //userAndTokenResponseDTO.setRefreshToken("New Refresh token");
 
         ArgumentCaptor<Instant> requestCaptor = ArgumentCaptor.forClass(Instant.class);
         when(tokenProvider.refreshUserToken(eq(request.getRefreshToken()), requestCaptor.capture())).thenReturn(userAndTokenResponseDTO);
