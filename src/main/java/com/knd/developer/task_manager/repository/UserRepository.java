@@ -8,24 +8,24 @@ import java.util.Optional;
 @Mapper
 public interface UserRepository {
     /**
-     * возврощает опшен с юзером, если юзер под указаным айди существует
+     * возвращает Optional с юзером, если юзер под указанным id существует
      * @param id id юзера тип Long
-     * @return юзер будет полностью заполненый, с тасками и ролью
+     * @return юзер будет полностью заполненный, с тасками и ролью
      */
     Optional<User> findById(Long id);
 
 
     /**
-     * возврощает опшен с юзером, если юзер под указаным username существует
+     * возвращает Optional с юзером, если юзер под указанным username существует
      * @param username username юзера тип String
-     * @return юзер будет полностью заполненый, с тасками и ролью
+     * @return юзер будет полностью заполненный, с тасками и ролью
      */
     Optional<User> findByUsername(String username);
 
     /**
      * Изменить можно поля: name, username, password.
      * Так как данные действия может делать только авторизованный пользователь, так что проверку на наличие айди нет
-     * @param user Обязательно должен быть айди юзера
+     * @param user Обязательно должен быть id юзера
      */
     void update(User user);
 
@@ -37,7 +37,7 @@ public interface UserRepository {
 
     /**
      * Сохраняет роль пользователя в память
-     * @param userId - айди пользователя
+     * @param userId - id пользователя
      * @param role - роль пользователя
      */
     void insertUserRole(@Param("user_id") Long userId,@Param("role") String role);
@@ -45,7 +45,7 @@ public interface UserRepository {
 
     /**
      * Удаляет пользователя из памяти
-     * @param id - айди пользователя
+     * @param id - id пользователя
      */
     void delete(Long id);
 }

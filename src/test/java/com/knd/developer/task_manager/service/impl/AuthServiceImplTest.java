@@ -7,8 +7,8 @@ import com.knd.developer.task_manager.service.UserService;
 import com.knd.developer.task_manager.service.props.JwtProperties;
 import com.knd.developer.task_manager.web.dto.auth.LoginRequest;
 import com.knd.developer.task_manager.web.dto.auth.RefreshRequest;
-import com.knd.developer.task_manager.web.dto.user.response.UserAndTokenResponseDto;
 import com.knd.developer.task_manager.web.dto.task.TaskDto;
+import com.knd.developer.task_manager.web.dto.user.response.UserAndTokenResponseDto;
 import com.knd.developer.task_manager.web.mappers.TaskMapper;
 import com.knd.developer.task_manager.web.security.JwtTokenProvider;
 import org.junit.jupiter.api.Test;
@@ -62,7 +62,7 @@ class AuthServiceImplTest {
                 .username("username@tast.ru")
                 .password("password")
                 .roles(Set.of(Role.ROLE_USER))
-                .tasks(List.of(task1,task2))
+                .tasks(List.of(task1, task2))
                 .build();
 
         when(userService.getByUsername(request.getUsername())).thenReturn(user);
@@ -99,7 +99,6 @@ class AuthServiceImplTest {
     void refresh_ShouldReturnUserAndTokenResponseDto() {
         RefreshRequest request = new RefreshRequest("Refresh token");
         UserAndTokenResponseDto userAndTokenResponseDTO = mock(UserAndTokenResponseDto.class);
-        //userAndTokenResponseDTO.setRefreshToken("New Refresh token");
 
         ArgumentCaptor<Instant> requestCaptor = ArgumentCaptor.forClass(Instant.class);
         when(tokenProvider.refreshUserToken(eq(request.getRefreshToken()), requestCaptor.capture())).thenReturn(userAndTokenResponseDTO);
@@ -112,8 +111,6 @@ class AuthServiceImplTest {
         assertTrue(capturedArgument.isAfter(Instant.now()));
         assertNotEquals(request.getRefreshToken(), result.getRefreshToken());
     }
-
-
 
 
 }

@@ -60,7 +60,7 @@ class TaskServiceImplTest {
     private static Pattern FORBIDDEN_JS_CHARS_PATTERN;
 
     @BeforeAll
-    static void test() throws FileNotFoundException {
+    static void init() throws FileNotFoundException {
         InputStream stream = new FileInputStream("src/main/resources/application.yml");
         yaml = new Yaml();
         Map<String, Object> data = yaml.load(stream);
@@ -125,9 +125,8 @@ class TaskServiceImplTest {
     //выкидывает ошибку, так как task под данным id нет
     @Test
     void getById_ShouldTrowsResourceNotFoundException_BecauseNotTask() {
-        Long id = id_l();
-        Task task = mock(Task.class);
-        when(taskRepository.findById(eq(id))).thenReturn(Optional.of(task));
+
+        when(taskRepository.findById(any(Long.class))).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> taskService.getById(12L));
     }
@@ -785,13 +784,15 @@ class TaskServiceImplTest {
 
     @Test
     void delete_ShouldCallRepositoryDelete() {
-        Long idUser = id_l();
+        Long idTask = id_l();
 
-        taskService.delete(idUser);
+        taskService.delete(idTask);
 
-        verify(taskRepository).delete(eq(idUser));
+        verify(taskRepository).delete(eq(idTask));
 
     }
+
+
 
 
 

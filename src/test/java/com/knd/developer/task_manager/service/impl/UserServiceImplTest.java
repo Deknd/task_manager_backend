@@ -11,10 +11,10 @@ import com.knd.developer.task_manager.service.TokensService;
 import com.knd.developer.task_manager.service.props.PatternString;
 import com.knd.developer.task_manager.web.dto.task.TaskDto;
 import com.knd.developer.task_manager.web.dto.user.request.UserCreateRequestDto;
-import com.knd.developer.task_manager.web.dto.user.request.UserDeleteRequestDto;
 import com.knd.developer.task_manager.web.dto.user.request.UserUpdateRequestDto;
 import com.knd.developer.task_manager.web.dto.user.response.UserResponseDto;
 import com.knd.developer.task_manager.web.mappers.TaskMapper;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -23,8 +23,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.yaml.snakeyaml.Yaml;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -35,23 +40,46 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
-    private final Pattern FORBIDDEN_JS_CHARS_PATTERN = Pattern.compile("[<>&\']");
-    private final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+    private static Yaml yaml;
+
 
     @InjectMocks
     private UserServiceImpl userService;
     @Mock
     private PatternString pattern;
     @Mock
-    private  TokensService tokensService;
+    private TokensService tokensService;
     @Mock
     private UserRepository userRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
     private TaskMapper taskMapper;
+    private static Pattern FORBIDDEN_JS_CHARS_PATTERN;
+    private static Pattern EMAIL_PATTERN;
 
+    //достает данные из application.yml нужные для тестов
+    @BeforeAll
+    static void init() throws FileNotFoundException {
+        InputStream stream = new FileInputStream("src/main/resources/application.yml");
+        yaml = new Yaml();
+        Map<String, Object> data = yaml.load(stream);
+        Object ob = data.get("entity");
+        if (ob instanceof Map) {
+            Map<String, Object> entity = (Map<String, Object>) ob;
+            Object pattern = entity.get("pattern");
+            if (pattern instanceof Map) {
+                Map<String, String> patternProps = (Map<String, String>) pattern;
+                EMAIL_PATTERN = Pattern.compile(patternProps.get("email_pattern"));
+                FORBIDDEN_JS_CHARS_PATTERN = Pattern.compile(patternProps.get("forbidden_js_chars_pattern"));
+            }
 
+        }
+
+    }
+
+    //Делает запрос в БД, если пользователь существует, вернет полностью заполненного пользователя
+    //Если пользователя нет, выкинет исключение ResourceNotFoundException
     @Test
     void getById_ShouldCallUserRepository_ReturnUserOrResourceNotFoundException() {
         User user = mock(User.class);
@@ -66,6 +94,8 @@ class UserServiceImplTest {
         assertThrows(ResourceNotFoundException.class, () -> userService.getById(id_l()));
     }
 
+    //Делает запрос в БД, если пользователь существует, вернет полностью заполненного пользователя
+    //Если пользователя нет, выкинет исключение ResourceNotFoundException
     @Test
     void getByUsername_ShouldCallUserRepository_ReturnUserOrResourceNotFoundException() {
         User user = mock(User.class);
@@ -80,45 +110,62 @@ class UserServiceImplTest {
         assertThrows(ResourceNotFoundException.class, () -> userService.getByUsername("C8uN1qJY"));
     }
 
+    //Получает из БД старого пользователя, сравнивает пароль полученный от пользователя(oldPassword) с паролем из БД.
+    //Проводит валидацию данных. Сохраняет измененного пользователя в БД. Возвращает пользователя в виде UserResponseDto.
     @Test
     void update_ShouldValidationOldPasswordAndUpdateUser() {
+        PasswordEncoder pasEnc = new BCryptPasswordEncoder();
+        Long id = id_l();
+
         String oldPassword = "OldPassword";
         String newPassword = "NewPassword";
-        Long id = id_l();
-        PasswordEncoder pasEnc = new BCryptPasswordEncoder();
         List<Task> tasks = mock(List.class);
         List<TaskDto> tasksDto = mock(List.class);
 
-        UserUpdateRequestDto userUpdate = new UserUpdateRequestDto();
-        userUpdate.setId(id);
-        userUpdate.setOldPassword(oldPassword);
-        userUpdate.setNewName("NewUser");
-        userUpdate.setNewUsername("NewEmailUser@mail.ru");
-        userUpdate.setNewPassword(newPassword);
+        UserUpdateRequestDto userUpdate = UserUpdateRequestDto.builder()
+                .id(id)
+                .oldPassword(oldPassword)
+                .newName("NewUser")
+                .newUsername("NewEmailUser@mail.ru")
+                .newPassword(newPassword)
+                .build();
 
-        User user = new User();
-        user.setId(id);
-        user.setTasks(tasks);
-        user.setPassword(pasEnc.encode(oldPassword));
+
+        User user = User.builder()
+                .id(id)
+                .tasks(tasks)
+                .password(pasEnc.encode(oldPassword))
+                .build();
+
 
         when(userRepository.findById(eq(id))).thenReturn(Optional.of(user));
+
         when(passwordEncoder.matches(any(CharSequence.class), any(String.class))).thenAnswer(invocationOnMock -> {
             CharSequence charSequence = invocationOnMock.getArgument(0);
             String encodePassword = invocationOnMock.getArgument(1);
             return pasEnc.matches(charSequence, encodePassword);
         });
+
+        when(pattern.getFORBIDDEN_JS_CHARS_PATTERN()).thenReturn(FORBIDDEN_JS_CHARS_PATTERN);
+        when(pattern.getEMAIL_PATTERN()).thenReturn(EMAIL_PATTERN);
         when(passwordEncoder.encode(any(String.class))).thenAnswer(invocationOnMock -> {
             String code = invocationOnMock.getArgument(0);
             return pasEnc.encode(code);
         });
-        when(pattern.getFORBIDDEN_JS_CHARS_PATTERN()).thenReturn(FORBIDDEN_JS_CHARS_PATTERN);
-        when(pattern.getEMAIL_PATTERN()).thenReturn(EMAIL_PATTERN);
+
         when(taskMapper.toDto(any(List.class))).thenReturn(tasksDto);
 
 
         UserResponseDto result = userService.update(userUpdate);
 
-        verify(userRepository).update(any(User.class));
+
+        ArgumentCaptor<User> requestCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).update(requestCaptor.capture());
+        User requestUser = requestCaptor.getValue();
+
+        assertNotNull(requestUser);
+        assertEquals(userUpdate.getNewUsername(), requestUser.getUsername());
+        assertTrue(pasEnc.matches(newPassword, requestUser.getPassword()));
         assertNotNull(result);
 
         assertEquals(id, result.getId());
@@ -126,45 +173,20 @@ class UserServiceImplTest {
 
     }
 
+    //Выкидывает исключение, так как в БД нет пользователя под данным id(UserUpdateRequestDto.id)
     @Test
-    void update_ShouldNoUpdateUserIfNoData() {
-        String oldPassword = "OldPassword";
-        String newPassword = "NewPassword";
-        Long id = id_l();
-        PasswordEncoder pasEnc = new BCryptPasswordEncoder();
-        List<Task> tasks = mock(List.class);
-        List<TaskDto> tasksDto = mock(List.class);
+    void update_ShouldTrowsAccessDeniedException() {
+        UserUpdateRequestDto user = mock(UserUpdateRequestDto.class);
 
-        UserUpdateRequestDto userUpdate = new UserUpdateRequestDto();
-        userUpdate.setId(id);
-        userUpdate.setOldPassword(oldPassword);
-        userUpdate.setNewName(null);
-        userUpdate.setNewUsername(null);
-        userUpdate.setNewPassword(null);
+        when(userRepository.findById(any())).thenReturn(Optional.empty());
 
-        User user = new User();
-        user.setId(id);
-        user.setTasks(tasks);
-        user.setPassword(pasEnc.encode(oldPassword));
-
-        when(userRepository.findById(eq(id))).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches(any(CharSequence.class), any(String.class))).thenAnswer(invocationOnMock -> {
-            CharSequence charSequence = invocationOnMock.getArgument(0);
-            String encodePassword = invocationOnMock.getArgument(1);
-            return pasEnc.matches(charSequence, encodePassword);
-        });
-
-
-        UserResponseDto result = userService.update(userUpdate);
-
-        verify(userRepository, never()).update(any(User.class));
-        assertNotNull(result);
-
-        assertEquals(id, result.getId());
-        assertEquals(userUpdate.getNewName(), result.getName());
-
+        assertThrows(AccessDeniedException.class, () -> userService.update(user));
     }
 
+    //Если oldPassword из UserUpdateRequestDto не совпадает с паролем из БД, выкидывает исключение AccessDeniedException
+    //Если oldPassword равен null, выкидывает исключение AccessDeniedException
+    //Если в newName из UserUpdateRequestDto есть запрещенные символы(указаны в application.yml: entity.pattern.forbidden_js_chars_pattern), выкидывает исключение MethodArgumentNotValidException
+    //Если в newUsername данные не соответствуют email(паттерн указаны в application.yml: entity.pattern.email_pattern), выкидывает исключение MethodArgumentNotValidException
     @Test
     void update_ShouldCallExceptionToAccessDeniedException() {
         String oldPassword = "OldPassword";
@@ -172,32 +194,47 @@ class UserServiceImplTest {
         Long id = id_l();
         PasswordEncoder pasEnc = new BCryptPasswordEncoder();
 
-        UserUpdateRequestDto user1 = new UserUpdateRequestDto();
-        user1.setId(id);
-        user1.setOldPassword("0fB");
-        user1.setNewName("NewUser");
-        user1.setNewUsername("NewEmailUser@mail.ru");
-        user1.setNewPassword(newPassword);
+        UserUpdateRequestDto user1 = UserUpdateRequestDto.builder()
+                .id(id)
+                .oldPassword("0fB")
+                .newName("NewUser")
+                .newUsername("NewEmailUser@mail.ru")
+                .newPassword(newPassword)
+                .build();
 
-        UserUpdateRequestDto user2 = new UserUpdateRequestDto();
-        user2.setId(id);
-        user2.setOldPassword(oldPassword);
-        user2.setNewName("NewUser <['");
-        user2.setNewUsername("NewEmailUser@mail.ru");
-        user2.setNewPassword(newPassword);
+        UserUpdateRequestDto user2 = UserUpdateRequestDto.builder()
+                .id(id)
+                .newName("NewUser")
+                .newUsername("NewEmailUser@mail.ru")
+                .newPassword(newPassword)
+                .build();
 
-        UserUpdateRequestDto user3 = new UserUpdateRequestDto();
-        user3.setId(id);
-        user3.setOldPassword(oldPassword);
-        user3.setNewName("NewUser");
-        user3.setNewUsername("NewEmailUsermail.ru");
-        user3.setNewPassword(newPassword);
+        UserUpdateRequestDto user3 = UserUpdateRequestDto.builder()
+                .id(id)
+                .oldPassword(oldPassword)
+                .newName("NewUser <['")
+                .newUsername("NewEmailUser@mail.ru")
+                .newPassword(newPassword)
+                .build();
 
-        User user = new User();
-        user.setId(id);
-        user.setPassword(pasEnc.encode(oldPassword));
+
+        UserUpdateRequestDto user4 = UserUpdateRequestDto.builder()
+                .id(id)
+                .oldPassword(oldPassword)
+                .newName("NewUser")
+                .newUsername("NewEmailUsermail.ru")
+                .newPassword(newPassword)
+                .build();
+
+
+        User user = User.builder()
+                .id(id)
+                .password(pasEnc.encode(oldPassword))
+                .build();
+
 
         when(userRepository.findById(eq(id))).thenReturn(Optional.of(user));
+
         when(passwordEncoder.matches(any(CharSequence.class), any(String.class))).thenAnswer(invocationOnMock -> {
             CharSequence charSequence = invocationOnMock.getArgument(0);
             String encodePassword = invocationOnMock.getArgument(1);
@@ -209,12 +246,60 @@ class UserServiceImplTest {
 
 
         assertThrows(AccessDeniedException.class, () -> userService.update(user1), " не верный password");
-        assertThrows(MethodArgumentNotValidException.class, () -> userService.update(user2), "Не верный name");
-        assertThrows(MethodArgumentNotValidException.class, () -> userService.update(user3), "Не верный email");
+        assertThrows(AccessDeniedException.class, () -> userService.update(user2), " не верный password");
+
+        assertThrows(MethodArgumentNotValidException.class, () -> userService.update(user3), "Не верный name");
+        assertThrows(MethodArgumentNotValidException.class, () -> userService.update(user4), "Не верный email");
 
 
     }
 
+    //Если данных(UserUpdateRequestDto: newName, newPassword, newUsername) нет, то вернутся данные пользователя из БД
+    @Test
+    void update_ShouldNoUpdateUserIfNoData() {
+        String oldPassword = "OldPassword";
+
+        Long id = id_l();
+        PasswordEncoder pasEnc = new BCryptPasswordEncoder();
+        List<Task> tasks = mock(List.class);
+
+        List<TaskDto> tasksDto = mock(List.class);
+
+        UserUpdateRequestDto userUpdate = UserUpdateRequestDto.builder()
+                .id(id)
+                .oldPassword(oldPassword)
+                .build();
+
+
+        User user = User.builder()
+                .id(id)
+                .tasks(tasks)
+                .password(pasEnc.encode(oldPassword))
+                .build();
+
+
+        when(userRepository.findById(eq(id))).thenReturn(Optional.of(user));
+
+        when(passwordEncoder.matches(any(CharSequence.class), any(String.class))).thenAnswer(invocationOnMock -> {
+            CharSequence charSequence = invocationOnMock.getArgument(0);
+            String encodePassword = invocationOnMock.getArgument(1);
+            return pasEnc.matches(charSequence, encodePassword);
+        });
+
+        when(taskMapper.toDto(any(List.class))).thenReturn(tasksDto);
+
+        UserResponseDto result = userService.update(userUpdate);
+
+        verify(userRepository, never()).update(any(User.class));
+        assertNotNull(result);
+
+        assertEquals(id, result.getId());
+        assertEquals(userUpdate.getNewName(), result.getName());
+
+    }
+
+
+    //Можно обновлять данные пользователя( name, username, password) по одному полю, для этого нужно отправить UserUpdateRequestDto(id и oldPassword - обязательны) с этим полем.
     @Test
     void update_ShouldUpdateUserWhereOneElement() {
         String oldPassword = "OldPassword";
@@ -224,44 +309,49 @@ class UserServiceImplTest {
         List<Task> tasks = mock(List.class);
         List<TaskDto> tasksDto = mock(List.class);
 
-        UserUpdateRequestDto userUpdateName = new UserUpdateRequestDto();
-        userUpdateName.setId(id);
-        userUpdateName.setOldPassword(oldPassword);
-        userUpdateName.setNewName("NewUser");
-        userUpdateName.setNewUsername(null);
-        userUpdateName.setNewPassword(null);
+        UserUpdateRequestDto userUpdateName = UserUpdateRequestDto.builder()
+                .id(id)
+                .oldPassword(oldPassword)
+                .newName("New User")
+                .build();
 
-        UserUpdateRequestDto userUpdateUsername = new UserUpdateRequestDto();
-        userUpdateUsername.setId(id);
-        userUpdateUsername.setOldPassword(oldPassword);
-        userUpdateUsername.setNewName(null);
-        userUpdateUsername.setNewUsername("NewEmailUser@mail.ru");
-        userUpdateUsername.setNewPassword(null);
 
-        UserUpdateRequestDto userUpdatePassword = new UserUpdateRequestDto();
-        userUpdatePassword.setId(id);
-        userUpdatePassword.setOldPassword(oldPassword);
-        userUpdatePassword.setNewName(null);
-        userUpdatePassword.setNewUsername(null);
-        userUpdatePassword.setNewPassword(newPassword);
+        UserUpdateRequestDto userUpdateUsername = UserUpdateRequestDto.builder()
+                .id(id)
+                .oldPassword(oldPassword)
+                .newUsername("NewEmailUser@mail.ru")
+                .build();
 
-        User user = new User();
-        user.setId(id);
-        user.setTasks(tasks);
-        user.setPassword(pasEnc.encode(oldPassword));
+
+        UserUpdateRequestDto userUpdatePassword = UserUpdateRequestDto.builder()
+                .id(id)
+                .oldPassword(oldPassword)
+                .newPassword(newPassword)
+                .build();
+
+
+        User user = User.builder()
+                .id(id)
+                .tasks(tasks)
+                .password(pasEnc.encode(oldPassword))
+                .build();
+
 
         when(userRepository.findById(eq(id))).thenReturn(Optional.of(user));
+
         when(passwordEncoder.matches(any(CharSequence.class), any(String.class))).thenAnswer(invocationOnMock -> {
             CharSequence charSequence = invocationOnMock.getArgument(0);
             String encodePassword = invocationOnMock.getArgument(1);
             return pasEnc.matches(charSequence, encodePassword);
         });
+
+        when(pattern.getFORBIDDEN_JS_CHARS_PATTERN()).thenReturn(FORBIDDEN_JS_CHARS_PATTERN);
+        when(pattern.getEMAIL_PATTERN()).thenReturn(EMAIL_PATTERN);
         when(passwordEncoder.encode(any(String.class))).thenAnswer(invocationOnMock -> {
             String code = invocationOnMock.getArgument(0);
             return pasEnc.encode(code);
         });
-        when(pattern.getFORBIDDEN_JS_CHARS_PATTERN()).thenReturn(FORBIDDEN_JS_CHARS_PATTERN);
-        when(pattern.getEMAIL_PATTERN()).thenReturn(EMAIL_PATTERN);
+
         when(taskMapper.toDto(any(List.class))).thenReturn(tasksDto);
 
 
@@ -285,23 +375,26 @@ class UserServiceImplTest {
         verify(userRepository, times(3)).update(any(User.class));
     }
 
+    //Проводит валидацию данных(name, username), сохраняет нового пользователя в БД
     @Test
     void create_ShouldCreateUserAndSave() {
-        UserCreateRequestDto requestDto = new UserCreateRequestDto();
-        requestDto.setName("Name");
-        requestDto.setUsername("username@server.ru");
-        requestDto.setPassword("newpassword");
+        UserCreateRequestDto requestDto = UserCreateRequestDto.builder()
+                .name("Name")
+                .username("username@server.ru")
+                .password("newpassword")
+                .build();
 
+        when(pattern.getFORBIDDEN_JS_CHARS_PATTERN()).thenReturn(FORBIDDEN_JS_CHARS_PATTERN);
+        when(pattern.getEMAIL_PATTERN()).thenReturn(EMAIL_PATTERN);
         PasswordEncoder pasEnc = new BCryptPasswordEncoder();
 
         when(passwordEncoder.encode(any(String.class))).thenAnswer(invocationOnMock -> {
             String code = invocationOnMock.getArgument(0);
             return pasEnc.encode(code);
         });
-        when(pattern.getFORBIDDEN_JS_CHARS_PATTERN()).thenReturn(FORBIDDEN_JS_CHARS_PATTERN);
-        when(pattern.getEMAIL_PATTERN()).thenReturn(EMAIL_PATTERN);
+
         doAnswer(invocation -> {
-            User arg=invocation.getArgument(0);
+            User arg = invocation.getArgument(0);
             arg.setId(id_l());
             return null;
         }).when(userRepository).create(any(User.class));
@@ -310,82 +403,102 @@ class UserServiceImplTest {
 
         ArgumentCaptor<User> requestCaptor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).create(requestCaptor.capture());
+
         User user = requestCaptor.getValue();
+
         assertNotNull(user);
+
         assertNotNull(user.getId());
         assertEquals(requestDto.getName(), user.getName());
         assertEquals(requestDto.getUsername(), user.getUsername());
-        assertTrue(pasEnc.matches(requestDto.getPassword(),user.getPassword()));
-        verify(userRepository).insertUserRole(eq(user.getId()),eq(Role.ROLE_USER.name()));
+        assertTrue(pasEnc.matches(requestDto.getPassword(), user.getPassword()));
+
+        verify(userRepository).insertUserRole(eq(user.getId()), eq(Role.ROLE_USER.name()));
 
     }
 
-    @Test
-    void create_ShouldCallExceptionIfUserExists(){
-        UserCreateRequestDto userDto = mock(UserCreateRequestDto.class);
-        when(userRepository.findByUsername(any())).thenReturn(Optional.of(new User()));
 
-        assertThrows(IllegalStateException.class, () -> userService.create(userDto));
-    }
+    //Если какое-нибудь поле в UserCreateRequestDto будет null, то выкинет исключение IllegalStateException
     @Test
-    void create_ShouldDataIsNull(){
-        UserCreateRequestDto user1 = new UserCreateRequestDto();
-        user1.setName(null);
-        user1.setUsername("username@server.ru");
-        user1.setPassword("newpassword");
-        UserCreateRequestDto user2 = new UserCreateRequestDto();
-        user2.setName("Name");
-        user2.setUsername(null);
-        user2.setPassword("newpassword");
-        UserCreateRequestDto user3 = new UserCreateRequestDto();
-        user3.setName("Name");
-        user3.setUsername("username@server.ru");
-        user3.setPassword(null);
+    void create_ShouldDataIsNull() {
+        UserCreateRequestDto user1 = UserCreateRequestDto.builder()
+                .username("username@server.ru")
+                .password("newpassword")
+                .build();
+
+        UserCreateRequestDto user2 = UserCreateRequestDto.builder()
+                .name("Name")
+                .password("newpassword")
+                .build();
+
+        UserCreateRequestDto user3 = UserCreateRequestDto.builder()
+                .name("Name")
+                .username("username@server.ru")
+                .build();
+
+
+        assertThrows(IllegalStateException.class, () -> {
+            userService.create(user1);
+        });
+        assertThrows(IllegalStateException.class, () -> {
+            userService.create(user2);
+        });
+        assertThrows(IllegalStateException.class, () -> {
+            userService.create(user3);
+        });
+
+    }
+
+    //Если существует пользователь с данным username, то выкидывается исключение IllegalStateException
+    @Test
+    void create_ShouldTrowsExceptionIllegalStateException_BecauseSuchUserExists() {
+        UserCreateRequestDto requestDto = UserCreateRequestDto.builder()
+                .name("Name")
+                .username("username@server.ru")
+                .password("newpassword")
+                .build();
+        when(userRepository.findByUsername(eq(requestDto.getUsername()))).thenReturn(Optional.of(mock(User.class)));
+        assertThrows(IllegalStateException.class, () -> userService.create(requestDto));
+
+    }
+    //Если данные не проходят валидацию(в name используются запрещенные символы(указаны в application.yml: entity.pattern.forbidden_js_chars_pattern),
+    // username не соответствует стандарту email(паттерн указаны в application.yml: entity.pattern.email_pattern),
+    //то выкидывает исключение MethodArgumentNotValidException.
+    @Test
+    void create_ShouldTrowsExceptionMethodArgumentNotValidException_BecauseDataNotValidate(){
+        UserCreateRequestDto failedName = UserCreateRequestDto.builder()
+                .name("Name['>")
+                .username("username@server.ru")
+                .password("new_password")
+                .build();
+        UserCreateRequestDto failedUsername = UserCreateRequestDto.builder()
+                .name("Name")
+                .username("username_server.ru")
+                .password("new_password")
+                .build();
+
         when(pattern.getFORBIDDEN_JS_CHARS_PATTERN()).thenReturn(FORBIDDEN_JS_CHARS_PATTERN);
         when(pattern.getEMAIL_PATTERN()).thenReturn(EMAIL_PATTERN);
 
-
-        assertThrows(IllegalStateException.class, () -> {userService.create(user1);});
-        assertThrows(IllegalStateException.class, () -> {userService.create(user2);});
-        assertThrows(IllegalStateException.class, () -> {userService.create(user3);});
-
+        assertThrows(MethodArgumentNotValidException.class, ()-> userService.create(failedName));
+        assertThrows(MethodArgumentNotValidException.class, ()-> userService.create(failedUsername));
     }
 
+    //Делает запрос в БД на удаление данных пользователя по указанному id.
     @Test
-    void delete_ShouldValidationPasswordAndDeleteUser(){
+    void delete_ShouldValidationPasswordAndDeleteUser() {
 
 
         Long id = id_l();
 
 
-
-
         userService.delete(id);
 
-        verify(userRepository).delete(id);
+        verify(tokensService).deleteToken(eq(id.toString()));
+        verify(userRepository).delete(eq(id));
     }
-//    @Test
-//    void delete_ShouldThrowsExceptionWhenPasswordWrong(){
-//        PasswordEncoder pasEnc = new BCryptPasswordEncoder();
-//        User user = new User();
-//        String pass = "password";
-//        user.setPassword(pasEnc.encode(pass));
-//
-//        Long id = id_l();
-//        UserDeleteRequestDto password = new UserDeleteRequestDto();
-//        password.setPassword("Hk7");
-//
-//        when(userRepository.findById(eq(id))).thenReturn(Optional.of(user));
-//        when(passwordEncoder.matches(any(CharSequence.class), any(String.class))).thenAnswer(invocationOnMock -> {
-//            CharSequence charSequence = invocationOnMock.getArgument(0);
-//            String encodePassword = invocationOnMock.getArgument(1);
-//            return pasEnc.matches(charSequence, encodePassword);
-//        });
-//
-//        assertThrows(AccessDeniedException.class, () -> userService.delete(id, password));
-//
-//        verify(userRepository, never()).delete(id);
-//    }
+
+    //Делает запрос в БД на удаление token по указанному id
     @Test
     void logout_ShouldUseJwtTokenProvider() {
         Long id = 898L;
@@ -393,8 +506,6 @@ class UserServiceImplTest {
 
         verify(tokensService).deleteToken(id.toString());
     }
-
-
 
 
     private Long id_l() {

@@ -10,43 +10,43 @@ import java.util.Optional;
 public interface TaskRepository{
 
     /**
-     * Ищет такск по id
-     * @param id таска назначеный базой данных, при создании
-     * @return возврощает полностью собраный Task
+     * Ищет task по id
+     * @param id task(Long)
+     * @return возвращает полностью собранный Task
      */
     Optional<Task> findById(Long id);
 
 
     /**
      * Ищет таски по userId
-     * @param userId  айди юзера
-     * @return возврощает List<Task> со всеми тасками которые есть у пользователя, таски полностью заполнены
+     * @param userId  id пользователя(Long)
+     * @return возвращает List<Task> со всеми тасками которые есть у пользователя, таски полностью заполнены
      */
     List<Task> findAllByUserId(Long userId);
 
     /**
-     * Проверяет, принадлежит ли таск юзеру
-     * @param user_id id юзера
-     * @param id id таска
-     * @return возврощает True, если таск принадлежит пользователю, иначе False
+     * Проверяет, принадлежит ли task юзеру
+     * @param user_id id пользователя(Long)
+     * @param id id task(Long)
+     * @return возвращает True, если task принадлежит пользователю, иначе False
      */
     boolean isTaskOwner(Long user_id, Long id);
 
     /**
      * Обновляет данные таска: title, description, expiration_date, status, priority
-     * @param task должно быть таск id
+     * @param task (Task) должно быть task id
      */
     void update(Task task);
 
     /**
-     * сохраняет таск
-     * @param task userId - не может быть null, title - не может быть null, status - не может быть null, priority - не может быть null
+     * сохраняет task
+     * @param task (Task) userId - не может быть null, title - не может быть null, status - не может быть null, priority - не может быть null
      */
     void create(Task task);
 
     /**
-     * Удаляет таск из памяти
-     * @param id - айди таска
+     * Удаляет task из памяти
+     * @param id id task(Long)
      */
     void delete(Long id);
 }

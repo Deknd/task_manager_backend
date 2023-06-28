@@ -21,14 +21,15 @@ class JwtEntityFactoryTest {
 
     @Test
     void create_ShouldCreateFromUserToJwtEntity(){
-        User user = new User();
-        user.setId(925L);
-        user.setName("blood");
-        user.setUsername("season@angle.ru");
-        user.setPassword("mine");
-        user.setRoles(Set.of(Role.ROLE_USER));
+        User user = User.builder()
+                .id(809L)
+                .name("friend")
+                .username("season@angle.ru")
+                .password("curse")
+                .roles(Set.of(Role.ROLE_USER))
+                .build();
 
-
+        
         JwtEntity result = factory.create(user);
 
         assertEquals(user.getId(), result.getId());

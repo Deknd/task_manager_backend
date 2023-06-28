@@ -21,9 +21,9 @@ spring:
 mybatis:
   mapper-locations: classpath:mybatis/mapper/*.xml
 security:
-   jwt:
-     access: 15 #минут
-     refresh: 24 #часа
+  jwt:
+    access: 15 #минут
+    refresh: 24 #часа
 entity:
   task:
     max_length_title: 25

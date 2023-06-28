@@ -20,7 +20,7 @@ public class JwtEntityFactory {
     /**
      * Создает из User объект для Spring security в виде JwtEntity
      * @param user - Пользователь, которого нужно переделать в JwtEntity
-     * @return - JwtEntity полностью заолненого
+     * @return - JwtEntity полностью заполненного
      */
 
     public JwtEntity create(User user){

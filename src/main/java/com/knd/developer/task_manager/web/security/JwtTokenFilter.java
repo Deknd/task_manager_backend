@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 
 @AllArgsConstructor
-@Slf4j
 public class JwtTokenFilter extends GenericFilterBean {
     private final JwtTokenProvider jwtTokenProvider;
 

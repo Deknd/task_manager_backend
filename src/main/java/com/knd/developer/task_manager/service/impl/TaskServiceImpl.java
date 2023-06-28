@@ -44,12 +44,12 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
-     * Делает запрос в TaskRepository и проверяет дедлайн тасков
-     * Если у пользователя нет таксков, вернется пустой лист
-     * Если дата дедлайна у таска закончилась, то статус таска поменяется на Failed
+     * Делает запрос в TaskRepository и проверяет дедлайн task
+     * Если у пользователя нет tasks, вернется пустой лист
+     * Если дата дедлайна у task закончилась, то статус таска поменяется на Failed
      *
-     * @param id - id User для которого нужны таски
-     * @return возвращат List<Task>, если у пользователя нет такс, возвращает пустой список
+     * @param id - id User(Long)
+     * @return возвращает List<Task>, если у пользователя нет task, возвращает пустой список
      */
     @Override
     public List<Task> getAllTasksByUserId(Long id) {
@@ -120,11 +120,11 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
-     * Делает запрос в taskRepository - принадлежит ли данный таск, данному юзеру
+     * Делает запрос в БД - принадлежит ли данный task(task_id), данному user(user_id)
      *
-     * @param user_id - айди юзера
-     * @param task_id - айди таска
-     * @return - возврощает true, если принадлежит пользователю, иначе false
+     * @param user_id - id(Long)
+     * @param task_id - id(Long)
+     * @return - возвращает true, если task принадлежит пользователю, иначе false
      */
     @Override
     public boolean isTaskOwner(Long user_id, Long task_id) {
@@ -132,9 +132,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
-     * Делает запрос в TaskRepository на удаление данного таска
+     * Делает запрос в БД на удаление task по-указанному id.
      *
-     * @param id - айди таска
+     * @param id  id(Task)
      */
     @Override
     @Transactional
@@ -142,6 +142,11 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.delete(id);
     }
 
+    /**
+     * Промежуточный метод. Добавляет в новый task(newTask) данные(Status.TO DO, PriorityTask.STANDARD) , если они равны null(Status == null, Priority == null).
+     * @param oldTask task, который создается для отправки пользователю
+     * @param newTask task, который приходит от пользователя, для дальнейшей валидации
+     */
     private void createValidationTask(Task oldTask, TaskDto newTask) {
 
         if (newTask.getStatus() == null) {
@@ -154,6 +159,17 @@ public class TaskServiceImpl implements TaskService {
         validationDateTask(oldTask, newTask);
     }
 
+    /**
+     * Проверяет данные на валидность(newTask). Записывает данные в oldTask.
+     *  "title"(newTask) - проверяется на длину( taskProperties.getMax_length_title() - указывается в файле application.yml(entity.task.max_length_title)),
+     * проверяется на запрещенные символы ( pattern.getFORBIDDEN_JS_CHARS_PATTERN() - указывается в файле application.yml(entity.pattern.forbidden_js_chars_pattern)).
+     *  "description"(newTask) - проверяется на длину( taskProperties.getMax_length_description() - указывается в файле application.yml(entity.task.max_length_description)),
+     *      проверяется на запрещенные символы ( pattern.getFORBIDDEN_JS_CHARS_PATTERN() - указывается в файле application.yml(entity.pattern.forbidden_js_chars_pattern)).
+     *  "expirationDate"(newTask) - не должен быть раньше настоящего времени.
+     *
+     * @param oldTask собранный task, из newTask при успешной валидации данных
+     * @param newTask полученный от пользователя task, для прохождения валидации
+     */
     private void validationDateTask(Task oldTask, TaskDto newTask) {
         if (newTask.getTitle() != null) {
             if (newTask.getTitle().length() <= taskProperties.getMax_length_title()) {
@@ -161,10 +177,10 @@ public class TaskServiceImpl implements TaskService {
                 if (!pattern.getFORBIDDEN_JS_CHARS_PATTERN().matcher(newTask.getTitle()).find()) {
                     oldTask.setTitle(newTask.getTitle());
                 } else {
-                    throw new ResourcesMappingException("Не верный запрос изменения Таска, в title используются запрещеные символы");
+                    throw new ResourcesMappingException("Не верный запрос изменения Таска, в title используются запрещенные символы");
                 }
             } else {
-                throw new ResourcesMappingException("Не верный запрос изменения Таска, title длинее 25 символов");
+                throw new ResourcesMappingException("Не верный запрос изменения Таска, title длиннее 25 символов");
             }
 
         }
@@ -173,10 +189,10 @@ public class TaskServiceImpl implements TaskService {
                 if (!pattern.getFORBIDDEN_JS_CHARS_PATTERN().matcher(newTask.getDescription()).find()) {
                     oldTask.setDescription(newTask.getDescription());
                 } else {
-                    throw new ResourcesMappingException("Не верный запрос изменения Таска, в description используются запрещеные символы");
+                    throw new ResourcesMappingException("Не верный запрос изменения Таска, в description используются запрещенные символы");
                 }
             } else {
-                throw new ResourcesMappingException("Не верный запрос изменения Таска, description длинее  255 символов");
+                throw new ResourcesMappingException("Не верный запрос изменения Таска, description длиннее  255 символов");
             }
 
         }
@@ -199,10 +215,10 @@ public class TaskServiceImpl implements TaskService {
 
 
     /**
-     * Проверяет время дедлайна
-     * Если время существует и оно позже чем нынешнее время, меняет статус таска на FAILED
+     * Проверяет срок выполнения задания
+     * Если время существует и оно раньше чем нынешнее время, меняет статус task на FAILED
      *
-     * @param task - таск для проверки
+     * @param task - task для проверки
      */
     private boolean resetStatus(Task task) {
         if (task.getExpirationDate() != null) {
