@@ -76,16 +76,16 @@ export const Task = ({ task }) => {
         {/*    */}
         <div className="row">
           <div className="col">
-           <IconButton img={pozitive} textIcon={"pozitive vote"} onClick={()=>console.log("pozitive")}/> 
+           <IconButton img={pozitive} textIcon={"pozitive vote"} onClickSent={()=>console.log("pozitive")}/> 
           </div>
           <div className="col">
-          <IconButton img={negative} textIcon={"negative vote"} onClick={()=>console.log("negative")}/>
+          <IconButton img={negative} textIcon={"negative vote"} onClickSent={()=>console.log("negative")}/>
           </div>
           <div className="col">
-          <IconButton img={edit} textIcon={"edit"} onClick={()=>console.log("edit")}/>
+          <IconButton img={edit} textIcon={"edit"} onClickSent={()=>console.log("edit")}/>
           </div>
           <div className="col">
-          <IconButton img={garbage} textIcon={"garbage"} onClick={()=>console.log("garbage")}/>
+          <IconButton img={garbage} textIcon={"garbage"} onClickSent={()=>console.log("garbage")}/>
           </div>
 
         </div>

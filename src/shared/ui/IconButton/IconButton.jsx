@@ -1,35 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import style from './IconButton.module.css';
+import {
+	scale_onClick_Active,
+	scale_onHover_Active,
+	scale_AtRest,
+	transformation_Time,
+	margin_OnClick,
+	margin_atRest,
+	emptyText,
+	textWhenNoFunction
+ } from './iconButtonConstants';
 // Кнопка - иконка, для использования в тасках. 
 // Принимает:   img - иконка, которую нужно отобразить; 
-//              onClick - функция, которая выполняется при нажатии;
+//              onClickSent - функция, которая выполняется при нажатии;
 //              textIcon - текст который используется если изображение не доступно.
 // Отображает иконку, когда на нее наводится указатель мыши, иконка увеличивается.
 // При нажатие на кноку, изображение уменьшается и смещается вниз
-// Если изображения не загрузятся, будет выводится описание данной кнопки со всей функциональности
+// Если изображения не загрузятся, будет выводится описание(textIcon) данной кнопки со всей функциональности
 
 export const IconButton = (props) => {
 
-const { 
+  const { 
     img, 
-    onClick, 
+    onClickSent, 
     textIcon 
-} = props;
+  } = props;
 
-    const scale_onClick_Active = 0.9; 
-    const scale_onHover_Active = 1.1;
-    const scale_AtRest = 1;
+  
 
-    const transformation_Time = 0.1;
+  //Проверяет, есть ли изображение в пропсах, если есть тру
+	const [isImageLoaded, setIsImageLoaded] = useState(false);
+	useEffect(() => {
+		img ? setIsImageLoaded(true) : setIsImageLoaded(false);
+	 }, [img]);
 
-    const margin_OnClick = 2;
-    const margin_atRest = 0;
+	//проверяет, передается ли сообщение в пропсах, если да то выводит сообщение из пропс, если нет, то выдает сообщение 'Empty text'
+	//const [isTextIsEmpty, setIsTextIsEmpty] = useState(false);
+	useEffect(()=>{
+		!isImageLoaded && !textImage ? setTextImage(emptyText) : setTextImage(textIcon)
+	},[isImageLoaded]);
 
-    const [isImageLoaded, setIsImageLoaded] = useState(false);
 
-  useEffect(() => {
-    img ? setIsImageLoaded(true) : setIsImageLoaded(false);
-  }, [img]);
+	//Текст для вывода вместо кнопки
+	const [textImage, setTextImage] = useState(textIcon);
+
+	//Функция для обработки события
+	const shouldDoOnClick = 
+		onClickSent ? onClickSent : ()=>{console.log(textWhenNoFunction)}
+	
+
+ 
 
   const [isHovered, setIsHovered] = useState(false);
   const [isActive, setIsActive] = useState(false);
@@ -57,11 +77,11 @@ const {
     paddingTop: isActive ? `${margin_OnClick}px` : `${margin_atRest}`,
   };
   
-
+//
   return (
     <div className={style.container}>
-      <div role="button" onClick={onClick} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}>
-         {isImageLoaded ? <img src={img} alt={textIcon} style={imageStyle} /> : <label className={style.textNoImg} style={imageStyle}>{textIcon}</label>}
+      <div role="button" onClick={shouldDoOnClick} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}>
+         {isImageLoaded ? <img src={img} alt={textImage} style={imageStyle} /> : <p className={style.textNoImg} style={imageStyle}>{textImage}</p>}
         
       </div>
     </div>
