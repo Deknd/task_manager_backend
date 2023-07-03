@@ -1,10 +1,15 @@
-import deleteImg from "../../images/delete.png";
-import yesImg from "../../images/yes.png";
-import noImg from "../../images/no.png";
+
 import { getAccessToken } from "../../features/user/tokens";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteTask } from "../../features/task/taskSlice";
+import taskPriorityStandardImg from "../../images/taskPriorityStandardImg.jpg";
+import pozitive from "../../images/positive-vote.png";
+import negative from "../../images/negative-vote.png";
+import edit from "../../images/edit.png";
+import garbage from "../../images/garbage.png";
+import { IconButton } from "../../shared/ui";
 
+{/*Компонент для отображение Task. Отображает title и expirationDate, плюс кнопки взаимодействие с Task. Принимает task.*/}
 export const Task = ({ task }) => {
   const isLogin = useSelector((state) => state.user.isLogin);
   const dispatch = useDispatch();
@@ -17,61 +22,74 @@ export const Task = ({ task }) => {
 
   return (
     <div
-      className="col-5 col-sm-5 col-md-4 col-lg-3 col-xl-2 justify-content-center align-items-center m-2 px-4 mt-2"
+      className="justify-content-center align-items-center"
       style={{
         borderRadius: "10px",
         display: "inline-block",
-        backgroundColor: "rgba(0, 0, 0, 0.2)",
-        maxWidth: "100%",
+        backgroundImage: `url(${taskPriorityStandardImg})`,
+        width: "15rem",
       }}
     >
-      <div className="row">
-        <div className="col">
-          <div className="text-center ">
-            <p>{task.title}</p>
-            <p>{task.expirationDate}</p>
+      {/* Отображает title */}
+      <div
+      className="text-center justify-content-center"
+      style={{
+        borderRadius: "0.3rem",
+        marginTop: "1rem",
+        marginRight: "0.6rem",
+        marginLeft: "0.6rem",
+        backgroundColor: "#FFFFFF73",
+        height: "3.3rem",
+        display: "flex",
+        alignItems: "center",
+        
+      }}>
+            <p style={{fontSize: "1.3rem"}}>
+              {task.title}
+              </p>
+
+      </div>
+
+      {/* Отображает expirationDate */}
+      <div className="text-center justify-content-center"
+      style={{
+        borderRadius: "0.3rem",
+        marginTop: "0.8rem",
+        marginRight: "0.6rem",
+        marginLeft: "0.6rem",
+        backgroundColor: "#FFFFFF73",
+        height: "2rem",
+        display: "flex",
+        alignItems: "center",
+        
+      }}>
+                    <p style={{fontSize: "1rem"}}>{task.expirationDate}</p>
+
+      </div>
+        {/* Отображает функциональные кнопки, для взаимодействия с Task  //*/}
+       <div style={{
+        marginTop: "0.8rem",
+        marginRight: "0.6rem",
+        marginLeft: "0.6rem",
+        marginBottom: "1rem",
+       }}>
+        {/*    */}
+        <div className="row">
+          <div className="col">
+           <IconButton img={pozitive} textIcon={"pozitive vote"} onClick={()=>console.log("pozitive")}/> 
           </div>
+          <div className="col">
+          <IconButton img={negative} textIcon={"negative vote"} onClick={()=>console.log("negative")}/>
+          </div>
+          <div className="col">
+          <IconButton img={edit} textIcon={"edit"} onClick={()=>console.log("edit")}/>
+          </div>
+          <div className="col">
+          <IconButton img={garbage} textIcon={"garbage"} onClick={()=>console.log("garbage")}/>
+          </div>
+
         </div>
-        <div
-          className="col-1"
-          style={{
-            backgroundColor: task.priority === "HIGH" ? "red" : "green",
-          }}
-        ></div>
-      </div>
-      <div className="row">
-        <div className="col-4">
-          <img
-            src={yesImg}
-            alt="выполнено"
-            style={{
-              width: "30px",
-            }}
-          />
-        </div>
-        <div className="col-4">
-          <img
-            src={noImg}
-            alt="провалено"
-            style={{
-              width: "30px",
-            }}
-          />
-        </div>
-        <div className="col-4 btn">
-          <img
-            className=""
-            src={deleteImg}
-            style={{
-              width: "30px",
-            }}
-            onClick={() => {
-              deleteChange();
-            }}
-            alt="удалить"
-          />
-        </div>
-      </div>
+       </div>
     </div>
   );
 };

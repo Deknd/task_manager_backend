@@ -50,7 +50,7 @@ export const AddTask = () => {
                 expirationDate: "",
                 time: "",
                 date: "",
-                priorityTask: "STANDART",
+                priorityTask: "STANDARD",
               });
             })
             .catch((error) => {
@@ -68,7 +68,7 @@ export const AddTask = () => {
     expirationDate: "",
     time: "",
     date: "",
-    priorityTask: "STANDART",
+    priorityTask: "STANDARD",
   });
 
   const handleChange = ({ target: { value, name } }) => {
@@ -190,7 +190,7 @@ export const AddTask = () => {
               onChange={handleChange}
               name="priorityTask"
             >
-              <option value="STANDART">Стандартный</option>
+              <option value="STANDARD">Стандартный</option>
 
               <option value="HIGH">Важный</option>
             </Form.Select>

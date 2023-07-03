@@ -1,8 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import addTask from "../../images/addTask.png";
-import addNotifacation from "../../images//addNotification.png";
+
 
 import { Button } from "react-bootstrap";
 
@@ -14,6 +13,7 @@ import { getRefreshTokenFromCookie } from "../../features/user/tokens";
 
 import {} from "../../features/user/userSlice";
 import { logoutUserDelTasks } from "../../features/task/taskSlice";
+import _default from "react-bootstrap/esm/CardGroup";
 
 export const Main = () => {
   const name = useSelector((state) => state.user.name);
@@ -100,13 +100,13 @@ export const Main = () => {
             <div className="row">
               <div className="col d-flex justify-content-center">
                 <Link href="#">
-                  <img src={addTask} className="small-icon" alt="aewaega" />
+                  <img className="small-icon" alt="aewaega" />
                 </Link>
               </div>
               <div className="col d-flex justify-content-center">
                 <Link>
                   <img
-                    src={addNotifacation}
+                    
                     className="small-icon"
                     alt="aewaega"
                   />

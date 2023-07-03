@@ -4,7 +4,6 @@ export const sortArray = (arrayTask) => {
   const currentDate = new Date();
 
   let noSortArray = arrayTask;
-  console.log("Массив который получили: ", arrayTask);
 
   let expressArray = lessThan24HoursTasks(noSortArray, currentDate);
 

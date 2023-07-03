@@ -16,10 +16,14 @@ export const Tasks = () => {
   });
 
   return (
-    <div className="container">
-      <div className="row " style={{}}>
+    <div className="container-fluid">
+      <div className="d-flex flex-wrap justify-content" style={{
+        fontSize: "15px"
+      }}>
         {array.tasks.map((task) => (
+          <div className="m-1 p-2" >
           <Task key={task.id} task={task} />
+          </div>
         ))}
       </div>
     </div>

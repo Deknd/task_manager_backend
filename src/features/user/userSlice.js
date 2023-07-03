@@ -99,10 +99,6 @@ const userSlice = createSlice({
       state.id = action.payload.data.id;
       state.name = action.payload.data.name;
 
-      console.log("AccessToken: ", action.payload.data.accessToken);
-      console.log("ExpirationTime: ", action.payload.data.expiration);
-      console.log("RefreshToken: ", action.payload.data.refreshToken);
-
       setAccessTokenSessionStorage(
         action.payload.data.accessToken,
         action.payload.data.expiration
