@@ -1,3 +1,8 @@
+@font-face {
+  font-family: 'Inria Sans'; /* Укажите желаемое название шрифта */
+  src: url('./shared/lib/fonts/InriaSans-Regular.ttf'); /* Укажите путь к файлу шрифта TTF относительно файла CSS */
+  /* Дополнительные свойства, если необходимо */
+}
 body {
   margin: 0;
   font-family: "Inria Sans", sans-serif;

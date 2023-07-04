@@ -9,7 +9,7 @@ import {
 	margin_atRest,
 	emptyText,
 	textWhenNoFunction
- } from './iconButtonConstants';
+ } from './IconButtonConstants';
 // Кнопка - иконка, для использования в тасках. 
 // Принимает:   img - иконка, которую нужно отобразить; 
 //              onClickSent - функция, которая выполняется при нажатии;

@@ -1,0 +1,331 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BigButton BigButton snapshot 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div />
+    <div>
+      <a
+        class="big_button"
+        href="/test/route"
+        role="button"
+        style="transform: scale(1); transition: transform 0.1s ease-in-out; padding-top: 0px; box-shadow: none; background-color: rgba(100, 50, 30, 0.65);"
+      >
+        <div
+          class="img_big_button"
+        >
+          <img
+            alt="test description"
+            class="image"
+            src="test.png"
+          />
+        </div>
+        <div
+          class="text_big_button"
+        >
+          <span>
+            test description
+          </span>
+        </div>
+      </a>
+    </div>
+  </body>,
+  "container": <div>
+    <a
+      class="big_button"
+      href="/test/route"
+      role="button"
+      style="transform: scale(1); transition: transform 0.1s ease-in-out; padding-top: 0px; box-shadow: none; background-color: rgba(100, 50, 30, 0.65);"
+    >
+      <div
+        class="img_big_button"
+      >
+        <img
+          alt="test description"
+          class="image"
+          src="test.png"
+        />
+      </div>
+      <div
+        class="text_big_button"
+      >
+        <span>
+          test description
+        </span>
+      </div>
+    </a>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
+
+exports[`BigButton BigButton snapshot кнопка нажата 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div />
+    <div>
+      <a
+        class="big_button"
+        href="/test/route"
+        role="button"
+        style="transform: scale(0.99); transition: transform 0.1s ease-in-out; padding-top: 2px; box-shadow: none; background-color: rgba(100, 50, 30, 0.65);"
+      >
+        <div
+          class="img_big_button"
+        >
+          <img
+            alt="test description"
+            class="image"
+            src="test.png"
+          />
+        </div>
+        <div
+          class="text_big_button"
+        >
+          <span>
+            test description
+          </span>
+        </div>
+      </a>
+    </div>
+  </body>,
+  "container": <div>
+    <a
+      class="big_button"
+      href="/test/route"
+      role="button"
+      style="transform: scale(0.99); transition: transform 0.1s ease-in-out; padding-top: 2px; box-shadow: none; background-color: rgba(100, 50, 30, 0.65);"
+    >
+      <div
+        class="img_big_button"
+      >
+        <img
+          alt="test description"
+          class="image"
+          src="test.png"
+        />
+      </div>
+      <div
+        class="text_big_button"
+      >
+        <span>
+          test description
+        </span>
+      </div>
+    </a>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
+
+exports[`BigButton BigButton snapshot мышка наведена 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div />
+    <div>
+      <a
+        class="big_button"
+        href="/test/route"
+        role="button"
+        style="transform: scale(1.03); transition: transform 0.1s ease-in-out; padding-top: 0px; box-shadow: none; background-color: rgba(100, 50, 30, 0.65);"
+      >
+        <div
+          class="img_big_button"
+        >
+          <img
+            alt="test description"
+            class="image"
+            src="test.png"
+          />
+        </div>
+        <div
+          class="text_big_button"
+        >
+          <span>
+            test description
+          </span>
+        </div>
+      </a>
+    </div>
+  </body>,
+  "container": <div>
+    <a
+      class="big_button"
+      href="/test/route"
+      role="button"
+      style="transform: scale(1.03); transition: transform 0.1s ease-in-out; padding-top: 0px; box-shadow: none; background-color: rgba(100, 50, 30, 0.65);"
+    >
+      <div
+        class="img_big_button"
+      >
+        <img
+          alt="test description"
+          class="image"
+          src="test.png"
+        />
+      </div>
+      <div
+        class="text_big_button"
+      >
+        <span>
+          test description
+        </span>
+      </div>
+    </a>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;

@@ -1,0 +1,35 @@
+.big_button {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 3rem;
+    border-radius: 15px;
+    text-decoration: none;
+    color: black;
+    
+  }
+  .big_button:hover{
+    color: black;
+  }
+.img_big_button{
+    width: 4rem;
+   
+    
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.image{
+    width: 2rem;
+    height: 2rem;
+    
+
+}
+.text_big_button {
+    margin-left: 0.7rem;
+    flex-grow: 1;
+    flex-shrink: 1;
+    font-size: 1.6rem;
+  }

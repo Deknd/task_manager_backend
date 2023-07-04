@@ -14,6 +14,7 @@ import { getRefreshTokenFromCookie } from "../../features/user/tokens";
 import {} from "../../features/user/userSlice";
 import { logoutUserDelTasks } from "../../features/task/taskSlice";
 import _default from "react-bootstrap/esm/CardGroup";
+import { BigButton } from "../../shared/ui";
 
 export const Main = () => {
   const name = useSelector((state) => state.user.name);
@@ -65,14 +66,7 @@ export const Main = () => {
         <div className="col-12 border-4" style={{}}>
           <ul className="nav nav-pills nav-justified">
             <li className="nav-item">
-              <NavLink
-                exact="true"
-                to={ROUTES.MAINTASK}
-                className="nav-link"
-                activeclassname="active"
-              >
-                Задачи
-              </NavLink>
+              <BigButton />
             </li>
             <li className="nav-item">
               <NavLink
@@ -133,13 +127,16 @@ export const Main = () => {
             role="group"
             aria-label="Vertical button group"
           >
-            <Link
-              to={ROUTES.MAINTASK}
+            {/* <Link
               type="button"
               className="btn btn-primary w-100 mb-2 fs-4"
             >
               Задачи
-            </Link>
+            </Link> */}
+            
+            <BigButton colorButtonRBG='250, 237, 205, 0.65' img='' description='Все таски' toRoute={ROUTES.MAINTASK}/>
+            
+            
             <Link
               to={ROUTES.TODAY}
               type="button"

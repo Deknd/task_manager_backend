@@ -8,12 +8,10 @@ import {
 	scale_onClick_Active,
 	scale_onHover_Active,
 	scale_AtRest,
-	transformation_Time,
 	margin_OnClick,
 	margin_atRest,
 	emptyText,
-	textWhenNoFunction
- } from './iconButtonConstants';
+ } from './IconButtonConstants';
 
 
 
