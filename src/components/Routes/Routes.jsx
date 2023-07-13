@@ -42,7 +42,6 @@ export const AppRoutes = () => {
 
   useEffect(() => {
     if (isLogin) {
-      console.log("Переход на майн");
       navigate(`/${ROUTES.MAIN}${ROUTES.MAINTASK}`);
     }
   }, [isLogin]);

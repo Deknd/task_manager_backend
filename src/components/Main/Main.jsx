@@ -15,15 +15,22 @@ import {} from "../../features/user/userSlice";
 import { logoutUserDelTasks } from "../../features/task/taskSlice";
 import _default from "react-bootstrap/esm/CardGroup";
 import { BigButton } from "../../shared/ui";
+import { ButtonPanelWidget } from "../../widgets/ButtonPanelWidget";
+import { ListTaskWidget } from "../../widgets/ListTaskWidget";
+import { UserPanelWidget } from "../../widgets";
 
 export const Main = () => {
   const name = useSelector((state) => state.user.name);
 
+
+  
+
   const dispatch = useDispatch();
 
   return (
-    <div className="container-fluid">
-      <div className="row">
+    <div className="container-fluid" style={{ padding: '0'}}>
+      <UserPanelWidget/>
+      {/* <div className="row">
         <div className="col-3 col-sm-4 col-lg-3 d-flex align-items-center justify-content-center border-end border-bottom border-4">
           <p className="fs-4">Hello, {name}</p>
         </div>
@@ -43,7 +50,6 @@ export const Main = () => {
                     onClick={() => {
                       dispatch(logoutUserDelTasks());
                       const token = getRefreshTokenFromCookie();
-                      console.log("Логаут: ", token);
                       dispatch(
                         logoutUser({
                           refreshToken: token,
@@ -59,7 +65,7 @@ export const Main = () => {
             </div>
           </nav>
         </div>
-      </div>
+      </div> */}
       {/* Отображение на вертикальных экранах */}
       {/* Отображение на самых маленьких экранах */}
       <div className=" row flex-grow-1 d-block d-sm-none">
@@ -120,19 +126,16 @@ export const Main = () => {
       </div>
 
       {/* Отображение на экранах больше 576px */}
-      <div className="row flex-grow-1 d-none d-sm-flex">
-        <div className="col-sm-4 col-lg-3 border-end border-4">
+      {/* <div className="row flex-grow-1 d-none d-sm-flex">
+        <ButtonPanelWidget/> */}
+        
+        {/* <div className="col-sm-4 col-lg-3 border-end border-4">
           <div
             className="btn-group-vertical w-100 mt-2"
             role="group"
             aria-label="Vertical button group"
           >
-            {/* <Link
-              type="button"
-              className="btn btn-primary w-100 mb-2 fs-4"
-            >
-              Задачи
-            </Link> */}
+           
             
             <BigButton colorButtonRBG='250, 237, 205, 0.65' img='' description='Все таски' toRoute={ROUTES.MAINTASK}/>
             
@@ -163,14 +166,37 @@ export const Main = () => {
             </Link>
           </div>
         </div>
-        <div
+          */}
+
+
+        {/* <div
           className="col-lg-9 col-sm-7 border-start border-4"
-          style={{ height: "80vh", overflowY: "auto" }}
-        >
+          style={{ 
+           height: "80vh",
+           overflowY: "auto",
+           paddingRight: '0rem',
+           paddingLeft: '0rem',
+          }}
+        > */}
           {/* <Notification /> */}
-          <Outlet />
+          {/* <Outlet />
+        </div>  */}
+        <div style={{ display: 'flex',}}>
+          <div >
+             <ButtonPanelWidget/>
+          </div>
+          <div style={{ flex: 1}}>
+             <ListTaskWidget/>
+          </div>
+
+
+
         </div>
+
+
+
+
       </div>
-    </div>
+    
   );
 };

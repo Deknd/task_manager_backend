@@ -1,0 +1,13 @@
+.field{
+    background-color: #FFFFFF73;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0.2rem;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+    opacity: 100%;
+    transition: 0.3s;
+}

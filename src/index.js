@@ -8,7 +8,7 @@ import "./index.css";
 
 import { App } from "./components/App/App";
 
-import { store } from "./features/store";
+import { store } from "./app/store/index";
 
 createRoot(document.getElementById("root")).render(
   <Provider store={store}>

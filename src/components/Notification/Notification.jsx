@@ -6,7 +6,6 @@ export const Notification = () => {
       <div
         className="row "
         style={{
-          backgroundColor: "green",
           height: "40px",
           borderRadius: "10px",
         }}

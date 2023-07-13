@@ -12,7 +12,8 @@ body {
   background-size: cover;
   background-image: url("./images/background.png");
   height: auto;
-  width: 100vw;
+  line-height:normal
+ 
 }
 a img {
   width: 15vw;

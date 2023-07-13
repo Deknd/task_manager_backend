@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { Tasks } from "../../Task/Tasks";
 import { getAllTasks } from "../../../features/task/taskSlice";
 import { getAccessToken } from "../../../features/user/tokens";
+import { ListTaskWidget } from "../../../widgets/ListTaskWidget";
 
 export const MainTasks = () => {
   const dispatch = useDispatch();
@@ -13,7 +13,6 @@ export const MainTasks = () => {
   const isLogin = useSelector((state) => state.user.isLogin);
 
   useEffect(() => {
-    console.log(!isLoadTask && isLogin);
     if (!isLoadTask && isLogin) {
       const access = getAccessToken(isLogin);
       dispatch(
@@ -25,5 +24,5 @@ export const MainTasks = () => {
     }
   }, []);
 
-  return <Tasks />;
+  return <ListTaskWidget />;
 };

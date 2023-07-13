@@ -24,7 +24,7 @@ export const IconButton = (props) => {
     img, 
     onClickSent, 
     textIcon 
-  } = props;
+  } = props || {};
 
   
 

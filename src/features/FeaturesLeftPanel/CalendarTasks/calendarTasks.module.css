@@ -1,0 +1,13 @@
+.datepicker {
+    background-color: transparent;
+    font-size: 0.9rem;
+    font-family: "Inria Sans", sans-serif;
+    border: 0px;
+    display: flex;
+    flex-direction: column;
+    line-height: 1rem;
+}
+ 
+
+
+

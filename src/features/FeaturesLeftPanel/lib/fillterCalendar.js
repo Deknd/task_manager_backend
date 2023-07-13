@@ -40,6 +40,8 @@ const compareTasks = (task1, task2) => {
     return date1 - date2;
   }
 };
+
+
 const mergeArrays = (arr1, arr2) => {
   const mergedArray = [...arr1, ...arr2];
   return mergedArray;

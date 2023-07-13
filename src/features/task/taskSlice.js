@@ -82,6 +82,9 @@ const taskSlice = createSlice({
       state.tasks = [];
       state.isLoadTasks = false;
     },
+    addAllTask: ( state, action ) => {
+      state.tasks = action.payload;
+    }
   },
 
   extraReducers: (builder) => {
@@ -99,13 +102,12 @@ const taskSlice = createSlice({
       state.tasks.push(action.payload);
     });
     builder.addCase(deleteTask.fulfilled, (state, action) => {
-      console.log(action.meta.arg.id);
       state.tasks = state.tasks.filter(
         (task) => task.id !== action.meta.arg.id
       );
     });
   },
 });
-export const { logoutUserDelTasks, setIsLoadTasks } = taskSlice.actions;
+export const { logoutUserDelTasks, setIsLoadTasks, addAllTask } = taskSlice.actions;
 
 export default taskSlice.reducer;
