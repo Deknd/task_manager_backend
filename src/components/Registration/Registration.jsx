@@ -1,43 +1,41 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { createUser } from "../../features/registration/registrationSlice";
-import { setRegistrationSuccess } from "../../features/registration/registrationSlice";
-import { loginUser } from "../../features/user/userSlice";
+//import { LoginUser } from "../../features/user/userSlice";
 
 export const Registration = () => {
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(setRegistrationSuccess(false));
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(setRegistrationSuccess(false));
+  // }, [dispatch]);
 
   const isRegistrationSuccess = useSelector(
     (state) => state.registration.isRegistrationSuccess
   );
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
 
-    const user = {
-      name: "",
-      username: "",
-      password: "",
-    };
+  //   const user = {
+  //     name: "",
+  //     username: "",
+  //     password: "",
+  //   };
 
-    if (values.password === values.passwordConfirmation) {
-      user.password = values.password;
-      user.name = values.name;
-      user.username = values.username;
+  //   if (values.password === values.passwordConfirmation) {
+  //     user.password = values.password;
+  //     user.name = values.name;
+  //     user.username = values.username;
 
-      const isNotEmpty = Object.values(user).every((val) => val);
-      if (!isNotEmpty) return;
+  //     const isNotEmpty = Object.values(user).every((val) => val);
+  //     if (!isNotEmpty) return;
 
-      dispatch(createUser(user));
-    } else {
-      return;
-    }
-  };
+  //     dispatch(createUser(user));
+  //   } else {
+  //     return;
+  //   }
+  // };
 
   useEffect(() => {
     if (isRegistrationSuccess) {
@@ -48,10 +46,10 @@ export const Registration = () => {
       if (!isNotEmpty) return;
 
       dispatch(
-        loginUser({
-          username: values.username,
-          password: values.password,
-        })
+        // LoginUser({
+        //   username: values.username,
+        //   password: values.password,
+        // })
       ).then(
         setValues({
           name: "",
@@ -155,7 +153,7 @@ export const Registration = () => {
             </div>
           ) : (
             <div className="d-grid gap-3 col-3 mx-auto text-center my-3">
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={()=>{}}>
                 <div className="mb-1">
                   <label htmlFor="exampleUserName" className="form-label">
                     User name

@@ -23,7 +23,7 @@ export const UsedButton = (props) => {
 
     
 
-    const tasks = useSelector((state)=>state.task.tasks);
+    const tasks = useSelector((state)=>state.tasks.tasks);
     
     
 

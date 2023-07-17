@@ -12,30 +12,7 @@ body {
   background-size: cover;
   background-image: url("./images/background.png");
   height: auto;
-  line-height:normal
+  line-height:normal;
+
  
-}
-a img {
-  width: 15vw;
-  height: auto;
-}
-
-div a p {
-  height: 4vh;
-  margin-top: 0;
-}
-
-.btn-primary {
-  color: black;
-}
-
-p {
-  margin-bottom: 0;
-}
-p myPtext {
-  margin-top: 0;
-}
-.small-icon {
-  width: 35px; /* Adjust the size as per your requirements */
-  height: 35px;
 }

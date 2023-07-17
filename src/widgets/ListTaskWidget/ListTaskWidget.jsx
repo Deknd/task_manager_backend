@@ -37,11 +37,11 @@ export const ListTaskWidget =() => {
         }
         calculateHeight();
       };
-      const calculateHeight = () => {
+    const calculateHeight = () => {
         if (containerRef.current) {
           const windowHeight = window.innerHeight;
-          
-          const height = windowHeight - elementRect.top;
+          const top = elementRect.top;
+          const height = windowHeight - top;
   
           setHeight(height);
         }
@@ -78,7 +78,7 @@ export const ListTaskWidget =() => {
             alignContent: 'flex-start',
             justifyContent: 'flex-start',
             overflowY: 'auto',
-            height: height-1,
+            height: '100dvh',
         }}>
            { (tasks.length !== 0) ? tasks.map((task) => (
           <div key={task.id}  style={{

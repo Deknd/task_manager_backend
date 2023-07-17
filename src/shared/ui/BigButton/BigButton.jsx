@@ -10,6 +10,7 @@ export const BigButton = (props) => {
         description,
         img,
         colorButtonRBG,
+        noImg,
         
     } =props;
 
@@ -26,7 +27,7 @@ return (
       height: '3rem',
       userSelect: 'none'
      }}>
-        <div style={{
+      {noImg ? <></> : (<div style={{
           width:'4rem',
           display: 'flex',
           justifyContent: 'flex-end',
@@ -41,7 +42,8 @@ return (
                       src={img} 
                       alt={descriptionButton} 
                     /> : null}
-        </div>
+        </div>)}
+        
         <div style={{
           display: 'flex',
           justifyContent: 'flex-end',

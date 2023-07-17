@@ -1,0 +1,1 @@
+export { userSliceR, setUserSlice } from './userSlice'

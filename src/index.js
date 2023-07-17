@@ -6,9 +6,9 @@ import { Provider } from "react-redux";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
 
-import { App } from "./components/App/App";
+import { App } from "./app/app";
 
-import { store } from "./app/store/index";
+import { store } from "./app/store";
 
 createRoot(document.getElementById("root")).render(
   <Provider store={store}>

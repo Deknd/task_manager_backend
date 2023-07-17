@@ -1,0 +1,1 @@
+export { SceletonUserPanel } from './SceletonUserPanel'

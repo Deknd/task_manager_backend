@@ -98,6 +98,6 @@ const taskWidget = createSlice({
     }
 });
 
-export const { setActivity , setTasks, setPriority, setActivityAndSortTasks } = taskWidget.actions;
+export const { setActivity , setTasks, setPriority } = taskWidget.actions;
 
 export const  taskWidgetSlice  = taskWidget.reducer;

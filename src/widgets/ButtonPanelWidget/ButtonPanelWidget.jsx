@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { UsedButton } from "../";
 
 import { ContainerForButton } from "../../entities";
-import { FooterButton } from "../../entities/FooterButton";
+import { Footer } from "../../entities";
 
 export const ButtonPanelWidget = () => {
 
@@ -14,7 +14,7 @@ export const ButtonPanelWidget = () => {
     return(
         <ContainerForButton>
             <UsedButton/>
-            <FooterButton/>
+            <Footer/>
             
         </ContainerForButton>
     );
