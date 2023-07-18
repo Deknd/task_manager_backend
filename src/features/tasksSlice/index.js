@@ -1,1 +1,1 @@
-export { sliceTasks, setTasksSlice } from './tasksSlice'
+export { sliceTasks, setTasksSlice, clear_tasks } from './tasksSlice'

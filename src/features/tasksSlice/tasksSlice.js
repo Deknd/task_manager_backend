@@ -9,17 +9,25 @@ const tasksSlice = createSlice({
   },
   reducers: {
     setTasksSlice: (state, action) => {
-      const arrayTasks = action.payload.map((task) => ({
-        id: task.id,
-        title: task.title,
-        description: task.description,
-        status: task.status,
-        priority: task.priority,
-        expirationDate: task.expirationDate,
-        
-      }));
+      if(!action.payload){
+        state.tasks = [];
+        return}
+
+       const arrayTasks = action.payload.map((task) => ({
+          id: task.id,
+          title: task.title,
+          description: task.description,
+          status: task.status,
+          priority: task.priority,
+          expirationDate: task.expirationDate,
+          
+        }));
+      
 
       state.tasks = arrayTasks;
+    },
+    clear_tasks: ( state, action ) => {
+      state.tasks = [];
     }
    
   },
@@ -27,7 +35,7 @@ const tasksSlice = createSlice({
   extraReducers: (builder) => {
   },
 });
-export const { setTasksSlice } = tasksSlice.actions;
+export const { setTasksSlice, clear_tasks } = tasksSlice.actions;
 
 export const sliceTasks = tasksSlice.reducer;
 

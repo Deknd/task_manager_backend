@@ -1,55 +1,38 @@
 import React, { useState } from "react";
-import { LinkButton, TextDisplay, InputField } from "../../shared/ui";
-import { EffectButton, actionAuthRegistrSlice} from "../../features";
-import { useDispatch } from "react-redux";
+import { LinkButton, TextDisplay } from "../../shared/ui";
+import { EffectButton, FrameError, LoginFeatures } from "../../features";
+import { InputData } from "../../entities";
+import { validate } from "../../shared/lib/validation";
 
 
 export const LoginForm = () => {
 
-    const dispatch = useDispatch();
-    const [username, setUsername] = useState("johndoe@mail.com");
-    const [password, setPassword] = useState("12345");
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
   
-    const handleUsernameChange = (event) => {
-      setUsername(event.target.value);
-    };
-  
-    const handlePasswordChange = (event) => {
-      setPassword(event.target.value);
-    };
-  
-    const handleSubmit = (event) => {
-      event.preventDefault();
-      // Здесь можно выполнить дополнительные действия, связанные с отправкой формы
-    };
-    
-
-    const click = (e) => { 
-        e.preventDefault();
-        const user = {username: username, password: password}
-
-        const isNotEmpty = Object.values(user).every((val) => val);
-
-        if (!isNotEmpty) return;
-        console.log('Click Login Form: ',user)
-
-        dispatch(
-          actionAuthRegistrSlice.loginUser(user)
-        );
-    }
-
     return(
        
 
-        <form 
+        <form   
             style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center'    
-            }}
-            onSubmit={handleSubmit}>
-                <InputField type={'email'} placeholder={'email'} value={username} onChange={handleUsernameChange} />
-                <InputField type={'password'} placeholder={'password'} value={password} onChange={handlePasswordChange} />
+            }}>
+              <div style={{ paddingTop: '0.5em' }} >
+                <TextDisplay text={'Enter your email'} fontSize={1.4} />
+              </div>
+              <FrameError dataCorrect={username.length > 3 && !validate.validateEmail(username) } textError='Email введен не верно' >
+                <InputData type={'email'} placeholder={'email'} getData={setUsername}/>
+              </FrameError>
+
+              <div style={{ paddingTop: '0.5em' }} >
+                <TextDisplay text={'Password'} fontSize={1.4} />
+              </div>
+
+              <FrameError dataCorrect={ false } textError='не менее 8 символов , цифры, буквы в верхнем и нижнем регистрах.' >
+                    <InputData type={'password'} placeholder={'password'} getData={setPassword}/>
+              </FrameError>
                
                 <EffectButton>
                     
@@ -62,9 +45,9 @@ export const LoginForm = () => {
                 }} >
                     
                     <EffectButton>
-                        <div onClick={click} >
+                        <LoginFeatures user={{username: username, password: password}} >
                             <LinkButton to={''} description={'Submit'} />
-                        </div>
+                        </LoginFeatures>
                     </EffectButton>
 
                 </div>

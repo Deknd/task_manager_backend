@@ -3,6 +3,7 @@ import { LoginForm } from "../../widgets";
 import { ChangeSize, EffectButton} from "../../features";
 import { Footer } from "../../entities";
 import { LinkButton, TextDisplay } from "../../shared/ui";
+import { ROUTES } from "../../shared/lib/constants/routes";
 
 
 export const LoginWidget = () => {
@@ -13,10 +14,10 @@ export const LoginWidget = () => {
     return(
         <div >
             <ChangeSize widthParam={{ 
-        startFontSize: startFontSize,
-        endFontSize: endFontSize, 
-  
-      }} >
+            startFontSize: startFontSize,
+            endFontSize: endFontSize, 
+    
+            }} >
                 <TextDisplay text={'Log in'} fontSize={3} />
 
                 <LoginForm/>
@@ -29,11 +30,11 @@ export const LoginWidget = () => {
                     marginTop: '1em'
                 }} >
 
-                <TextDisplay text={'If you are not yet registered, we suggest you complete a simple registration'} fontSize={1} />
-                
-                <EffectButton>
-                        <LinkButton to={''} description={'Registration'} />
-                </EffectButton>
+                    <TextDisplay text={'If you are not yet registered, we suggest you complete a simple registration'} fontSize={1} />
+                    
+                    <EffectButton>
+                            <LinkButton to={`/${ROUTES.REGISTRATION}`} description={'Registration'} />
+                    </EffectButton>
                 </div>
               
 

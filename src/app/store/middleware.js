@@ -1,16 +1,18 @@
 import { logger } from "../../shared/lib/logger";
 import { cookieForRefreshToken } from "../../shared/lib/cookieForRefreshToken";
-import { actionAuthRegistrSlice , setTasksSlice, setUserSlice } from '../../features'
+import { actionAuthRegistrSlice , clear_tasks, clear_user, setTasksSlice, setUserSlice } from '../../features'
 import { ROUTES } from "../../shared/lib/constants/routes";
 
 const {
     setRefreshTokenCookie,
     getRefreshTokenFromCookie,
+    deleteRefreshTokenCookie
  } = cookieForRefreshToken;
 const {
     setAuthAndRegistrSlice,
     setStartPage,
     updateRefreshToken,
+    clear_data
 } =actionAuthRegistrSlice;
  
  //Добавляет данные при Логине пользователя во все слайсы
@@ -63,12 +65,19 @@ const startPegeSelectionMiddleware = (store) => (next) => (action) => {
 
     }
         
+    return next(action);
 
+  }
 
+  const logout = (store) => (next) => (action) => {
 
-
-
-
+    if(action.type === 'logout_user'){
+        const { dispatch } = store;
+        dispatch(clear_tasks());
+        dispatch(clear_user());
+        dispatch(clear_data());
+        deleteRefreshTokenCookie();
+    }
     return next(action);
 
   }
@@ -97,7 +106,12 @@ const startPegeSelectionMiddleware = (store) => (next) => (action) => {
 
 
 
-const  middleware = [ addDataFor_AuthAndRegistrSlice_UserSlice_TasksSlice_Cookie, startPegeSelectionMiddleware, updateRefreshToken_Add_Data ]
+const  middleware = [ 
+    addDataFor_AuthAndRegistrSlice_UserSlice_TasksSlice_Cookie,
+    startPegeSelectionMiddleware,
+     updateRefreshToken_Add_Data,
+     logout, 
+    ]
 
 
 export const middlewares = [logger, ...middleware];

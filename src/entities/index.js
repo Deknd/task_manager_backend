@@ -5,4 +5,5 @@ export { ContainerForButton } from './ContainerForButton'
 export { SceletonUserPanel } from './SceletonUserPanel'
 export { Footer } from './Footer'
 export { SceletonStartWidget } from './SceletonStartWidget'
+export { InputData } from './InputData'
 

@@ -1,15 +1,20 @@
+import { createAction } from "@reduxjs/toolkit";
 import React from "react";
+import { useDispatch } from "react-redux";
 
 
 
 export const LogOutUser = (props) => {
+
+
+    const dispatch = useDispatch();
 
     const {
         children
     } = props;
 
     const click = () => {
-        console.log('LogOutUser')
+        dispatch(logout());
     }
 
 
@@ -19,3 +24,5 @@ export const LogOutUser = (props) => {
         </div>
     )
 }
+
+const logout = createAction('logout_user');

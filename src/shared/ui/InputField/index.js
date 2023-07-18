@@ -12,16 +12,17 @@ export const InputField = (props) => {
 
 
 
+
     return(
         <div style={{
-            padding: '0.5em',
+           opacity: '60%'
         }} >
             <input
             style={{
-                fontSize: '1.3em',
-                width: '15em',
-                borderRadius: '15px',
-                padding: '0.2em',
+                fontSize: '1.7em',
+                width: '17em',
+                borderRadius: '0.3em',
+                padding: '0.1em',
                 textAlign: 'center'
 
             }}

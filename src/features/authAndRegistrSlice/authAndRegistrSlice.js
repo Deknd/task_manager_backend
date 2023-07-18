@@ -1,24 +1,19 @@
 import { createAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { API_LOGIN, API_UPDATE_REFRESH_TOKEN } from "../../shared/lib/api";
+import { API_LOGIN, API_UPDATE_REFRESH_TOKEN, API_REGISTRATION } from "../../shared/lib/api";
+import { ROUTES } from "../../shared/lib/constants/routes";
 
 
-// const createUser = createAsyncThunk(
-//   "auth/createUser", //название для дальнейших до функций
-//   async (payload, thunkAPI) => {
-//     try {
-//       const res = await axios.post(
-//         `API_SERVERauth/register`,
-//         payload
-//       ); //`${AUTH_URL}/register`
-//       const registrationData = res.data;
+const registrationUser = createAsyncThunk(
+  "auth/registrationUser", //название для дальнейших до функций
+  async (payload, thunkAPI) => {
+    
+      const res = await API_REGISTRATION(payload);
+      const registrationData = res.data;
 
-//       return registrationData;
-//     } catch (err) {
-//       console.log(err);
-//       return thunkAPI.rejectWithValue(err);
-//     }
-//   }
-// );
+      return registrationData;
+    
+  }
+);
 
 const loginUser = createAsyncThunk(
   "auth/loginUser",
@@ -50,20 +45,23 @@ const authAndRegistrSlice = createSlice({
 
   name: "authAndRegistrSlice",
   initialState: {
+    //Если пользователь успешно залогинился, то true, и переходит на страничку тасков
     isLogin: false,
-
+    //токены доступа
     accessToken: '',
     expiration: '',
     refreshToken: '',
-
+    //старничка, на которую автоматически переходит
     startPage: '',
-
+    // метка при начальной загрузки, проверяет на какую страницу нужен переход
     needNavigate: false,
 
-    isNoTryLogPass: false,
+    // метка показывающая успешная ли регистрация
+    isRegistrationSuccessful: 0,
 
 
-    isRegistrationSuccess: false,
+    //метка, показывает отправлены даные или нет
+    isDataSentRegistration: false,
   },
   reducers: {
     setAuthAndRegistrSlice: ( state, action ) => {
@@ -76,11 +74,32 @@ const authAndRegistrSlice = createSlice({
     setStartPage: ( state, action ) => {
       state.startPage = action.payload.startPage;
       state.needNavigate = true;
+    },
+    clear_data: ( state, action ) => {
+      state.accessToken = '';
+      state.expiration = '';
+      state.refreshToken = ''
+      state.isLogin = false;
     }
 
    
   },
   extraReducers: (builder) => {
+    builder.addCase(registrationUser.pending, (state, action) => {
+      state.isDataSentRegistration = true;
+      state.isRegistrationSuccessful = 0;
+    } );
+    builder.addCase(registrationUser.rejected, (state, action) => {
+      state.isDataSentRegistration = false;
+      state.isRegistrationSuccessful = -1;
+
+    } );
+    builder.addCase(registrationUser.fulfilled, (state, action) => {
+      state.isDataSentRegistration = false;
+      state.startPage = ROUTES.LOGIN;
+      state.isRegistrationSuccessful = 1;
+
+    } )
   
 
 
@@ -101,7 +120,6 @@ const authAndRegistrSlice = createSlice({
       delete meta.arg.username;
       state.meta = meta;
 
-      state.isNoTryLogPass = true;
     });
 
 
@@ -111,5 +129,5 @@ const authAndRegistrSlice = createSlice({
 
 
 export const authRegistrSlice = authAndRegistrSlice.reducer;
-const { setAuthAndRegistrSlice, setStartPage } = authAndRegistrSlice.actions;
-export const actionAuthRegistrSlice = { loginUser, startPegeSelection, setAuthAndRegistrSlice, setStartPage, updateRefreshToken  };
+const { setAuthAndRegistrSlice, setStartPage, clear_data } = authAndRegistrSlice.actions;
+export const actionAuthRegistrSlice = { loginUser, startPegeSelection, setAuthAndRegistrSlice, setStartPage, updateRefreshToken, registrationUser, clear_data };

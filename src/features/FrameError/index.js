@@ -1,0 +1,1 @@
+export { FrameError } from './FrameError'

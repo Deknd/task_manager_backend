@@ -1,0 +1,1 @@
+export { RegistrationWidget } from './RegistrationWidget'

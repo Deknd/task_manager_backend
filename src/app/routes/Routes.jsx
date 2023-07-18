@@ -15,14 +15,8 @@ import { actionAuthRegistrSlice } from "../../features";
 
 import { ROUTES } from "../../shared/lib/constants/routes";
 
+import { TasksDashboard, StartPage, LoginPage, RegistrationPage } from "../../pages";
 
-import { Registration } from "../../components/Registration/Registration";
-
-import { TasksDashboard, StartPage, LoginPage } from "../../pages";
-
-
-//import { getRefreshTokenFromCookie } from "../../features/user/tokens";
-//import { updateRefreshToken } from "../../features/user/userSlice";
 
 
 const PrivateOutlet = (props) => {
@@ -30,7 +24,6 @@ const PrivateOutlet = (props) => {
   const { isLogin } = props;
   const location = useLocation();
 
- // const isAuthenticated = useSelector((state) => state.user.isLogin);
 
   return isLogin ? (
     <Outlet />
@@ -48,31 +41,28 @@ export const AppRoutes = () => {
 
   const navigate = useNavigate();
 
- // let isLogin = useSelector((state) => state.user.isLogin);
- // let refreshToken = getRefreshTokenFromCookie();
 
-  // useEffect(() => {
-  //   if (isLogin) {
-  //     navigate(`/${ROUTES.MAIN} `);
-  //   }
-  // }, [isLogin]);
   const needNavigate = useSelector((state) => state.authAndRegistrSlice.needNavigate);
   const isLogin = useSelector((state) => state.authAndRegistrSlice.isLogin);
   const startPage = useSelector((state) => state.authAndRegistrSlice.startPage);
+  const isRegistrationSuccessful = useSelector((state) => state.authAndRegistrSlice.isRegistrationSuccessful);
 
   useEffect(() => {
-  console.log( isLogin)
   if (!isLogin) {
     dispatch(startPegeSelection());
   }
   }, [isLogin]);
 
   useEffect(() => {
-      if (isLogin || needNavigate) {
-        console.log(startPage)
+      if (isLogin || needNavigate ) {
         navigate(`/${startPage}`);
       }
-    }, [needNavigate, isLogin]);
+      if(isRegistrationSuccessful === 1){
+        setTimeout( ()=>{ navigate(`/${startPage}`) }, 1000 );
+        
+
+      }
+    }, [ needNavigate, isLogin, isRegistrationSuccessful ]);
 
 
 
@@ -82,7 +72,7 @@ export const AppRoutes = () => {
     <Routes>
       <Route index element={<StartPage />} />
       <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-      <Route path={ROUTES.REGISTRATION} element={<Registration />} />
+      <Route path={ROUTES.REGISTRATION} element={<RegistrationPage />} />
 
       <Route path="/" element={<PrivateOutlet isLogin={isLogin} />}>
         <Route path={ROUTES.MAIN} element={<TasksDashboard />}/>

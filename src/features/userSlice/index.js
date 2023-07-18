@@ -1,1 +1,1 @@
-export { userSliceR, setUserSlice } from './userSlice'
+export { userSliceR, setUserSlice, clear_user } from './userSlice'

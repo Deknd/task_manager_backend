@@ -84,6 +84,7 @@ export const ChangeSize = (props) => {
             alignItems: 'center',
             width: '100%',
             height: `100dvh`,
+            minHeight: '500px',
             fontSize: `${size.fontSize}px`, 
             }} >
             <div  style={{paddingBottom: `${size.padding}rem`,}}>
