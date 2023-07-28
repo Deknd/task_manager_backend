@@ -1,5 +1,6 @@
 import React from 'react';
 import { ContentField } from '../../../shared/ui';
+import { format } from 'date-fns';
 
 
 export const ContentTask = (props)=>{
@@ -18,6 +19,8 @@ export const ContentTask = (props)=>{
 
     } = taskData;
 
+    const date = new Date(expirationDate);
+    const resDate = format(date, ' dd/MM/yyyy  HH:mm  ')
 
  {/* div для контентной части */}
     return(
@@ -31,7 +34,7 @@ export const ContentTask = (props)=>{
              {!isBlock ? <ContentField text={description} isVisible={isActive} height={13}  /> : null}
  
              {/* Отображение даты  */}
-             <ContentField text={expirationDate} isVisible={true} height={2} />
+             <ContentField text={resDate} isVisible={true} height={2} />
          
          </div>
     );

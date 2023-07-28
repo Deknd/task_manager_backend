@@ -20,6 +20,7 @@ export { SendNewTask } from './SendNewTask'
 export { CloseActiveTask } from './CloseActiveTask'
 export { DeleteTask } from './DeleteTask'
 export { ChangeStatusTask } from './ChangeStatusTask'
+export { UpdateTask } from './UpdateTask'
 
 
 

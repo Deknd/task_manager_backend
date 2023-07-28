@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 
 
 
-import { ChangeStatusTask, ContainerForButtonIcon, ContentTaskActiveElements, DeleteTask, EffectButton, SendNewTask } from '../../features';
+import { ChangeStatusTask, ContainerForButtonIcon, ContentTaskActiveElements, DeleteTask, EffectButton,  UpdateTask } from '../../features';
 import { FormTaskWidget } from '../../features';
 import { ChangePriorityTask } from '../../features';
 
@@ -10,7 +10,6 @@ import { ContentTask } from "../../entities";
 
 import {  ContentField, IconButton_v2 } from '../../shared/ui'
 import { InputDataForTask } from '../InputDataForTask';
-import { format } from 'date-fns';
 
 
 
@@ -34,9 +33,10 @@ export const TaskWidget = (props) => {
         id,
         status,
         priority,
+        expirationDate,
         isBlock,
         isActive,
-    } = taskData || {};
+    } = taskData;
     const [ statusTask, setStatusTask ] = useState(status);
     const [ priorityTask, setPriorityTask ] = useState(priority);
 
@@ -100,13 +100,16 @@ export const TaskWidget = (props) => {
       },[isActive]);
     const [ isEditMode, setIsEditMode ] = useState(false);
     const [ isActiveEditMode, setIsActiveEditMode ] = useState(false);
-    const [ taskDataEdit, setTaskData ] = useState({
+    const [ taskDataEdit, setTaskDataEdit ] = useState({
+        
         title: '',
         description: '',
         expirationDate: new Date(),
         priority: '',
-        status: 'TODO'
     })
+    useEffect(()=>{
+
+    },[taskDataEdit])
 
     const buttonComplect = [(
 
@@ -146,10 +149,10 @@ export const TaskWidget = (props) => {
 
         <EffectButton>
         
-            <SendNewTask 
-                task={taskDataEdit} >
+            <UpdateTask 
+                task={taskDataEdit} id={id} closeEditMode={setIsEditMode} >
                 <IconButton_v2 type={'accept'} textIcon={'ok'} />
-            </SendNewTask>
+            </UpdateTask>
         </EffectButton>  
 
     ), (
@@ -169,7 +172,7 @@ export const TaskWidget = (props) => {
     return(
 
         <div ref={taskWidget} >
-            <FormTaskWidget status={statusTask} priority={priorityTask} taskData={taskData} move={move}>
+            <FormTaskWidget status={statusTask} priority={isActiveEditMode? taskDataEdit.priority : priority} taskData={taskData} move={move}>
                 {/* div для контентной части */}
                 
                     <ContentTaskActiveElements 
@@ -181,7 +184,12 @@ export const TaskWidget = (props) => {
                             {
                                 isActiveEditMode ? (
 
-                                    <InputDataForTask getData={setTaskData} cameTitle={taskData.title} cameDescription={taskData.description}  />
+                                    <InputDataForTask 
+                                    getData={setTaskDataEdit} 
+                                    cameTitle={taskData.title} 
+                                    cameDescription={taskData.description} 
+                                    camePriority={priority}
+                                    cameExpirationDate={expirationDate} />
                                   
 
                                 ):(

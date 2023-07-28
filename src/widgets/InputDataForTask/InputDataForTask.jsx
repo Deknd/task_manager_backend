@@ -12,6 +12,7 @@ export const InputDataForTask = (props) => {
         cameTitle,
         cameDescription,
         cameExpirationDate,
+        camePriority,
         getData,
      } = props;
 
@@ -19,12 +20,11 @@ export const InputDataForTask = (props) => {
     const [ title, setTitle ] = useState(cameTitle ? cameTitle : '');
     const [ description, setDescription ] = useState(cameDescription ? cameDescription : '');
     const [ expirationDate, setExpirationDate ] = useState(cameExpirationDate ? new Date(cameExpirationDate) : new Date());
-    const [ priority, setPriority ] = useState('STANDARD');
+    const [ priority, setPriority ] = useState(camePriority? camePriority : 'STANDARD');
 
 
 
     useEffect(()=>{
-        console.log(title, description, expirationDate)
         getData({ title: title, description: description, expirationDate: format(expirationDate, "yyyy-MM-dd HH:mm"), priority: priority })
 
     },[ title, description, expirationDate, priority ])

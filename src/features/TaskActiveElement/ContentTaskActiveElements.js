@@ -25,7 +25,6 @@ export const ContentTaskActiveElements = (props)=>{
     const dispatch = useDispatch();
     const [ isNowBlock, setIsNowBlock ] = useState(false);
     useEffect(()=> {
-        console.log(`useEffect  !isBlock: ${!isBlock} isEditMode: ${isEditMode} isActiveEditMode: ${isActiveEditMode} isNowBlock: ${isNowBlock}`)
 
         const fetchData = async () => {
             if (isEditMode) {
@@ -66,7 +65,6 @@ export const ContentTaskActiveElements = (props)=>{
 
     const clickTask = ()=>{
         if(!isBlock && !isEditMode){
-            console.log(`clickTask  !isBlock: ${!isBlock} isEditMode: ${isEditMode} isActiveEditMode: ${isActiveEditMode} isNowBlock: ${isNowBlock}`)
             setIsNowBlock(!isNowBlock)
             dispatch(setActivity(id))
 

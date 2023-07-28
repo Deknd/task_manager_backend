@@ -21,7 +21,6 @@ export const LoginFeatures = (props) => {
         const isNotEmpty = Object.values(user).every((val) => val);
 
         if (!isNotEmpty) return;
-        console.log('Click Login Form: ',user)
 
         dispatch(
           actionAuthRegistrSlice.loginUser(user)

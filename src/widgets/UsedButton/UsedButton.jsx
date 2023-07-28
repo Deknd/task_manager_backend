@@ -9,7 +9,6 @@ import today from './img/today.png'
 import calendar from './img/calendar.png'
 import done from './img/done.png'
 import failed from './img/failed.png'
-import addTaskImg from './img/addTaskImg.png'
 
 
 
@@ -26,7 +25,6 @@ export const UsedButton = (props) => {
     
 
     const tasks = useSelector((state)=>state.tasks.tasks);
-    
     
 
 

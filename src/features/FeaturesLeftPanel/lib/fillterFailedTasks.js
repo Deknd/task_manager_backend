@@ -1,6 +1,5 @@
 const fillterFailedTasks = (tasksAll) => {
 
-    console.log(tasksAll)
     const taskFailed = []
     tasksAll.map((task)=>{
         if(task.status === 'FAILED'){
