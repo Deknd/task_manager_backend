@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
 import { setTasks } from "../../../widgets/ListTaskWidget/taskWidgetSlice";
@@ -11,12 +11,23 @@ export const FailedTasks = (props) => {
 
     const {
         tasks,
-        children
+        children,
+        isSelect
     } = props;
 
   
 
     const dispatch = useDispatch();
+    useEffect(()=>{
+
+        if(isSelect){
+
+            if(tasks.lenght !== 0){
+
+                onClick();
+            }
+        }
+    },[tasks])
 
     const onClick = ()=>{
        

@@ -22,9 +22,42 @@ const setActivityFun = (state, action) => {
     
     
 } else {
+  if(action.payload === -1 && state.activeTask !== -1){
+      const active = state.activeTask;
+      state.activeTask = -1;
+      const tasksArray = state.tasks;
+
+      const result = tasksArray.map((task) => {
+          task.isActive = false;
+
+          task.isBlock = true;
+          return task;
+      })
+     return result;
+
+
+
+
+
+    } else {
+      if(action.payload === -2){
+        const active = state.activeTask;
+        state.activeTask = null;
+        const tasksArray = state.tasks;
+        const result = tasksArray.map((task) => {
+          task.isActive = false;
+
+          task.isBlock = false;
+          return task;
+          })
+        return result;
+      }
+
+    
     if(state.activeTask === action.payload){
         state.activeTask = null;
         const tasksArray = state.tasks;
+        
         const result = tasksArray.map((task) => {
           if(task.id === action.payload){
             task.isActive = false;
@@ -40,7 +73,7 @@ const setActivityFun = (state, action) => {
         })
         return result;
 
-    }
+    }}
 }
 }
 
@@ -53,6 +86,7 @@ const taskWidget = createSlice({
     initialState: {
         activeTask: null,
         priorityActiveTask: null,
+        isNeedAddTask: false,
         tasks: [],
 
           
@@ -67,12 +101,22 @@ const taskWidget = createSlice({
             priority: task.priority,
             expirationDate: task.expirationDate,
             isActive: false,
-            isBlock: false,
+            isBlock: state.activeTask === -1 ? true : false,
           }));
 
           state.tasks = arrayTasks;
         },
+        setIsNeedAddTask: (state, _ ) => {
+          if(state.isNeedAddTask){
+            state.isNeedAddTask = false;
+          } else {
+            state.isNeedAddTask = true;
+          }
+        },
         setActivity: (state, action) => {
+            if(state.isNeedAddTask && state.activeTask === -1){
+              state.isNeedAddTask = false;
+            }
            const result = setActivityFun(state, action);
            state.tasks = result;
            
@@ -98,6 +142,6 @@ const taskWidget = createSlice({
     }
 });
 
-export const { setActivity , setTasks, setPriority } = taskWidget.actions;
+export const { setActivity , setTasks, setPriority, setIsNeedAddTask } = taskWidget.actions;
 
 export const  taskWidgetSlice  = taskWidget.reducer;

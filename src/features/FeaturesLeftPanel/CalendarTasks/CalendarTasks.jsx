@@ -53,14 +53,13 @@ export const CalendarTasks = (props) => {
                     //dispatch(setTasks(mapTasks.get(date)))
                 } 
             }
-            console.log('Calendar')
             if(key !== null){
                 const result = mapTasks.get(key);
                 dispatch(setTasks(sortArray(result) ))
             }else { dispatch(setTasks([])) }
         }
         
-    },[startDate, isSelect])
+    },[startDate, isSelect, tasks])
 
    
     //следит за тем, какие стили должны быть

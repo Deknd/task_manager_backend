@@ -9,6 +9,8 @@ import today from './img/today.png'
 import calendar from './img/calendar.png'
 import done from './img/done.png'
 import failed from './img/failed.png'
+import addTaskImg from './img/addTaskImg.png'
+
 
 
 
@@ -32,7 +34,7 @@ export const UsedButton = (props) => {
         (isSelect) => {  
             return (
                 <EffectButton borderRadius='10px' isSelect={ isSelect ? isSelect : null } >
-                    <AllActiveTask tasks={tasks}  >
+                    <AllActiveTask tasks={tasks} isSelect={isSelect}  >
                         <BigButton img={all} description='Активные таски' colorButtonRBG='250, 237, 205, 0.65' />
                     </AllActiveTask>
                 </EffectButton> 
@@ -41,7 +43,7 @@ export const UsedButton = (props) => {
         (isSelect) => {  
             return (
                 <EffectButton borderRadius='10px' isSelect={ isSelect ? isSelect : null } >
-                    <TodayActiveTasks tasks={tasks}  >
+                    <TodayActiveTasks tasks={tasks} isSelect={isSelect} >
                         <BigButton img={today} description='Задачи на сегодня' colorButtonRBG='250, 237, 205, 0.65' />
                     </TodayActiveTasks>
                 </EffectButton> 
@@ -59,7 +61,7 @@ export const UsedButton = (props) => {
         (isSelect) => {  
             return (
                 <EffectButton borderRadius='10px' isSelect={ isSelect ? isSelect : null } >
-                    <DoneTasks tasks={tasks} >
+                    <DoneTasks tasks={tasks} isSelect={isSelect} >
                         <BigButton img={done} description='Выполненые' colorButtonRBG='250, 237, 205, 0.65' />
                     </DoneTasks>
                 </EffectButton> 
@@ -67,12 +69,12 @@ export const UsedButton = (props) => {
         },(isSelect) => {  
             return (
                 <EffectButton borderRadius='10px' isSelect={ isSelect ? isSelect : null } >
-                    <FailedTasks tasks={tasks} >
+                    <FailedTasks tasks={tasks} isSelect={isSelect} >
                         <BigButton img={failed} description='Проваленные' colorButtonRBG='250, 237, 205, 0.65' />
                     </FailedTasks>
                 </EffectButton> 
             )
-        },
+        }, 
     ]
 
 

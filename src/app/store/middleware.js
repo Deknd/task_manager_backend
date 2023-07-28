@@ -1,7 +1,9 @@
 import { logger } from "../../shared/lib/logger";
 import { cookieForRefreshToken } from "../../shared/lib/cookieForRefreshToken";
-import { actionAuthRegistrSlice , clear_tasks, clear_user, setTasksSlice, setUserSlice } from '../../features'
+import { actionAuthRegistrSlice , actionTaskSlice, clear_tasks, clear_user, setTasksSlice, setUserSlice } from '../../features'
 import { ROUTES } from "../../shared/lib/constants/routes";
+import { setIsNeedAddTask } from "../../widgets/ListTaskWidget";
+import { deleteTaskForServer } from "../../features/tasksSlice/tasksSlice";
 
 const {
     setRefreshTokenCookie,
@@ -81,6 +83,147 @@ const startPegeSelectionMiddleware = (store) => (next) => (action) => {
     return next(action);
 
   }
+  const checkAccessToken = (store) => (next) => (action) => {
+
+    if(action.type === 'tasks/createTask'){
+      const { getState } = store;
+
+      const state = getState();
+
+      const task = action.payload;
+      const id = state.user.id;
+      const accessToken = state.authAndRegistrSlice.accessToken;
+
+
+        checkIsNeedRefresh(store,actionTaskSlice.addTask({id, task, accessToken}) );
+        
+        return;
+   
+    }
+    if(action.type === 'tasks/deleteTask'){
+
+        const { getState } = store;
+        const state = getState();
+
+        const idTask = action.payload;
+        const accessToken = state.authAndRegistrSlice.accessToken;
+
+        checkIsNeedRefresh( store, actionTaskSlice.deleteTaskForServer({idTask, accessToken}) );
+
+     return;
+    }
+    if(action.type === 'task/update'){
+      const { getState } = store;
+      const state = getState();
+
+      const{
+        id,
+        title,
+        description,
+        status,
+        priority,
+        expirationDate,
+      }=action.payload;
+
+      const task = {
+        id: id,
+        title: title? title : null,
+        description: description? description : null,
+        status: status? status : null,
+        priority: priority? priority : null,
+        expirationDate: expirationDate? expirationDate : null,
+
+      }
+      const accessToken = state.authAndRegistrSlice.accessToken;
+
+      checkIsNeedRefresh( store, actionTaskSlice.updateTaskForServer({task, accessToken}) );
+
+
+
+    }
+
+  return next(action); 
+
+  }
+
+  const checkIsNeedRefresh = async (store, fun) => {
+    const { getState } = store;
+    const { dispatch } = store;
+
+    const state = getState();
+
+    const now = new Date();
+    const expirationAccessToken = state.authAndRegistrSlice.expiration;
+    const otherDate = new Date(expirationAccessToken);
+
+    if(otherDate > now) {
+      dispatch(fun)
+    } else {
+      const refreshToken = state.authAndRegistrSlice.refreshToken;
+      await dispatch(updateRefreshToken({refreshToken: refreshToken}))
+      dispatch(fun)
+
+    }
+  }
+
+  const closeWindowAddTask = (store) => (next) => (action) => {
+    if(action.type === 'tasks/addTask/fulfilled'){
+      const { dispatch } = store;
+
+      dispatch(setIsNeedAddTask())
+    }
+    return next(action)
+  }
+
+
+
+ 
+  const timers = {}; 
+const isActive = {};
+  const updateOrNotUpdateTask = (store) => (next) => (action) => {
+
+    if(action.type === 'tasks/updateStatus'){
+
+      if(!isActive){
+        startTimer(store, action);
+      } else {
+        stopTimer(action);
+        startTimer(store, action);
+      }
+    }
+
+
+
+
+    return next(action);
+  }
+  const startTimer = (store, action) => {
+    const taskId = action.payload.id;
+    if (!isActive[taskId]) {
+      isActive[taskId] = true;  
+  
+      timers[taskId] = setTimeout(() => {
+        isActive[taskId] = false;  
+
+        const { getState } = store;
+        const state = getState();
+        const taskOld = state.tasks.tasks.find((task) => task.id === action.payload.id)
+        if(action.payload.status !== taskOld.status){
+          const { dispatch } = store;
+          dispatch(actionTaskSlice.updateTask({id: action.payload.id, status: action.payload.status}))
+        } 
+
+      }, 1000); 
+    }
+  }
+  const stopTimer = (action) => {
+    const taskId = action.payload.id;
+
+    if (isActive[taskId]) {
+      isActive[taskId] = false;
+      clearTimeout(timers[taskId]);
+    }
+  }
 
 
 
@@ -110,7 +253,10 @@ const  middleware = [
     addDataFor_AuthAndRegistrSlice_UserSlice_TasksSlice_Cookie,
     startPegeSelectionMiddleware,
      updateRefreshToken_Add_Data,
-     logout, 
+     logout,
+     checkAccessToken,
+     closeWindowAddTask,
+     updateOrNotUpdateTask,
     ]
 
 

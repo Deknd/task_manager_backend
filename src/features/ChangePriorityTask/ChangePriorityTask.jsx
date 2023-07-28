@@ -14,12 +14,14 @@ export const ChangePriorityTask = (props) =>{
     const {
         children,
         taskData,
+        priority,
+        change,
     } = props;
 
     const {
         id,
 
-    } = taskData;
+    } = taskData || {id: null};
 
 
 
@@ -30,12 +32,23 @@ export const ChangePriorityTask = (props) =>{
 
 
     const click = () =>{
-        dispatch(setPriority(id));    }
+        if(change){
+            if(priority === 'STANDARD'){
+                change('HIGH')
+            } else change('STANDARD')
+            return;
+        }
+
+
+        if(id){
+
+            dispatch(setPriority(id));    }
+        }
 
 
 
     return(
-        <div className={style.prioritytask} onClick={click}>
+        <div className={priority ? style.prioritytask : null} onClick={click}>
             {children}
         </div>
     )

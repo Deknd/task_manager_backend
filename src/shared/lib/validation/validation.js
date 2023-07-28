@@ -25,11 +25,33 @@ const validateEmail = (email) => {
   
 
   const isValidSymbol = (username) => {
-    const regex = /^[a-zA-Z0-9_]+$/;
-  
-    return regex.test(username);
+    const unsafeCharacters = /[\u0000-\u001f\u007f-\u009f<>\\='";{}()]/;
+
+    return !unsafeCharacters.test(username);
+  }
+  const errorMessanger = (errorDataArray) => {
+
+    const array = [];
+    errorDataArray.forEach((errorData)=>{
+      const   errorText =  errorData.errorText;
+      const functionValidation = errorData.functionValidation;
+      if(functionValidation){
+        array[array.length]=errorText;
+      }
+    })
+    if(array.length !== 0){
+      if(array.length>1){
+        const result = array.join(", ");
+        return result;
+
+      } else { return array; }
+      
+    }
+
+
+
   }
 
 
 
-  export const validate = { isValidSymbol, validateEmail, validatePassword };
+  export const validate = { isValidSymbol, validateEmail, validatePassword, errorMessanger };

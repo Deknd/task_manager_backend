@@ -13,16 +13,15 @@ export const AllActiveTask = (props) => {
     const {
         children,
         tasks,
+        isSelect,
     } = props;
 
-    const [ firstRender, setFirstRender ] = useState(false)
         useEffect(()=>{
-            if(!firstRender){
+            if(isSelect){
 
                 if(tasks.lenght !== 0){
 
                     onClick();
-                    setFirstRender(true);
                 }
             }
         },[tasks])

@@ -8,12 +8,17 @@ export const InputData = ( props ) => {
     const { 
         type,
         placeholder,
+        dataPut,
         getData,
         clear,
+        width,
+        height,
+        fontSize,
+        noBorder
      } = props;
 
 
-     const [ data, setData ] = useState('');
+     const [ data, setData ] = useState(dataPut ? dataPut : '');
      useEffect(()=> {
         if(clear){
             setData('');
@@ -32,7 +37,7 @@ export const InputData = ( props ) => {
 
     return (
         <div>
-            <InputField type={type} placeholder={placeholder} value={data} onChange={ handleDataChange } />
+            <InputField noBorder={noBorder} type={type} placeholder={placeholder} value={data} onChange={ handleDataChange } width={width ? width : null} height={ height ? height : null} fontSize={fontSize? fontSize : null} />
         </div>
     )
 }

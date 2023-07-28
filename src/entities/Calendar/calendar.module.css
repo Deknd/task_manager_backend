@@ -1,0 +1,21 @@
+.calendar {
+  
+  font-family: inherit !important;
+  font-size: 0.67em !important;
+  border: none;
+}
+
+.day {
+    width: 1em;
+    height: 1.4em;
+    
+
+}
+
+.time {
+
+}
+
+
+
+

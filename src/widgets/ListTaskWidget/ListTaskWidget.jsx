@@ -1,8 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import {  useSelector } from "react-redux";
+import {  useDispatch, useSelector } from "react-redux";
 
-import { TaskWidget } from '../index';
+import { AddNewTask, TaskWidget } from '../../widgets';
+import { setActivity, setIsNeedAddTask } from "./taskWidgetSlice";
+
+
+
+
 
 
 
@@ -15,14 +20,19 @@ import { TaskWidget } from '../index';
 export const ListTaskWidget =() => {
    
   // Получает таски из стора
-    const tasks = useSelector((state) => state.taskWidget.tasks)
+    const tasksState = useSelector((state) => state.taskWidget.tasks);
+    const activeTask = useSelector((state) => state.taskWidget.activeTask);
+    const isNeedAddTask = useSelector((state) => state.taskWidget.isNeedAddTask);
      // Получает контейнер 
     const containerRef = useRef(null);
     // данные о размере контейнера
     const [elementRect, setElementRect] = useState({ top: 0, left: 0, right: 0, bottom: 0, });
-    const [height, setHeight] = useState(0);
+    const [ tasks, setTasks ] = useState([]);
+    useEffect(()=>{
+      tasksState ? setTasks(tasksState) : setTasks([]);
+    },[tasksState])
 
-
+    const dispatch = useDispatch();
     //Функция для обновления размера контейнера
     const handleResize = () => {
         if (containerRef.current) {
@@ -35,17 +45,23 @@ export const ListTaskWidget =() => {
             });
             
         }
-        calculateHeight();
       };
-    const calculateHeight = () => {
-        if (containerRef.current) {
-          const windowHeight = window.innerHeight;
-          const top = elementRect.top;
-          const height = windowHeight - top;
-  
-          setHeight(height);
-        }
-      };
+
+      useEffect(()=>{
+        isAddTask();
+      },
+      [isNeedAddTask])
+
+
+     const isAddTask = ()=>{
+      if(isNeedAddTask){
+        dispatch(setActivity(-1))
+      }else{
+        if(activeTask !== null){
+          dispatch(setActivity(-1))
+
+      }}
+    }
 
     //подписывается на обновление контейнера
     useEffect(() => {
@@ -62,15 +78,20 @@ export const ListTaskWidget =() => {
     }, []);
 
     
-    
-  
-
-
+   
+      
     return(
+      <div style={{
+        position: 'relative',
+        height: '91dvh',
+
+      }} >
+        
+
         <div 
-        role="ListForTasks"
-        ref={containerRef}
-        style={{
+          role="ListForTasks"
+          ref={containerRef}
+          style={{
             padding: '0.5rem',
             display: 'flex',
             flexDirection: 'row',
@@ -78,27 +99,34 @@ export const ListTaskWidget =() => {
             alignContent: 'flex-start',
             justifyContent: 'flex-start',
             overflowY: 'auto',
-            height: '100dvh',
-        }}>
+            height: '100%',
+            filter: isNeedAddTask ? 'blur(2.5px)' : ''
+          }}>
+          
+
            { (tasks.length !== 0) ? tasks.map((task) => (
-          <div key={task.id}  style={{
+            <div key={task.id}  style={{
             margin: `0.5rem`
             }}>
-          <TaskWidget taskData={task} parrentRect={elementRect} />
-          </div>
-        )) : (
+            <TaskWidget taskData={task} parrentRect={elementRect} />
+            </div>
+            )) : (
           <div style={{
             margin: 'auto',
             paddingTop: '5rem'
-          }}>
+            }}>
             <span style={{
               fontSize: '3rem'
-            }}>
+              }}>
                Нет задач
 
             </span>
           </div>
-        )}
+          )}
         </div>
+
+       {isNeedAddTask ? (<AddNewTask/>) : null }
+       
+      </div>
     )
 } 

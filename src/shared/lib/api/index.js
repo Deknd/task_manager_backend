@@ -1,3 +1,6 @@
 export { API_LOGIN } from './api_login'
 export { API_UPDATE_REFRESH_TOKEN } from './api_updateRefreshToken'
 export { API_REGISTRATION } from './api_registration'
+export { API_ADD_TASK } from './api_addTask'
+export { API_DELETE_TASK } from './api_deleteTask'
+export { API_UPDATE } from './api_updateTask'

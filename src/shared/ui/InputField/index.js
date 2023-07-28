@@ -8,6 +8,10 @@ export const InputField = (props) => {
         placeholder,
         value,
         onChange,
+        width,
+        height,
+        fontSize,
+        noBorder,
     } = props;
 
 
@@ -19,11 +23,17 @@ export const InputField = (props) => {
         }} >
             <input
             style={{
-                fontSize: '1.7em',
-                width: '17em',
+                fontSize: fontSize? fontSize : '1.7em',
+                width: width ? width : '17em',
+                height: height ? height : '', 
                 borderRadius: '0.3em',
+                border: noBorder ? 'none' : '',
                 padding: '0.1em',
-                textAlign: 'center'
+                textAlign: 'center',
+                whiteSpace: 'pre-wrap',
+
+
+
 
             }}
             type={type}

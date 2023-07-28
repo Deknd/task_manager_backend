@@ -1,3 +1,2 @@
 export { ListTaskWidget } from './ListTaskWidget'
-export { taskWidgetSlice } from './taskWidgetSlice'
-export { taskWidgetMiddleware } from './taskWidgetMiddleware'
+export { taskWidgetSlice, setIsNeedAddTask } from './taskWidgetSlice'

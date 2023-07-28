@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
 import { fillterTodayActiveTasks } from "../lib/fillterTodayActiveTask";
@@ -12,10 +12,22 @@ export const TodayActiveTasks = (props) => {
     const {
         children,
         tasks,
+        isSelect,
+
     } = props;
 
 
     const dispatch = useDispatch();
+    useEffect(()=>{
+
+        if(isSelect){
+
+                if(tasks.lenght !== 0){
+
+                    onClick();
+                }
+            }
+    },[tasks])
 
     const onClick = ()=>{
         

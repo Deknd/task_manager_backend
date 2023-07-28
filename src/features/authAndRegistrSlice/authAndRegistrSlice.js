@@ -130,4 +130,12 @@ const authAndRegistrSlice = createSlice({
 
 export const authRegistrSlice = authAndRegistrSlice.reducer;
 const { setAuthAndRegistrSlice, setStartPage, clear_data } = authAndRegistrSlice.actions;
-export const actionAuthRegistrSlice = { loginUser, startPegeSelection, setAuthAndRegistrSlice, setStartPage, updateRefreshToken, registrationUser, clear_data };
+export const actionAuthRegistrSlice = { 
+  loginUser, 
+  startPegeSelection, 
+  setAuthAndRegistrSlice, 
+  setStartPage, 
+  updateRefreshToken, 
+  registrationUser, 
+  clear_data 
+};

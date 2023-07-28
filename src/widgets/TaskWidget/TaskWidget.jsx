@@ -2,14 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 
 
 
-import { ContentTaskActiveElements } from '../../features';
+import { ChangeStatusTask, ContainerForButtonIcon, ContentTaskActiveElements, DeleteTask, EffectButton, SendNewTask } from '../../features';
 import { FormTaskWidget } from '../../features';
 import { ChangePriorityTask } from '../../features';
 
-import { FourIconButton } from '../../entities';
 import { ContentTask } from "../../entities";
 
-import {  ContentField } from '../../shared/ui'
+import {  ContentField, IconButton_v2 } from '../../shared/ui'
+import { InputDataForTask } from '../InputDataForTask';
+import { format } from 'date-fns';
 
 
 
@@ -30,9 +31,14 @@ export const TaskWidget = (props) => {
     } = parrentRect;
 
     const {
+        id,
+        status,
+        priority,
         isBlock,
         isActive,
     } = taskData || {};
+    const [ statusTask, setStatusTask ] = useState(status);
+    const [ priorityTask, setPriorityTask ] = useState(priority);
 
     //стандартный отступ для активации таска
     const leftShiftDefault = -2.835;
@@ -92,33 +98,118 @@ export const TaskWidget = (props) => {
             }
         }
       },[isActive]);
-    
+    const [ isEditMode, setIsEditMode ] = useState(false);
+    const [ isActiveEditMode, setIsActiveEditMode ] = useState(false);
+    const [ taskDataEdit, setTaskData ] = useState({
+        title: '',
+        description: '',
+        expirationDate: new Date(),
+        priority: '',
+        status: 'TODO'
+    })
+
+    const buttonComplect = [(
+
+        <EffectButton>
+            <ChangeStatusTask activeStatus={statusTask} setStatus={setStatusTask} forStatus={'DONE'} id={id} >
+                <IconButton_v2 type={'positive'}  textIcon={'Done'} />
+            </ChangeStatusTask>
+        </EffectButton>  
+
+    ), (
+
+        <EffectButton>
+            <ChangeStatusTask activeStatus={statusTask} setStatus={setStatusTask} forStatus={'FAILED'} id={id} >
+                <IconButton_v2 type={'negative'}  textIcon={'Failed'} />
+            </ChangeStatusTask>
+        </EffectButton>
+
+    ),(
+
+        <EffectButton>
+            <div onClick={()=>{setIsEditMode(true)}} >
+                <IconButton_v2 type={'edit'}  textIcon={'Edit'} />
+            </div>
+        </EffectButton>  
+
+    ), (
+
+        <EffectButton>
+            <DeleteTask idTask={id} >
+                <IconButton_v2 type={'garbage'}  textIcon={'Delete'} />
+            </DeleteTask>
+        </EffectButton>
+
+    )]
+
+    const buttonComplectEditMode = [(
+
+        <EffectButton>
+        
+            <SendNewTask 
+                task={taskDataEdit} >
+                <IconButton_v2 type={'accept'} textIcon={'ok'} />
+            </SendNewTask>
+        </EffectButton>  
+
+    ), (
+
+        <EffectButton>
+            
+            <div onClick={()=>{setIsEditMode(false)}} >
+
+                <IconButton_v2 type={'cancel'} textIcon={'Отмена'} />
+            </div>
+            
+            
+        </EffectButton>
+
+    )]
 
     return(
 
         <div ref={taskWidget} >
-            <FormTaskWidget taskData={taskData} move={move}>
+            <FormTaskWidget status={statusTask} priority={priorityTask} taskData={taskData} move={move}>
                 {/* div для контентной части */}
-                <ContentTaskActiveElements taskData={taskData}>
-                    <ContentTask taskData={taskData}/>
-                </ContentTaskActiveElements>
+                
+                    <ContentTaskActiveElements 
+                        taskData={taskData} 
+                        isEditMode={isEditMode} 
+                        isActiveEditMode={isActiveEditMode}   
+                        setIsActiveEditMode={setIsActiveEditMode}
+                        setIsEditMode={setIsEditMode} >
+                            {
+                                isActiveEditMode ? (
+
+                                    <InputDataForTask getData={setTaskData} cameTitle={taskData.title} cameDescription={taskData.description}  />
+                                  
+
+                                ):(
+                                    <ContentTask taskData={taskData}/>
+                                )
+                            }
+                    </ContentTaskActiveElements>
+                
+                
 
                 {/* Фуекциональная часть */}
                 
                     {/* Кнопка изменения приоритета */}
-                {isActive ?( 
+                {isActive && !isActiveEditMode ?( 
                     <ChangePriorityTask taskData={taskData}>
                         <ContentField text={'change priority'} isVisible={isActive} height={2} />
                     </ChangePriorityTask>
                 )  : null}
 
                 <div style={{
-                    height: '2.5rem',
-                    marginTop: '0.5rem',
-                    padding: '0.3rem',
+                   // height: '4em',
+                    //marginTop: '0.5rem',
+                   paddingBottom: '0.4em',
                         
                 }}>
-                    {!isBlock ? <FourIconButton/> : null}
+                    {!isBlock ? (
+                        <ContainerForButtonIcon buttonIcons={isActiveEditMode ? buttonComplectEditMode : buttonComplect} />
+                    ) : null}
                 </div>
             </FormTaskWidget>
         </div>

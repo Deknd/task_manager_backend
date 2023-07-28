@@ -3,14 +3,16 @@ import React, { useEffect,  useState } from "react";
 
 import { SceletonTaskWidget } from "../../entities";
 
-import taskDesctopBigStandart from './image/taskDesctopBigStandard.jpg'
-import taskDesctopBigHigh from './image/taskDesctopBigHigh.jpg'
+import taskDesctopBigStandart from '../lib/image/taskDesctopBigStandard.jpg'
+import taskDesctopBigHigh from '../lib/image/taskDesctopBigHigh.jpg'
 
 
 export const FormTaskWidget = (props)=>{
 
     const {
       taskData,
+      status,
+      priority,
       move,
       
 
@@ -19,8 +21,7 @@ export const FormTaskWidget = (props)=>{
     }=props;
 
     const{
-      status,
-      priority,
+      
       isActive,
       isBlock,
 

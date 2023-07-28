@@ -1,0 +1,52 @@
+.wrapper{
+    background-color: rgb(163, 22, 206);
+    font-size: 1em;
+    padding-top: 0.5em;
+    width: 100%;
+}
+
+
+
+
+.calendar{
+    background-color: #6adf0ad5;
+    width: 100%;
+    text-align: center;
+    height: 2em;
+    font-family: "Inria Sans", sans-serif;
+    border-radius: 0.3em; 
+}
+
+.popper {
+    padding-top: 0px;
+    background-color: aquamarine;
+}
+
+.calendar_content {
+    background-color: rgb(3, 5, 129);
+    padding-top: 0px;
+    font-size: unset;
+    font-family: "Inria Sans", sans-serif;
+
+    width: 20em;
+   
+
+}
+.time {
+    padding-top: 0px;
+
+    background-color: red;
+}
+
+.month {
+    padding-top: 0px;
+
+    background-color: rgb(241, 162, 14);
+}
+
+
+.clear {
+    padding-top: 0px;
+
+    background-color: rgb(94, 53, 0);
+}
