@@ -183,13 +183,27 @@ const isActive = {};
   const updateOrNotUpdateTask = (store) => (next) => (action) => {
 
     if(action.type === 'tasks/updateStatus'){
+      const taskId = action.payload.id;
+      
 
-      if(!isActive){
-        startTimer(store, action);
+      if(!isActive[`${taskId}:${action.type}`]){
+        startTimer(store, action, 'status');
       } else {
         stopTimer(action);
-        startTimer(store, action);
+        startTimer(store, action, 'status');
       }
+    }
+    if(action.type ==='tasks/updatePriority'){
+      const taskId = action.payload.id;
+      console.log('taskId: ',taskId, ' priority: ',action.payload.priority)
+      if(!isActive[`${taskId}:${action.type}`]){
+        startTimer(store, action, 'priority');
+      } else {
+        stopTimer(action);
+        startTimer(store, action, 'priority');
+      }
+
+
     }
 
 
@@ -197,31 +211,50 @@ const isActive = {};
 
     return next(action);
   }
-  const startTimer = (store, action) => {
+  const startTimer = (store, action, type ) => {
     const taskId = action.payload.id;
-    if (!isActive[taskId]) {
-      isActive[taskId] = true;  
+    const idTimer = `${taskId}:${action.type}`;
+    
+    if (!isActive[idTimer]) {
+      isActive[idTimer] = true;  
   
-      timers[taskId] = setTimeout(() => {
-        isActive[taskId] = false;  
+      timers[idTimer] = setTimeout(() => {
+        isActive[idTimer] = false;  
 
         const { getState } = store;
         const state = getState();
         const taskOld = state.tasks.tasks.find((task) => task.id === action.payload.id)
-        if(action.payload.status !== taskOld.status){
-          const { dispatch } = store;
-          dispatch(actionTaskSlice.updateTask({id: action.payload.id, status: action.payload.status}))
-        } 
+        let quest = null;
+        switch (type) {
+          case 'status': { 
+            if(action.payload.status !== taskOld.status){
+            const { dispatch } = store;
+            dispatch(actionTaskSlice.updateTask({id: action.payload.id, status: action.payload.status}))
+          } 
+        }
+          break;
+          case 'priority': {
+
+           
+            if(action.payload.priority !== taskOld.priority){
+              const { dispatch } = store;
+              dispatch(actionTaskSlice.updateTask({id: action.payload.id, priority: action.payload.priority}))
+            } 
+          };
+          break;
+        }
+        
+       
 
       }, 1000); 
     }
   }
   const stopTimer = (action) => {
     const taskId = action.payload.id;
-
-    if (isActive[taskId]) {
-      isActive[taskId] = false;
-      clearTimeout(timers[taskId]);
+    const idTimer = `${taskId}:${action.type}`;
+    if (isActive[idTimer]) {
+      isActive[idTimer] = false;
+      clearTimeout(timers[idTimer]);
     }
   }
 

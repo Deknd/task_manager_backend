@@ -29,6 +29,7 @@ const updateTaskForServer = createAsyncThunk(
 const createTask = createAction('tasks/createTask');
 const deleteTask = createAction('tasks/deleteTask');
 const updateStatusTask = createAction('tasks/updateStatus');
+const updatePriorityTask = createAction('tasks/updatePriority')
 const updateTask = createAction('task/update');
 
 
@@ -102,6 +103,7 @@ export const actionTaskSlice = {
   deleteTaskForServer,
   updateTaskForServer,
   updateTask,
+  updatePriorityTask
 
 }
 

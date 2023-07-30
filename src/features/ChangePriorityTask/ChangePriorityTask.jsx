@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { setPriority } from "../../widgets/ListTaskWidget/taskWidgetSlice";
 
 import style from './changePriority.module.css'
+import { actionTaskSlice } from "../tasksSlice";
 
 
 
@@ -35,7 +36,12 @@ export const ChangePriorityTask = (props) =>{
         if(change){
             if(priority === 'STANDARD'){
                 change('HIGH')
-            } else change('STANDARD')
+                dispatch(actionTaskSlice.updatePriorityTask({id: id,priority: 'HIGH'}))
+            } else {
+                change('STANDARD')
+                dispatch(actionTaskSlice.updatePriorityTask({id: id,priority: 'STANDARD'}))
+
+            }
             return;
         }
 
