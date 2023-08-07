@@ -70,6 +70,7 @@ public class UserController {
     @PreAuthorize("@customSecurityExpression.canAccessUser(#id)")
     public TaskDto createTask(@PathVariable Long id,
                               @Validated(OnCreate.class) @RequestBody TaskDto dto) {
+        log.info( "title: "+dto.getTitle()+" description: "+dto.getDescription() +" status: "+dto.getStatus() + " priority: "+ dto.getPriority() + " expirationDate: "+ dto.getExpirationDate());
         Task createdTask = taskService.create(dto, id);
         return taskMapper.toDto(createdTask);
     }

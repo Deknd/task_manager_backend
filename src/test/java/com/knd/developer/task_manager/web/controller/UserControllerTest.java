@@ -8,7 +8,6 @@ import com.knd.developer.task_manager.service.props.JwtProperties;
 import com.knd.developer.task_manager.web.dto.auth.LoginRequest;
 import com.knd.developer.task_manager.web.dto.auth.RefreshRequest;
 import com.knd.developer.task_manager.web.dto.task.TaskDto;
-import com.knd.developer.task_manager.web.dto.user.request.UserDeleteRequestDto;
 import com.knd.developer.task_manager.web.dto.user.request.UserUpdateRequestDto;
 import com.knd.developer.task_manager.web.dto.user.response.UserAndTokenResponseDto;
 import com.knd.developer.task_manager.web.dto.user.response.UserResponseDto;
@@ -18,13 +17,11 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.FluxExchangeResult;
-import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;

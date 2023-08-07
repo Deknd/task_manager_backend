@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -91,7 +92,7 @@ public class TaskServiceImpl implements TaskService {
      * Если данные не верны( userId == null, title == null,
      * данные из TaskDto не проходят валидацию(т.е. использованы не допустимые знаки или данные не допустимой длинны),
      * время выполнения просрочено) выкидывает исключение ResourcesMappingException.
-     * Если не указаны статус и(или) приоритет, то они меняются на Status.ТODO и PriorityTask.STANDART
+     * Если не указаны статус и(или) приоритет, то они меняются на Status.ТODO и PriorityTask.STANDARD
      *
      * @param taskDto - TaskDto, title не может быть null
      * @param userId  - id юзера, к которому добавляется task, не может быть null
@@ -108,8 +109,19 @@ public class TaskServiceImpl implements TaskService {
             throw new ResourcesMappingException("title не может быть null");
 
         }
-        if (taskDto.getExpirationDate() != null && LocalDateTime.parse(taskDto.getExpirationDate()).isBefore(LocalDateTime.now())) {
-            throw new ResourcesMappingException("Не верное время завершение, время на выполнение уже закончилось");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+
+
+        if (taskDto.getExpirationDate() != null) {
+            if(taskDto.getExpirationDate().length()>17){
+                formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS");
+            }
+            LocalDateTime timeTask = LocalDateTime.parse(taskDto.getExpirationDate(), formatter);
+            if(timeTask.isBefore(LocalDateTime.now())){
+                throw new ResourcesMappingException("Не верное время завершение, время на выполнение уже закончилось");
+
+            }
         }
         Task task = Task.builder().user_id(userId).build();
 
@@ -206,8 +218,13 @@ public class TaskServiceImpl implements TaskService {
 
         }
         if (newTask.getExpirationDate() != null) {
-            if (LocalDateTime.parse(newTask.getExpirationDate()).isAfter(LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()))) {
-                oldTask.setExpirationDate(LocalDateTime.parse(newTask.getExpirationDate()));
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            if(newTask.getExpirationDate().length()>16){
+                formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS");
+            }
+            LocalDateTime timeTask = LocalDateTime.parse(newTask.getExpirationDate(),formatter);
+            if (timeTask.isAfter(LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()))) {
+                oldTask.setExpirationDate(timeTask);
             }
 
         }
