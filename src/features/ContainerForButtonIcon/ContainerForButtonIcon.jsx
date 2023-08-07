@@ -1,7 +1,7 @@
 import React from "react";
 
 
-
+//Контейнер для кнопок
 export const ContainerForButtonIcon = (props) => {
     const {
         buttonIcons,
@@ -13,9 +13,9 @@ export const ContainerForButtonIcon = (props) => {
     return(
         <div
                 style={{
-                    height: '2.5rem',
-                    marginTop: '0.5rem',
-                    padding: '0.3rem',        
+                    height: '2.5em',
+                    marginTop: '0.5em',
+                    padding: '0.3em',        
                 }}>
                 <div style={{
                     display: 'flex',

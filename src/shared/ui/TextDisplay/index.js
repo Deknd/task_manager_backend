@@ -1,11 +1,13 @@
 import React from "react";
 
 
-
+//выводит текст на экран
 export const TextDisplay = (props) => {
 
     const {
+        //размер шрифта в em
         fontSize,
+        //текст для вывода
         text
     } = props;
 
@@ -15,7 +17,7 @@ export const TextDisplay = (props) => {
             alignContent: 'center',
             justifyContent: 'center',
             alignItems: 'center',
-            fontSize: `${fontSize}em`,
+            fontSize: fontSize ? `${fontSize}em` : '1em',
             }} >
             {text}
         </div>

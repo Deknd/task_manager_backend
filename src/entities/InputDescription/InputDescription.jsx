@@ -1,22 +1,27 @@
 import React, { useEffect, useState } from "react";
 
-
+//принимает описание от пользователя
 export const InputDescription = (props) => {
 
     const {
+        //метод для возврата описание
         getDiscription,
+        //принимает описание
         dataPut,
+        //инидкатор того, что нужно очистить данные
         clear
     } = props;
 
+    //следит за состоянием описания
     const [ description, setDescription ] = useState(dataPut? dataPut : '');
+    //метод обновляющий состояние и возвращающий данные
     const handleChangeDescription = (e) => {
         setDescription(e.target.value);
         if(getDiscription){
             getDiscription(e.target.value);
         }
       };
-    
+    //следит за индикатором очистки и очищает данные, если это требуется
     useEffect(()=> {
         if(clear){
             setDescription('');

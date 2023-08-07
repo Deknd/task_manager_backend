@@ -1,0 +1,5 @@
+export { ButtonsForTask } from './buttons'
+export { complectButtonsForVisual } from './complectButtonForVisual'
+export { complectButtonsForEditMode } from './complectButtonsForEditMode'
+export { DisplayingData } from './contentTask'
+export { SceletonForTask } from './sceletonForTask'

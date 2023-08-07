@@ -12,7 +12,7 @@ export const DoneTasks = (props) => {
     const {
         tasks,
         children,
-        isSelect
+        isSelect,
     } = props;
 
   

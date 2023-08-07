@@ -1,59 +1,33 @@
-import React, { useState } from "react";
+import React  from "react";
+import style from './effectButton.module.css'
 
 
 
-
+//создает эффект нажатие и анимацию кнопки
 export const EffectButton =(props)=> {
 
     const{
         children,
+        //если выбрана данная кнопка, появляется тень
         isSelect,
+        //округление границ
         borderRadius,
        
     } = props;
 
 
-  //Хуки для слежения взаимодействия с кнопкой
-    const [isHovered, setIsHovered] = useState(false);
-    const [isActive, setIsActive] = useState(false);
-
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    setIsActive(false); 
-  };
-
-  const handleMouseDown = () => {
-    setIsActive(true);
-  };
-
-  const handleMouseUp = () => {
-    setIsActive(false);
-  };
-
-
 return(
 
 
-    <div style={{
-        overflow: 'hidden',
-
-        transform: isActive
-         ? `scale(1) translateY(0)`
-          : isHovered
-           ? `scale(1.02) translateY(-3px)`
-            : `scale(1)`,
-        transition: `transform 0.1s ease-in-out`,
-        cursor: 'pointer',
-        position: 'relative',
+    <div 
+    className={style.effect_button}
+    style={{
+       
         boxShadow: isSelect ?'0 0 4px rgba(0, 0, 0, 0.6)' : '',
         borderRadius: borderRadius ? borderRadius : '',
      
         
-      }} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} >
+      }}  >
         {children}
     </div>
 

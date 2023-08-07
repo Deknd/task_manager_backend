@@ -2,27 +2,29 @@ import React from "react";
 import { TextDisplay } from "../../shared/ui";
 
 
-
+//проводит валидацию и выводит сообщения об ошибках
 export const FrameError = (props) => {
 
     const { 
         children,
+        //индикатор коректности данных
         dataCorrect,
+        //текст ошибки который нужно вывести
         textError
      } = props;
 
+     //проверяет, приходит ли индикатор ошибки
     const errorData = dataCorrect ? dataCorrect : false;
 
 
     return (
         <div style={{
-            //paddingTop: '0.1em'
         }} >
             <div style={{
                 visibility: errorData ? 'visible': 'hidden',
                 color: 'rgb(254, 167, 187)',
-               // padding: '0.1em',
                 }} >
+                    {/* выводит текст (ок)*/}
                 <TextDisplay text={textError? textError : ' Error '} fontSize={0.9} />
             </div>
             <div style={{

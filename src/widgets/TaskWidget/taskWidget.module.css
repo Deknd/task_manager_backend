@@ -5,19 +5,11 @@
 .content {
     opacity: 100%;
     width: 15.33rem;
-    border-radius: 10px;
-    background-size: cover;
-    padding-top: 1rem;
-    padding-left: 0.7rem;
-    padding-right: 0.7rem;
+    
     user-select: none;
     position: relative;
     transition: 0.5s;
     transform: scale(1);
     z-index: auto;
     left: 0rem;
-}
-.content:hover {
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-    transform: scale(1.01);
 }

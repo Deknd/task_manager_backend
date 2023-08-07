@@ -1,27 +1,33 @@
-import React, { useEffect, useRef, useState } from "react";
-
+import React from "react";
+import { complectButtonForUserPanelWidget } from './ui'
 import { UsedButton } from "../";
 
 import { ContainerForButton } from "../../entities";
 import { Footer } from "../../entities";
 
 import addTaskImg from './addTaskImg.png'
-import { EffectButton } from "../../features";
+import { ActiveOneOfMany, EffectButton } from "../../features";
 import { BigButton } from "../../shared/ui";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setIsNeedAddTask } from "../ListTaskWidget";
 
-
+//панель для управление и разделения тасков
 export const ButtonPanelWidget = () => {
     const dispatch = useDispatch();
+    const tasks = useSelector((state)=>state.tasks.tasks);
 
 
     
 
 
     return(
+
+        //контейнер для кнопок (ок) TODO 
         <ContainerForButton>
-            <UsedButton/>
+
+             <div style={{borderRadius: '15px'}}>
+            <ActiveOneOfMany elements={complectButtonForUserPanelWidget(tasks)} />
+            </div>
             <div style={{margin: '0.5em'}}>
                 <EffectButton isSelect={null} borderRadius='10px'  >
                     <div onClick={()=>{dispatch(setIsNeedAddTask())}} >

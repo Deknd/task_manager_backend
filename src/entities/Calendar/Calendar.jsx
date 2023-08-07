@@ -5,15 +5,17 @@ import ReactDatePicker from "react-datepicker";
 
 import styles from './calendar.module.css'; 
 
-
+//календарь
 export const Calendar = (props) => {
 
     const {
+        //метод для возврата данных
         getDate,
+        //данные принятые 
         startDate,
     } = props;
 
-
+    //метод обновляющий данные
     const handleChangeDate = (e) => {
         setStartDateCalendar(e)
         if(getDate) {
@@ -21,6 +23,7 @@ export const Calendar = (props) => {
         }
       };
      
+      //состояние данных 
     const [ startDateCalendar, setStartDateCalendar ] = useState(startDate)
     return(
         <ReactDatePicker

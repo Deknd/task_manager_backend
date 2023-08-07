@@ -1,0 +1,14 @@
+.container {
+    border-radius: 0.6em;
+    background-size: cover;
+    padding-top: 1em;
+    padding-left: 0.7em;
+    padding-right: 0.7em;
+    transition: 0.3s;
+
+}
+
+.container:hover {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    transform: scale(1.01);
+  }

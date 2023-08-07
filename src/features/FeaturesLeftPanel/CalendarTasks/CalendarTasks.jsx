@@ -17,6 +17,8 @@ export const CalendarTasks = (props) => {
         children,
         tasks,
         isSelect,
+        
+
     } = props;
 
     const dispatch = useDispatch();
@@ -55,8 +57,11 @@ export const CalendarTasks = (props) => {
             }
             if(key !== null){
                 const result = mapTasks.get(key);
+
                 dispatch(setTasks(sortArray(result) ))
-            }else { dispatch(setTasks([])) }
+            }else { 
+
+                dispatch(setTasks([])) }
         }
         
     },[startDate, isSelect, tasks])

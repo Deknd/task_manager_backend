@@ -1,6 +1,8 @@
 import React from "react";
 
+import style from './sceletonUserPanel.module.css'
 
+//создает контойнер для пользовательского интерфейса
 export const SceletonUserPanel = (props) => {
 
     const {
@@ -9,36 +11,14 @@ export const SceletonUserPanel = (props) => {
     }=props;
 
     return(
-        <div style={{
-            display: 'flex',
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            alignContent: 'center',
-            justifyContent: 'space-between',
-            
-
-            height: '3rem',
-            width: '100%',
-            borderBottom: "3px solid #00000030",
-        }}>
-            <div style={{
-                display: 'flex',
-                marginLeft: '5rem',
-                paddingLeft: '3.4rem',
-                fontSize: '1.6rem'
-                
-            }} >
+        <div className={style.main_container} >
+            <div className={ style.user_name } >
                 <span>Hello,</span>
-                <div style={{
-                    paddingLeft: '2rem'
-                }} >{userName}</div>
-                    
+                <div className={ style.name } > 
+                    {userName}
+                </div>   
             </div>
-            <div style={{
-                display: 'flex',
-                paddingRight: '2rem'
-                }} >
-                
+            <div className={ style.other } >
                 {children} 
             </div>
         </div>

@@ -12,7 +12,8 @@ export const FailedTasks = (props) => {
     const {
         tasks,
         children,
-        isSelect
+        isSelect,
+        
     } = props;
 
   

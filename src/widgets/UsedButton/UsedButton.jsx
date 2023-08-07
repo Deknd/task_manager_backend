@@ -17,6 +17,7 @@ import { EffectButton } from "../../features";
 import { AllActiveTask, FailedTasks, TodayActiveTasks, CalendarTasks, DoneTasks } from '../../features/FeaturesLeftPanel/index '
 import { ActiveOneOfMany } from "../../features";
 
+
 import { BigButton } from "../../shared/ui";
 
 
@@ -41,7 +42,7 @@ export const UsedButton = (props) => {
         (isSelect) => {  
             return (
                 <EffectButton borderRadius='10px' isSelect={ isSelect ? isSelect : null } >
-                    <TodayActiveTasks tasks={tasks} isSelect={isSelect} >
+                    <TodayActiveTasks tasks={tasks} isSelect={isSelect}  >
                         <BigButton img={today} description='Задачи на сегодня' colorButtonRBG='250, 237, 205, 0.65' />
                     </TodayActiveTasks>
                 </EffectButton> 
@@ -50,7 +51,7 @@ export const UsedButton = (props) => {
         (isSelect) => {
             return(
                 <EffectButton borderRadius='10px' isSelect={ isSelect ? isSelect : null } >
-                    <CalendarTasks tasks={tasks} isSelect={ isSelect ? isSelect : null }>
+                    <CalendarTasks tasks={tasks}  isSelect={ isSelect ? isSelect : null }>
                         <BigButton img={calendar} description='Календарь' colorButtonRBG='250, 237, 205, 0.65' />
                     </CalendarTasks>
                 </EffectButton>
@@ -59,7 +60,7 @@ export const UsedButton = (props) => {
         (isSelect) => {  
             return (
                 <EffectButton borderRadius='10px' isSelect={ isSelect ? isSelect : null } >
-                    <DoneTasks tasks={tasks} isSelect={isSelect} >
+                    <DoneTasks tasks={tasks} isSelect={isSelect}  >
                         <BigButton img={done} description='Выполненые' colorButtonRBG='250, 237, 205, 0.65' />
                     </DoneTasks>
                 </EffectButton> 

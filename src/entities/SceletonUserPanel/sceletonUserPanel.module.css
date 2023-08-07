@@ -1,0 +1,23 @@
+.main_container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: space-between;
+    height: 3em;
+    width: 100%;
+    border-bottom: 3px solid #00000030;
+}
+.user_name {
+    display: flex;
+    margin-left: 3em;
+    padding-left: 3.4em;
+    font-size: 1.6em;
+}
+.name {
+    padding-left: 2em;
+}
+.other {
+    display: flex;
+    padding-right: 2em;
+}

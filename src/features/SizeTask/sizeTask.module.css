@@ -1,0 +1,17 @@
+.fix_container {
+    width: 15.33em;
+    height: 9.6em;
+}
+.content {
+    opacity: 100%;
+    width: 15.33em;
+    border-radius: 0.6em;
+    background-size: cover;
+    padding-left: 0.7em;
+    padding-right: 0.7em;
+    user-select: none;
+    position: relative;
+    transition: opacity 0.3s, width 0.5s, height 0.3s;
+    z-index: auto;
+    
+}

@@ -1,75 +1,54 @@
 import React, { useEffect, useState } from "react";
 
-import { useDispatch} from "react-redux";
-
-import { setActivity } from "../../widgets/ListTaskWidget/taskWidgetSlice";
 
 
 
+//компонент для активации таска
 export const ContentTaskActiveElements = (props)=>{
 
     const {
         children,
-        taskData,
+        //id таска
+        id,
+        // индикатор режима редактирования
         isEditMode,
-        isActiveEditMode,
-        setIsActiveEditMode,
-        setIsEditMode,
+        //индикатор активности таска
+        isActive,
+        //индикатор того, что таск заблокирован
+        isBlock,
+        //активация активного таска
+        setIdActiveTask,
+
     } = props;
     
-    const {
-        id,
-        isBlock,
-    } = taskData;
-    
-    const dispatch = useDispatch();
-    const [ isNowBlock, setIsNowBlock ] = useState(false);
+   
+    //индикатор что был включен мод редактирование
+    const [ editMode, setEditMode ] = useState(false);
+   
+    //следит за состоянием режима редактирования
     useEffect(()=> {
+        if(isEditMode && !isActive && !isBlock){
+            setIdActiveTask(id)
+            setEditMode(isEditMode);
+        }
+        console.log(isEditMode)
+        if( isActive && !isBlock && editMode && !isEditMode ){
+            setIdActiveTask(null)
+            setEditMode(isEditMode);
 
-        const fetchData = async () => {
-            if (isEditMode) {
-                if(!isBlock && !isNowBlock){
-                    dispatch(setActivity(id));
-                    setIsActiveEditMode(isEditMode);
-
-                    
-                }else {
-                    if(!isBlock && isNowBlock){
-                    setIsActiveEditMode(isEditMode);
-
-                    }
-                }
-               
-            
-            } else {
-                if(isActiveEditMode && !isBlock && !isNowBlock){
-                    dispatch(setActivity(id));
-                    setIsActiveEditMode(isEditMode);
-                } else {
-                    if(isActiveEditMode && !isBlock && isNowBlock){
-                    setIsActiveEditMode(isEditMode);
-
-                    }
-                }
-            }
-            if(isBlock && isEditMode && isActiveEditMode){
-                setIsActiveEditMode(false)
-                setIsEditMode(false)
-            }
-           
-          };
+        }
         
-        fetchData();
     },[isEditMode, isBlock])
 
 
+    //активация и дезактивация таска
     const clickTask = ()=>{
-        if(!isBlock && !isEditMode){
-            setIsNowBlock(!isNowBlock)
-            dispatch(setActivity(id))
-
+        if(!isActive && !isBlock && !isEditMode){
+            setIdActiveTask(id)
         }
-      
+        if( isActive && !isBlock && !isEditMode ) {
+            setIdActiveTask(null)
+        }
     }
 
 
@@ -77,7 +56,7 @@ export const ContentTaskActiveElements = (props)=>{
         <div 
          style={{cursor: isBlock ? 'default' : 'pointer'}}
          onClick={clickTask}
-         >
+         >          
             {children}
         </div>
     )

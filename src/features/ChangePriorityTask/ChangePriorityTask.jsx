@@ -1,8 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
-
-import { setPriority } from "../../widgets/ListTaskWidget/taskWidgetSlice";
 
 import style from './changePriority.module.css'
 import { actionTaskSlice } from "../tasksSlice";
@@ -14,47 +12,53 @@ export const ChangePriorityTask = (props) =>{
 
     const {
         children,
+        //данные таска
         taskData,
-        priority,
-        change,
+        //приоритет таска
+        priorityTask,
+        //метод для изменения приоритета таска
+        setPriorityTask,
+        //инидкатор активный ли таск
+        isActive,
     } = props;
 
-    const {
-        id,
-
-    } = taskData || {id: null};
-
-
-
-
+    
     const dispatch = useDispatch();
 
+  
+    
+   
+//следит за тем, чтоб при изменения приоритета таска и выхода из активности, оставался актуальный приоритет
+    useEffect(()=>{
+      
+        if(!isActive && taskData)            
+                if(taskData.priority !== priorityTask){
+                    setPriorityTask(taskData.priority)
+                    dispatch(actionTaskSlice.updatePriorityTask({id: taskData.id,priority: priorityTask}))
+                }
+            
+        
+    },[isActive])
 
 
 
+
+
+//меняет приоритет, но не посылает на сервер запрос
     const click = () =>{
-        if(change){
-            if(priority === 'STANDARD'){
-                change('HIGH')
-                dispatch(actionTaskSlice.updatePriorityTask({id: id,priority: 'HIGH'}))
+        if(setPriorityTask){
+            if(priorityTask === 'STANDARD'){
+                setPriorityTask('HIGH')
             } else {
-                change('STANDARD')
-                dispatch(actionTaskSlice.updatePriorityTask({id: id,priority: 'STANDARD'}))
+                setPriorityTask('STANDARD')
 
             }
             return;
         }
-
-
-        if(id){
-
-            dispatch(setPriority(id));    }
-        }
-
-
+    }
 
     return(
-        <div className={priority ? style.prioritytask : null} onClick={click}>
+        <div className={priorityTask ? style.prioritytask : null} onClick={click}>
             {children}
         </div>
     )

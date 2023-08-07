@@ -1,6 +1,6 @@
 
 export { ContentTaskActiveElements } from "./TaskActiveElement";
-export { FormTaskWidget } from './FormTaskWidget';
+export { ShiftTask } from './ShiftTask';
 export { ChangePriorityTask } from './ChangePriorityTask';
 export { EffectButton } from "./EffectButton";
 export { ActiveOneOfMany } from './ActiveOneOfTheMany'
@@ -21,6 +21,8 @@ export { CloseActiveTask } from './CloseActiveTask'
 export { DeleteTask } from './DeleteTask'
 export { ChangeStatusTask } from './ChangeStatusTask'
 export { UpdateTask } from './UpdateTask'
+export { BackgroundTask } from './BackgroundTask'
+export { SizeTask } from './SizeTask'
 
 
 

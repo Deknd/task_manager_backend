@@ -1,16 +1,25 @@
 import React from "react";
 
-
+//поле для ввода данных
 export const InputField = (props) => {
 
+
     const {
+        //тип вводимых данных
         type,
+        //информация которая должна отображаться без данных
         placeholder,
+        //данные
         value,
+        //метод для отправки данных
         onChange,
+        //ширина
         width,
+        //высота
         height,
+        //размер шрифта
         fontSize,
+        //индикатор нужности границ
         noBorder,
     } = props;
 

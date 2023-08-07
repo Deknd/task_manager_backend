@@ -5,13 +5,20 @@ import style from './contentField.module.css'
 export const ContentField = (props) =>{
 
     const{
+        //текст который будет отображаться
         text,
+        //высота объекта
         height,
+        //видим или нет он
         isVisible,
+        //размер шрифта
         fontSize,
+        //убирает стандартный отступ
         noMargin,
     }=props;
-    const heightField = height ? `${height}rem` : 'auto'
+
+    //ставит высоту по стандарту, если нет других данных
+    const heightField = height ? `${height}em` : 'auto'
 
     //Видим или не видим
     const [ show, setShow ] = useState(false);
@@ -31,12 +38,12 @@ export const ContentField = (props) =>{
         <div 
         className={style.field} 
         style={{
-            height: show ? heightField : '0rem',
-            fontSize: sz !== '' ? `${sz}rem` : sz,
+            height: show ? heightField : '0em',
+            fontSize: sz !== '' ? `${sz}em` : sz,
             opacity: show ? '' : '0%',
-            padding: show ? '' : '0rem',
-            marginTop: show ? '' : '0rem',
-            marginTop: noMargin ? '0rem' : show ? '' : '0rem',
+            padding: show ? '' : '0em',
+            marginTop: show ? '' : '0em',
+            marginTop: noMargin ? '0em' : show ? '' : '0em',
             
             }} >
             <span>

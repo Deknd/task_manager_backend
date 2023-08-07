@@ -1,0 +1,21 @@
+.main_container_for_medium_button {
+    display: flex;
+    width: 8em;
+    height: 2.1em;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0.6em;
+    background-color: #A8DADC45;
+    margin-left: 1em;
+    user-select: none;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+.for_img_container {
+    margin: 0.2em;
+}
+.img_stuly {
+    width: 1.4em;
+    height: 1.4em;
+}

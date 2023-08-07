@@ -1,85 +1,57 @@
 import React, { useEffect, useState } from "react";
-import { ChangePriorityTask, EffectButton, FrameError, SelectElement } from "../../features";
-import { Calendar, InputData, InputDescription } from "../../entities";
-import { validate } from "../../shared/lib/validation";
-import { ContentField } from "../../shared/ui";
+
 import { format } from "date-fns";
+import { Title, DescriptionAndCalendar, Priority } from './ui'
 
-
+//виджет для редактирования таска
 export const InputDataForTask = (props) => {
 
     const { 
+        //входящие данные о заголовке
         cameTitle,
+        //входящие данные о описании
         cameDescription,
+        //входячие данные о времени завершения
         cameExpirationDate,
+        //входящие данные о приоритете
         camePriority,
+        //исходящие данные при изменении
         getData,
      } = props;
 
-
+//следит за состоянием заголовка
     const [ title, setTitle ] = useState(cameTitle ? cameTitle : '');
+//следит за состоянием описании
     const [ description, setDescription ] = useState(cameDescription ? cameDescription : '');
+//следит за состоянием времени завершения
     const [ expirationDate, setExpirationDate ] = useState(cameExpirationDate ? new Date(cameExpirationDate) : new Date());
+//следит за состоянием приоритете
     const [ priority, setPriority ] = useState(camePriority? camePriority : 'STANDARD');
 
 
-
+    //отправляет данные через проперти наверх
     useEffect(()=>{
         getData({ title: title, description: description, expirationDate: format(expirationDate, "yyyy-MM-dd HH:mm"), priority: priority })
 
     },[ title, description, expirationDate, priority ])
 
-    const [isOpen, setIsOpen] = useState(0);
    
-
-    const handleClick = (e) => {
-        e.preventDefault();
-        if(isOpen === 1){
-            setIsOpen(0);
-        } else setIsOpen(1)
-      }; 
-
-
-
     return(
         <div>
+            {/* изменяет title и проводит валидацию (ok) */}
+            <Title title={title} setTitle={setTitle} />
+            {/*  изменяет или календарь, или description( плюс валидация данных ) (ок) */}
+            <DescriptionAndCalendar 
+                description={description} 
+                setDescription={setDescription} 
+                expirationDate={expirationDate} 
+                setExpirationDate={setExpirationDate} />
+        
 
-            <FrameError 
-                dataCorrect={title.length !== 0 && title.length>25 ||  !validate.isValidSymbol(title)} 
-                textError={validate.errorMessanger([
-                    {errorText: 'title больше 25 символов',functionValidation: (title.length>25)},
-                    {errorText: 'использованы запрещенные символы', functionValidation: !validate.isValidSymbol(title)}
-                    ])} >  
+            {/* Меняет приоритет (ок) */}
 
-                        <InputData dataPut={title} placeholder='Enter title' noBorder={true} width='100%' fontSize='1.1em' height='3em' getData={setTitle} />
-            </FrameError>
-
-            <FrameError 
-                dataCorrect={description.length !== 0 && !validate.isValidSymbol(description)} 
-                textError={validate.errorMessanger([
-                    {errorText: 'использованы запрещенные символы', functionValidation: !validate.isValidSymbol(description)}
-                    ])} >
-                        <SelectElement elements={[ (
-                            <InputDescription dataPut={description} getDiscription={setDescription} />
-                        ), (
-                            <Calendar getDate={setExpirationDate} startDate={expirationDate}  />
-                        ), ]} openElement={isOpen} />
-            </FrameError>
-            <div 
-                    style={{ 
-                        paddingTop: '0.25em',
-                        }}
-                    onClick={handleClick}>
-                    <EffectButton>
-                        <ContentField text={format(expirationDate, "dd-MM-yyyy HH:mm")} isVisible={true} height={2} noMargin={true} />   
-                    </EffectButton>
-
-                </div>
-                <EffectButton>
-                    <ChangePriorityTask priority={priority} change={setPriority} >
-                        <ContentField text={'change priority'} isVisible={true} height={2} />
-                    </ChangePriorityTask>
-                </EffectButton>
+            <Priority priority={priority} setPriority={setPriority} />
+         
         </div>
     )
 }

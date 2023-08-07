@@ -28,7 +28,6 @@ export const AllActiveTask = (props) => {
     const dispatch = useDispatch();
 
     const onClick = ()=>{
-        
         dispatch(setTasks(sortArray(fillter(tasks)) ))
         
     }

@@ -13,6 +13,7 @@ export const TodayActiveTasks = (props) => {
         children,
         tasks,
         isSelect,
+        
 
     } = props;
 
@@ -30,7 +31,7 @@ export const TodayActiveTasks = (props) => {
     },[tasks])
 
     const onClick = ()=>{
-        
+
         dispatch(setTasks(sortArray(fillterTodayActiveTasks(tasks)) ));
         
     }

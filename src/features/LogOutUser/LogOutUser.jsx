@@ -3,7 +3,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 
 
-
+//делает логаут пользователя
 export const LogOutUser = (props) => {
 
 

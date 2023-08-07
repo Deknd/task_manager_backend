@@ -1,0 +1,7 @@
+.main_container {
+    height: calc( 100dvh - 3em );
+    width: 21em;
+    padding: 0.5em;
+    border-right: 0.5em solid #00000030 ;
+    
+}
