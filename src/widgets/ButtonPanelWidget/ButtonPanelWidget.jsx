@@ -1,42 +1,91 @@
-import React from "react";
-import { complectButtonForUserPanelWidget } from './ui'
-import { UsedButton } from "../";
+import React, { useEffect, useState } from "react";
 
-import { ContainerForButton } from "../../entities";
-import { Footer } from "../../entities";
+import {  ButtonForPanel } from './ui'
 
-import addTaskImg from './addTaskImg.png'
-import { ActiveOneOfMany, EffectButton } from "../../features";
-import { BigButton } from "../../shared/ui";
-import { useDispatch, useSelector } from "react-redux";
-import { setIsNeedAddTask } from "../ListTaskWidget";
+import { AllActiveTask, TodayActiveTasks, CalendarTasks, DoneTasks, FailedTasks, AddTask } from "../../features";
+import { all, today, calendar, done, failed, addTaskImg } from './img'
 
-//панель для управление и разделения тасков
+
+import style from './buttonPanelWidget.module.css'
+import { useSelector } from "react-redux";
+
+
+
+
+//панель кнопок для управление и разделения тасков
 export const ButtonPanelWidget = () => {
-    const dispatch = useDispatch();
     const tasks = useSelector((state)=>state.tasks.tasks);
+    const [ activeFillter, setActiveFillter ] = useState("AllActiveTask")
 
+    //стиль для поиска элементов по нему
+    const buttonForPanelWidget = 'button_for_panel_widget';
 
-    
-
+    //Добавляет и убирает выделение на активную кнопку
+    useEffect(() => {
+        const divs = document.querySelectorAll(`.${buttonForPanelWidget}`);
+        divs.forEach(div => {
+          div.addEventListener('click', function () {
+            divs.forEach(dv => dv.classList.remove(style.active));
+            this.classList.add(style.active);
+          });
+        });
+      }, []); 
 
     return(
+        
+        <div className={style.main_container} >
+            {/* отображает кнопку (ОК) */}
+            <ButtonForPanel 
+            reactComp={AllActiveTask} 
+            activeFillters={{activeFillter, setActiveFillter}} 
+            buttonForPanelWidget={`${buttonForPanelWidget} ${style.active}`} 
+            description='Активные таски' 
+            tasks={tasks}
+            img={all} />
 
-        //контейнер для кнопок (ок) TODO 
-        <ContainerForButton>
+          {/* отображает кнопку (ОК) */}
+            <ButtonForPanel 
+            reactComp={TodayActiveTasks} 
+            activeFillters={{activeFillter, setActiveFillter}} 
+            buttonForPanelWidget={buttonForPanelWidget} 
+            description='Задачи на сегодня' 
+            tasks={tasks}
+            img={today} />
 
-             <div style={{borderRadius: '15px'}}>
-            <ActiveOneOfMany elements={complectButtonForUserPanelWidget(tasks)} />
-            </div>
-            <div style={{margin: '0.5em'}}>
-                <EffectButton isSelect={null} borderRadius='10px'  >
-                    <div onClick={()=>{dispatch(setIsNeedAddTask())}} >
-                        <BigButton img={addTaskImg}  description='Добавить таск' colorButtonRBG='168, 218, 220, 0.451' />
-                    </div>
-                </EffectButton>
-            </div>
-            <Footer/>
-            
-        </ContainerForButton>
+          {/* отображает кнопку (ОК) */}  
+            <ButtonForPanel 
+            reactComp={CalendarTasks} 
+            activeFillters={{activeFillter, setActiveFillter}} 
+            buttonForPanelWidget={buttonForPanelWidget} 
+            description='Календарь' 
+            tasks={tasks}
+            img={calendar} />
+
+          {/* отображает кнопку (ОК) */}
+            <ButtonForPanel 
+            reactComp={DoneTasks} 
+            activeFillters={{activeFillter, setActiveFillter}} 
+            buttonForPanelWidget={buttonForPanelWidget} 
+            description='Выполненые' 
+            tasks={tasks}
+            img={done} />
+
+        {/* отображает кнопку (ОК) */}
+            <ButtonForPanel 
+            reactComp={FailedTasks} 
+            activeFillters={{activeFillter, setActiveFillter}} 
+            buttonForPanelWidget={buttonForPanelWidget} 
+            description='Проваленные' 
+            tasks={tasks}
+            img={failed} />
+
+        {/* Кнопка добавления таска (ОК) */}
+            <ButtonForPanel
+            reactComp={AddTask}
+            description='Добавить таск' 
+            img={addTaskImg} 
+            colorButtonRBG='168, 218, 220, 0.451'/>
+ 
+        </div>
     );
 }

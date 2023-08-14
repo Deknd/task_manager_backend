@@ -1,98 +1,85 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useDispatch } from "react-redux";
-import { setTasks } from "../../../widgets/ListTaskWidget/taskWidgetSlice";
-import DatePicker from "react-datepicker";
+import React, { useEffect, useState } from "react";
 
-import { sortArray } from "../lib/fillterCalendar";
-import { splitTaskForDate } from "../lib/splitTaskForDate";
-import { splitTaskForPastAndFeature } from "../lib/splitTaskForDate";
-import { compareDates } from "../lib/splitTaskForDate";
-import { formatDate } from "../lib/splitTaskForDate";
+import { useDispatch } from "react-redux";
+
+import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
 import style from "./calendarTasks.module.css";
 
+
+
+import { calendarModuels } from './models/calendarModels'
+
+// фильтрует данные по дате указаной в календаре
 export const CalendarTasks = (props) => {
     const {
         children,
         tasks,
-        isSelect,
+        activeFillters,
         
 
     } = props;
+    const{
+        activeFillter,
+         setActiveFillter
+    } = activeFillters;
 
     const dispatch = useDispatch();
     //выбраная дата
     const [startDate, setStartDate] = useState(new Date());
 
- 
+    //отдает в календарь стили для дат, чтоб потом к ним применились динамические стили
+    const [highlightWithRanges, setHighlightWithRanges ]= useState([]);
+    
+    
     //функция по сортировки тасков
-     const splitMapDateTasks = (array) => {
-        const mapDateTasks = splitTaskForDate(array);
-        setHighlightWithRanges(splitTaskForPastAndFeature(mapDateTasks));
-        return mapDateTasks;
-    };
-
-
+    const [ isOpen, setIsOpen ] = useState(false);
    
-    //метод вызывающийся при изменение даты
-    const handleChange = (date) => {
-        setStartDate(date);
-       // setIsOpen(false);
-        
-    };
-    //следит, какая дата выбрана
+
+    //сортирует таски по датам, добавляет к датам стили, 
     useEffect(()=>{
-        const mapTasks = splitMapDateTasks(tasks);
+        const resultMap = calendarModuels.splitMapDateTasks(tasks);
+        const  mapTasks = resultMap.mapDateTasks;
+        setHighlightWithRanges(resultMap.highlightWithRangesArray);
+       
+        if(activeFillter === 'CalendarTasks'){
 
-        if(isSelect){
-            const dateActive = formatDate(startDate);
-            const iterator = mapTasks.keys();
-            let key = null;
-            for (const date of iterator) {
-                if(compareDates(dateActive, date)){
-                    key=date
-                    //dispatch(setTasks(mapTasks.get(date)))
-                } 
+           
+            if(isOpen ){
+                calendarModuels.changeStyle();
+
+                calendarModuels.dispathSetTask(startDate, mapTasks, dispatch)
+
             }
-            if(key !== null){
-                const result = mapTasks.get(key);
-
-                dispatch(setTasks(sortArray(result) ))
-            }else { 
-
-                dispatch(setTasks([])) }
+        } else {
+            setIsOpen(false)
         }
         
-    },[startDate, isSelect, tasks])
-
-   
-    //следит за тем, какие стили должны быть
-    const [highlightWithRanges, setHighlightWithRanges ]= useState([]);
-      
-   
+    },[startDate, activeFillter, tasks, isOpen,])
+    //открывает, закрывает календарь, активирует фильтр
+    const onClick = () => {
+     setIsOpen(!isOpen);
+     setActiveFillter('CalendarTasks')
+    }
+  
+    
 
     return (
-        <>  
-            {children}
-            {isSelect && (
-
-                      
-
-                          <DatePicker 
-                              calendarClassName={style.datepicker}
-                              selected={startDate} 
-                              onChange={handleChange} 
-                              highlightDates={highlightWithRanges}
-          
-                              inline 
-                          />    
-                     
+        <div>
+            <div onClick={onClick}>
+                {children}
+            </div>  
+            {isOpen && (
+                    <DatePicker 
+                        calendarClassName={style.datepicker}
+                        onMonthChange={calendarModuels.changeStyle}
+                        selected={startDate} 
+                        onChange={(date)=>setStartDate(date)} 
+                        highlightDates={highlightWithRanges}
+                        inline 
+                    />    
             )}
-        </>
+        </div>
     );
 }
-
-
-
-

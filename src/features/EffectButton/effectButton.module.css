@@ -7,7 +7,9 @@ position: relative;
 }
 .effect_button:hover {
     transform: scale(1.02) translateY(-2px);
+
 }
 .effect_button:active {
     transform: scale(0.98) translateY(1px);
+
 }

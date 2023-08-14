@@ -1,8 +1,8 @@
 import { addDays } from 'date-fns';
-import { fillter } from './fillterAllActiveTasks'
+import { fillterAllActiveTasks } from './fillterAllActiveTasks'
 
 export const fillterTodayActiveTasks = (tasks) => {
-    const activeTask = fillter(tasks);
+    const activeTask = fillterAllActiveTasks(tasks);
 
     
     const result = [];

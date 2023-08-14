@@ -31,7 +31,6 @@ export const ContentTaskActiveElements = (props)=>{
             setIdActiveTask(id)
             setEditMode(isEditMode);
         }
-        console.log(isEditMode)
         if( isActive && !isBlock && editMode && !isEditMode ){
             setIdActiveTask(null)
             setEditMode(isEditMode);

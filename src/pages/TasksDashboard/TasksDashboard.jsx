@@ -13,7 +13,7 @@ export const TasksDashboard = () => {
           <UserPanelWidget/>
           <div style={{ display: 'flex',}}>
             <div >
-              {/* панель управление тасками */}
+              {/* панель управление тасками (OK) */}
               <ButtonPanelWidget/>
             </div>
             <div style={{ flex: 1}}>

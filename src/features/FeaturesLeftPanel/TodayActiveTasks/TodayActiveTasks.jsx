@@ -6,22 +6,26 @@ import { sortArray } from "../lib/fillterCalendar";
 
 import { setTasks } from "../../../widgets/ListTaskWidget/taskWidgetSlice";
 
-
+//Фильтрует таски и передает их в ListTaskWidget
 export const TodayActiveTasks = (props) => {
 
     const {
         children,
         tasks,
-        isSelect,
+        activeFillters,
         
 
     } = props;
 
-
+    const{
+        activeFillter,
+         setActiveFillter
+    } = activeFillters;
     const dispatch = useDispatch();
+    // если набор тасков обновится, то сразу обновится и в ListTaskWidget
     useEffect(()=>{
 
-        if(isSelect){
+        if(activeFillter === 'TodayActiveTasks'){
 
                 if(tasks.lenght !== 0){
 
@@ -29,9 +33,9 @@ export const TodayActiveTasks = (props) => {
                 }
             }
     },[tasks])
-
+//Обновляет состояние активного фильтра и отправляет даные в таск лист
     const onClick = ()=>{
-
+        setActiveFillter('TodayActiveTasks');
         dispatch(setTasks(sortArray(fillterTodayActiveTasks(tasks)) ));
         
     }

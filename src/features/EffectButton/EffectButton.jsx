@@ -9,21 +9,23 @@ export const EffectButton =(props)=> {
     const{
         children,
         //если выбрана данная кнопка, появляется тень
-        isSelect,
+        useClassName,
         //округление границ
         borderRadius,
        
     } = props;
 
 
+//Стили для кнопки
+    const buttonClassName = `${style.effect_button} ${useClassName}`;
+
 return(
 
 
     <div 
-    className={style.effect_button}
+    className={buttonClassName}
     style={{
        
-        boxShadow: isSelect ?'0 0 4px rgba(0, 0, 0, 0.6)' : '',
         borderRadius: borderRadius ? borderRadius : '',
      
         

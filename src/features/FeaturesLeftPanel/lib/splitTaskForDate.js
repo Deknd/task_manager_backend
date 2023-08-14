@@ -1,29 +1,92 @@
+import style from './test.module.css'
 export const splitTaskForDate = (array) => {
     const mapDateTasks = new Map();
 
     array.forEach((task) => {
         const formattedDate = formatDate(task.expirationDate);
-        if (!mapDateTasks.has(formattedDate)) {
-            mapDateTasks.set(formattedDate, []);
+        const iterator = mapDateTasks.keys();
+        let haveKey = false;
+        for(const key of iterator){
+          if(`${key}`=== `${formattedDate}`){
+            haveKey = true;
+          }
         }
-        mapDateTasks.get(formattedDate).push(task);
+        if (!haveKey) {
+            mapDateTasks.set(`${formattedDate}`, []);
+        }
+        mapDateTasks.get(`${formattedDate}`).push(task);
     });
+    
     return mapDateTasks;
 }
 export const splitTaskForPastAndFeature = (map)=>{
     const iterator = map.keys();
-        const red = { "react-datepicker__day--highlighted-custom-1": [] };
-        const green = { "react-datepicker__day--highlighted-custom-2": [] };
-        const dateNow = formatDate(new Date());
 
-        for (const date of iterator) {
-            if (dateNow <= date) {
-                green["react-datepicker__day--highlighted-custom-2"].push(date);
-            } else {
-                red["react-datepicker__day--highlighted-custom-1"].push(date);
+    const dateToStyle = [];
+
+    for(const date of iterator){
+      const arrayTaskForDate = map.get(date);
+      let countDone = 0;
+      let countFailed = 0;
+      let countHigh = 0;
+      let countStandard =0;
+      arrayTaskForDate.map(task => {
+        if(task.status === 'DONE'){
+          countDone+=1;
+        } else{
+          if(task.status === 'FAILED'){
+            countFailed+=1;
+          }else{
+            if(task.priority === 'HIGH'){
+              countHigh+=1;
             }
+            if(task.priority === 'STANDARD'){
+              countStandard+=1;
+            }
+          }
         }
-        return [red, green]
+      })
+      
+      const onePercent = (countDone+countFailed+countHigh+countStandard)/100;
+      const donePercent = countDone/onePercent;
+      const failedPercent = countFailed/onePercent;
+      const highPercent = countHigh/onePercent;
+      const standardPercent = countStandard/onePercent;
+      const gradientStops = [
+        `#fedfda 0%, #fedfda ${highPercent}%,`,
+        `#c1e5d9 ${highPercent}%, #c1e5d9 ${standardPercent + highPercent}%,`,
+        `#48f17370 ${standardPercent + highPercent}%, #48f17370 ${standardPercent + highPercent + donePercent}%,`,
+        `#fa1e1e70 ${standardPercent + highPercent + donePercent}%, #fa1e1e70 ${standardPercent + highPercent + failedPercent + donePercent}%`
+      ];
+      const gradientString = `linear-gradient(to bottom, ${gradientStops.join(' ')})`;
+
+      const style = {
+        background: gradientString,
+        borderRadius: '0.3em'
+      };
+      const dateString = dateToString(formatDate(date));
+
+
+      dateToStyle.push (
+        [{[`${dateString}`]: [formatDate(date)]},
+        dateString,
+        style]
+        
+      )
+
+      
+      
+    }
+    
+        return dateToStyle;
+}
+const dateToString = (date) => {
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear().toString();
+  const dayStyle = 'my_day_style';
+  
+  return `${dayStyle}_${day}_${month}_${year}`;
 }
 
 export const formatDate = (date) => {

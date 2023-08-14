@@ -6,32 +6,34 @@ import { setTasks } from "../../../widgets/ListTaskWidget/taskWidgetSlice";
 import { fillterDoneTasks } from "../lib/fillterDoneTasks";
 
 
-
+//Выполненные таски
 export const DoneTasks = (props) => {
 
     const {
         tasks,
         children,
-        isSelect,
+        activeFillters,
     } = props;
+    const{
+        activeFillter,
+         setActiveFillter
+    } = activeFillters;
 
   
-
+    
     const dispatch = useDispatch();
-    useEffect(()=>{
-
-        if(isSelect){
-
+    //Следит за изменениями тасков и обновляет данные в ListTaskWidget
+    useEffect(()=>{ 
+        if(activeFillter === 'DoneTasks'){
             if(tasks.lenght !== 0){
-
                 onClick();
             }
-        }
+        }  
     },[tasks])
+    //обновляет данные в ListTaskWidget
     const onClick = ()=>{
-        
-       dispatch(setTasks(fillterDoneTasks(tasks)))
-        
+       dispatch(setTasks(fillterDoneTasks(tasks)));
+        setActiveFillter('DoneTasks');
     }
 
 

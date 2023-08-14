@@ -6,22 +6,26 @@ import { setTasks } from "../../../widgets/ListTaskWidget/taskWidgetSlice";
 import { fillterFailedTasks } from "../lib/fillterFailedTasks";
 
 
-
+//фильтрует таски выбирая проваленные и отправляет их
 export const FailedTasks = (props) => {
 
     const {
         tasks,
         children,
-        isSelect,
+        activeFillters,
         
     } = props;
-
+    const{
+        activeFillter,
+         setActiveFillter
+    } = activeFillters;
   
 
     const dispatch = useDispatch();
+    //если есть обновление в тасках, отправляет их в ListTaskWidget
     useEffect(()=>{
 
-        if(isSelect){
+        if(activeFillter === 'FailedTasks'){
 
             if(tasks.lenght !== 0){
 
@@ -30,9 +34,10 @@ export const FailedTasks = (props) => {
         }
     },[tasks])
 
+    // активирует данный фильтр и отправляет их в ListTaskWidget
     const onClick = ()=>{
-       
-       dispatch(setTasks(fillterFailedTasks(tasks)))
+       setActiveFillter('FailedTasks');
+       dispatch(setTasks(fillterFailedTasks(tasks)));
         
     }
 

@@ -1,5 +1,5 @@
 export let needUpdate =[];
-export const fillter = (tasks) => {
+export const fillterAllActiveTasks = (tasks) => {
     const notDoneAndNotFailedTasks =[];
     tasks.map((task)=>{
         if(task.status !== 'FAILED' && task.status !== 'DONE'){
